@@ -1,0 +1,20 @@
+Command:
+  Reload:
+    Message: '&bMultiChat &8: &eConfig reloaded.'
+  Error:
+    ByConsole:
+      Message: '&bMultiChat &8: &eThat command has to be executed by a player.'
+    NotExist:
+      Message: '&bMultiChat &8: &eThat command doesn''t exist.'
+    BadSyntax:
+      Message: '&bMultiChat &8: &ePlease do %Syntax% instead.'
+    NoPermission:
+      Message: '&bMultiChat &8: &eYou don''t have permission to execute this command.'
+  Channel:
+    ChangedChannel:
+      Message: '&bMultiChat &8: &eYour channel has been set to &a&l%Channel%&e.'
+  Profanity:
+    ToggleOn:
+      Message: '&bMultiChat &8: &eYour profanity filter has been turned &a&lOn&e.'
+    ToggleOff:
+      Message: '&bMultiChat &8: &eYour profanity filter has been turned &c&lOff&e.'

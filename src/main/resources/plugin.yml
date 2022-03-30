@@ -1,0 +1,12 @@
+main: Main.Main
+name: PluginTemplate
+version: 1.0.0
+author: ResurrectAjax
+description: Template for plugins
+api-version: 1.18
+
+commands:
+  PluginTemplate:
+    description: run a PluginTemplate command
+    usage: /<command>
+    aliases: pt
