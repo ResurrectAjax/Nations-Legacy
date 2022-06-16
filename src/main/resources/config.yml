@@ -1,19 +1,2 @@
-MultiChat:
-  # The channels players can choose from
-  # worlds: defines which worlds can receive messages: ALL/OWN -> (All worlds)/(The world you're currently in)
-  # radius: defines in which block radius players can receive messages: -1 for everywhere
-  # default: defines the default channel players use
-  Channels:
-    global:
-      default: true
-      worlds: ALL
-      radius: -1
-    local:
-      worlds: OWN
-      radius: 20
-    shout:
-      worlds: OWN
-      radius: 40
-    whisper:
-      worlds: OWN
-      radius: 3
+Nations:
+  maxchunks: 10

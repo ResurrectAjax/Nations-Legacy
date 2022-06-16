@@ -1,12 +1,13 @@
-main: Main.Main
-name: PluginTemplate
+main: main.Main
+name: Nations-Legacy
 version: 1.0.0
 author: ResurrectAjax
-description: Template for plugins
+description: Nations
 api-version: 1.18
+depend: [PlaceholderAPI]
 
 commands:
-  PluginTemplate:
-    description: run a PluginTemplate command
+  Nations:
+    description: run a Nations command
     usage: /<command>
-    aliases: pt
+    aliases: n

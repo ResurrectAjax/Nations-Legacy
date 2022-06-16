@@ -1,43 +1,52 @@
-package Commands;
-
+package commands.admin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import Interfaces.ParentCommand;
-import Main.Main;
+import commands.admin.disband.DisbandNation;
+import help.HelpCommand;
+import interfaces.ParentCommand;
+import main.Main;
 
-public class NationsCommand extends ParentCommand{
-	private List<ParentCommand> subcommands;
+public class AdminCommand extends ParentCommand{
+
+	private List<ParentCommand> subcommands = new ArrayList<ParentCommand>();
 	
-	public NationsCommand(Main main) {
+	public AdminCommand(Main main) {
 		subcommands = new ArrayList<ParentCommand>(Arrays.asList(
-				
+				new DisbandNation(main),
+				new HelpCommand(main)
 				));
 	}
 	
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.admin";
+	}
+
+	@Override
+	public boolean hasTabCompletion() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "multichat";
+		return "admin";
 	}
 
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/multichat <subcommand>";
+		return "/nations admin <subcommand>";
 	}
 
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Runs the multichat command";
+		return "Runs an admin command";
 	}
 
 	@Override
@@ -47,9 +56,9 @@ public class NationsCommand extends ParentCommand{
 	}
 
 	@Override
-	public boolean hasGUI() {
+	public boolean isConsole() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

@@ -1,20 +1,35 @@
 Command:
   Reload:
-    Message: '&bMultiChat &8: &eConfig reloaded.'
+    Message: '&bNations-Legacy &8: &eConfig reloaded.'
+  Help:
+    EndOfHelp:
+      Message: '&bNations-Legacy &8: &eThis is the end of the help list.'
   Error:
     ByConsole:
-      Message: '&bMultiChat &8: &eThat command has to be executed by a player.'
+      Message: '&bNations-Legacy &8: &eThat command has to be executed by a player.'
     NotExist:
-      Message: '&bMultiChat &8: &eThat command doesn''t exist.'
+      Message: '&bNations-Legacy &8: &eThat command doesn''t exist.'
     BadSyntax:
-      Message: '&bMultiChat &8: &ePlease do %Syntax% instead.'
+      Message: '&bNations-Legacy &8: &ePlease do %rel_nations_syntax% instead.'
     NoPermission:
-      Message: '&bMultiChat &8: &eYou don''t have permission to execute this command.'
-  Channel:
-    ChangedChannel:
-      Message: '&bMultiChat &8: &eYour channel has been set to &a&l%Channel%&e.'
-  Profanity:
-    ToggleOn:
-      Message: '&bMultiChat &8: &eYour profanity filter has been turned &a&lOn&e.'
-    ToggleOff:
-      Message: '&bMultiChat &8: &eYour profanity filter has been turned &c&lOff&e.'
+      Message: '&bNations-Legacy &8: &eYou don''t have permission to execute this command.'
+  Nations:
+    NotExist:
+      Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e doesn''t exist.'
+    Create:
+      AlreadyExists:
+        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e already exists.'
+      AlreadyInNation:
+        Message: '&bNations-Legacy &8: &e You''re already in a nation.'
+      Created:
+        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been created.'
+    Disband:
+      Disbanded:
+        Message: '&bNations-Legacy &8: &c&l%nations_nation_name%&e has been disbanded.'
+      NotALeader:
+        Message: '&bNations-Legacy &8: &e You''re not a leader of your nation.'
+  Player:
+    NotExist:
+      Message: '&bNations-Legacy &8: &e That player doesn''t exist.'
+    NotInNation:
+      Message: '&bNations-Legacy &8: &e You''re not part of a nation.'
