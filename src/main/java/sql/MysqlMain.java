@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -31,7 +32,7 @@ public class MysqlMain extends Database{
         super(instance, mappingRepo);
         dbname = plugin.getConfig().getString("SQLite.Nations-Legacy", "Nations-Legacy"); // Set the database name here e.g player_kills
     }
-	
+    
     private String SQLiteCreateRanksTable = "CREATE TABLE IF NOT EXISTS Ranks (" + 
     		"`Rank` varchar(32) PRIMARY KEY" +
             ");"; 
@@ -54,12 +55,14 @@ public class MysqlMain extends Database{
             "`Killpoints` int NOT NULL, " +
             "`NationID` int, " +
             "`Rank` varchar(32) not null, " +
-            "foreign key(Rank) references Ranks(Rank) " +
+            "foreign key(Rank) references Ranks(Rank), " +
+            "foreign key(NationID) references Nations(NationID) on delete set null" +
             ");"; 
     
     private String SQLiteCreateNationsTable = "CREATE TABLE IF NOT EXISTS Nations (" + 
     		"`NationID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
     		"`Name` varchar(32) NOT NULL, " + 
+    		"`Description` varchar(32), " +
             "`Leaders` varchar(32) NOT NULL, " +
             "`Officers` varchar(32), " +
             "`Members` varchar(32), " +
@@ -127,12 +130,18 @@ public class MysqlMain extends Database{
         }
         try {
             if(connection!=null&&!connection.isClosed()){
+            	PreparedStatement ps = connection.prepareStatement("PRAGMA foreign_keys = ON;");
+                ps.execute();
+                ps.close();
                 return connection;
             }
             Class.forName("org.sqlite.JDBC");
             Properties properties = new Properties();
             properties.setProperty("PRAGMA foreign_keys", "ON");
             connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder, properties);
+            PreparedStatement ps = connection.prepareStatement("PRAGMA foreign_keys = ON;");
+            ps.execute();
+            ps.close();
             return connection;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);

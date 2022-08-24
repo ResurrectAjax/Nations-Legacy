@@ -21,14 +21,16 @@ import main.Main;
  * */
 public class HelpCommand extends ParentCommand{
 	protected Main main;
+	private ParentCommand parent;
 	private int helpSize = 0;
 	
 	/**
 	 * Constructor of RaidHelpParent class<br>
 	 * @param main instance of the {@link Main.Main} class
 	 * */
-	public HelpCommand(Main main) {
-		this.main = main;
+	public HelpCommand(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
 	}
 
 
@@ -128,7 +130,8 @@ public class HelpCommand extends ParentCommand{
 		if(command.getSubCommands() != null) {
 			List<ParentCommand> subcommands = new ArrayList<ParentCommand>(command.getSubCommands());
 			for(ParentCommand subcommand : subcommands) {
-				if(!(subcommand instanceof ChildCommand)) continue;
+				if(!(subcommand instanceof ChildCommand) && !subcommand.getName().equalsIgnoreCase("description")) continue;
+				if(!subcommand.hasTabCompletion()) continue;
 				if(subcommand.getName().equals(this.getName())) continue;
 				
 				String message;
@@ -177,5 +180,12 @@ public class HelpCommand extends ParentCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
 	}
 }

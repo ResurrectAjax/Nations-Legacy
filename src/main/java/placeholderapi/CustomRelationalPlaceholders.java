@@ -21,7 +21,10 @@ public class CustomRelationalPlaceholders extends PlaceholderExpansion implement
 		
 		NationMapping nation, enemy;
 		switch(identifier) {
-		case "nation_name":
+		case "nation1_name":
+			nation = mappingRepo.getNationByPlayer(playone);
+			return nation.getName();
+		case "nation2_name":
 			nation = mappingRepo.getNationByPlayer(playtwo);
 			return nation.getName();
 		case "enemy_nation":
@@ -36,7 +39,7 @@ public class CustomRelationalPlaceholders extends PlaceholderExpansion implement
 	@Override
 	public @NotNull String getIdentifier() {
 		// TODO Auto-generated method stub
-		return "rel_nations";
+		return "relnations";
 	}
 
 	@Override

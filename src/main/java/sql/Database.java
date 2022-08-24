@@ -6,8 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -85,7 +88,7 @@ public abstract class Database {
    
             rs = ps.executeQuery();
             while(rs.next()){
-                PlayerMapping player = new PlayerMapping(UUID.fromString(rs.getString(1)), rs.getInt(2), Rank.valueOf(rs.getString(4)));
+                PlayerMapping player = new PlayerMapping(UUID.fromString(rs.getString(1)), rs.getInt(2), Rank.valueOf(rs.getString(4)), this);
                 if(rs.getObject(3) != null) player.setNationID(rs.getInt(3));
                 players.add(player);
             }
@@ -105,21 +108,14 @@ public abstract class Database {
         return players;
     }
     
-    private String getStringFromList(List<PlayerMapping> playerList) {
-    	List<UUID> uuidList = playerList.stream().map(play -> play.getUUID()).collect(Collectors.toList());
-    	
-    	String uuids = "";
-    	for(UUID uuid : uuidList) {
-    		if(uuid.equals(uuidList.get(uuidList.size()-1))) uuids += uuid;
-    		else uuids += uuid + ",";
-    	}
-    	return uuids;
+    private String getStringFromList(Collection<PlayerMapping> playerList) {
+    	return playerList.stream().map(play -> play.getUUID().toString()).collect(Collectors.joining(","));
     }
     
-    private List<PlayerMapping> getPlayerListFromString(String list) {
-    	if(list == null) return new ArrayList<PlayerMapping>();
+    private Set<PlayerMapping> getPlayerListFromString(String list) {
+    	if(list == null) return new HashSet<PlayerMapping>();
     	String[] itemSplit = list.split(",");
-    	List<PlayerMapping> items = new ArrayList<PlayerMapping>();
+    	Set<PlayerMapping> items = new HashSet<PlayerMapping>();
     	
     	for(String item : itemSplit) {
     		if(item.isBlank() || item.isEmpty()) continue;
@@ -128,14 +124,14 @@ public abstract class Database {
     	return items;
     }
     
-    public List<NationMapping> getAllNations() {
+    public Set<NationMapping> getAllNations() {
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        List<NationMapping> nations = new ArrayList<NationMapping>();
-        HashMap<Integer, List<Chunk>> chunkMap = getAllClaimedChunks();
-        HashMap<Integer, List<Flag>> flagMap = getAllNationFlags();
+        Set<NationMapping> nations = new HashSet<NationMapping>();
+        HashMap<Integer, Set<Chunk>> chunkMap = getAllClaimedChunks();
+        HashMap<Integer, Set<Flag>> flagMap = getAllNationFlags();
         
         try {
             conn = getSQLConnection();
@@ -143,16 +139,16 @@ public abstract class Database {
    
             rs = ps.executeQuery();
             while(rs.next()){
-            	int nationID = rs.getInt(1), maxChunks = rs.getInt(6);
-            	String name = rs.getString(2);
+            	int nationID = rs.getInt(1), maxChunks = rs.getInt(7);
+            	String name = rs.getString(2), description = rs.getString(3) == null ? "" : rs.getString(3);
             	
-            	List<PlayerMapping> leaders = getPlayerListFromString(rs.getString(3)), 
-            			officers = getPlayerListFromString(rs.getString(4)), 
-            			members = getPlayerListFromString(rs.getString(5));
-            	List<Chunk> chunks = chunkMap.get(nationID) == null ? new ArrayList<Chunk>() : chunkMap.get(nationID);
-            	List<Flag> flags = flagMap.get(nationID) == null ? new ArrayList<Flag>() : flagMap.get(nationID);
+            	Set<PlayerMapping> leaders = getPlayerListFromString(rs.getString(4)), 
+            			officers = getPlayerListFromString(rs.getString(5)), 
+            			members = getPlayerListFromString(rs.getString(6));
+            	Set<Chunk> chunks = chunkMap.get(nationID) == null ? new HashSet<Chunk>() : chunkMap.get(nationID);
+            	Set<Flag> flags = flagMap.get(nationID) == null ? new HashSet<Flag>() : flagMap.get(nationID);
             	
-            	NationMapping nation = new NationMapping(nationID, name, maxChunks, leaders, officers, members, chunks, flags, this);
+            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, leaders, officers, members, chunks, flags, this);
             	nations.add(nation);
             }
         	return nations;
@@ -171,12 +167,12 @@ public abstract class Database {
         return nations;
     }
     
-    public HashMap<Integer, List<Chunk>> getAllClaimedChunks() {
+    public HashMap<Integer, Set<Chunk>> getAllClaimedChunks() {
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        HashMap<Integer, List<Chunk>> map = new HashMap<Integer, List<Chunk>>();
+        HashMap<Integer, Set<Chunk>> map = new HashMap<Integer, Set<Chunk>>();
         List<Chunk> chunks = new ArrayList<Chunk>();
         try {
             conn = getSQLConnection();
@@ -186,13 +182,13 @@ public abstract class Database {
             
             Integer nationID = null;
             while(rs.next()){
-            	if(nationID != rs.getInt(1)) chunks = new ArrayList<Chunk>();
+            	if((nationID == null) || (nationID != rs.getInt(1))) chunks = new ArrayList<Chunk>();
             	nationID = rs.getInt(1);
             	
             	Chunk chunk = Bukkit.getWorld(rs.getString(2)).getChunkAt(rs.getInt(3), rs.getInt(4));
             	chunks.add(chunk);
             	
-            	map.put(nationID, new ArrayList<Chunk>(chunks));
+            	map.put(nationID, new HashSet<Chunk>(chunks));
             }
         	return map;
         } catch (SQLException ex) {
@@ -212,13 +208,13 @@ public abstract class Database {
     
     
     
-    public HashMap<Integer, List<Flag>> getAllNationFlags() {
+    public HashMap<Integer, Set<Flag>> getAllNationFlags() {
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        HashMap<Integer, List<Flag>> map = new HashMap<Integer, List<Flag>>();
-        List<Flag> flags = new ArrayList<Flag>();
+        HashMap<Integer, Set<Flag>> map = new HashMap<Integer, Set<Flag>>();
+        Set<Flag> flags = new HashSet<Flag>();
         try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT * FROM FlagLines");
@@ -227,11 +223,11 @@ public abstract class Database {
             
             Integer nationID = null;
             while(rs.next()){
-            	if(nationID != rs.getInt(2)) flags = new ArrayList<Flag>();
+            	if(nationID != rs.getInt(2)) flags = new HashSet<Flag>();
             	nationID = rs.getInt(2);
             	
             	flags.add(Flag.valueOf(rs.getString(3)));
-            	map.put(nationID, new ArrayList<Flag>(flags));
+            	map.put(nationID, new HashSet<Flag>(flags));
             }
         	return map;
         } catch (SQLException ex) {
@@ -366,7 +362,7 @@ public abstract class Database {
         List<AllianceMapping> alliances = new ArrayList<AllianceMapping>();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM Wars;");
+            ps = conn.prepareStatement("SELECT * FROM Alliances;");
    
             rs = ps.executeQuery();
             while(rs.next()){
@@ -404,7 +400,7 @@ public abstract class Database {
             ps.setString(3, rank.toString());
             
             ps.executeUpdate();
-            return new PlayerMapping(uuid, killpoints, rank);
+            return new PlayerMapping(uuid, killpoints, rank, this);
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
         } finally {
@@ -493,18 +489,19 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Leaders = ?, Officers = ?, Members = ?, MaxChunks = ? WHERE NationID = ?");
+            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, Leaders = ?, Officers = ?, Members = ?, MaxChunks = ? WHERE NationID = ?");
                      
             String leaders = getStringFromList(nation.getLeaders()), 
             		officers = getStringFromList(nation.getOfficers()), 
             		members = getStringFromList(nation.getMembers());
             
             ps.setString(1, nation.getName()); 
-            ps.setString(2, leaders);
-            ps.setString(3, officers); 
-            ps.setString(4, members);
-            ps.setInt(5, nation.getMaxChunks());
-            ps.setInt(6, nation.getNationID());
+            ps.setString(2, nation.getDescription());
+            ps.setString(3, leaders);
+            ps.setString(4, officers); 
+            ps.setString(5, members);
+            ps.setInt(6, nation.getMaxChunks());
+            ps.setInt(7, nation.getNationID());
             
             ps.executeUpdate();
             return;
@@ -527,6 +524,7 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
+            
             ps = conn.prepareStatement("DELETE FROM Nations WHERE NationID = ?");
             
             ps.setInt(1, nationID);
@@ -534,11 +532,11 @@ public abstract class Database {
             ps.executeUpdate();
             ps.close();
             
-            ps = conn.prepareStatement("UPDATE Players SET NationID = NULL, Rank = 'Nationless' WHERE NationID = ?");
-            ps.setInt(1, nationID);
-            
+            ps = conn.prepareStatement("UPDATE Players SET NationID = NULL, Rank = ?");
+            ps.setString(1, Rank.Nationless.toString());
             ps.executeUpdate();
             ps.close();
+            
             return;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -583,6 +581,37 @@ public abstract class Database {
             }
         }
         return null;
+    }
+    
+    public void deleteAlliance(int nationID, int allyID) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+        	
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("DELETE FROM Alliances WHERE (NationID = ? AND AllyID = ?) OR (NationID = ? AND AllyID = ?);");
+            
+            ps.setInt(1, nationID);
+            ps.setInt(2, allyID);
+            ps.setInt(3, allyID);
+            ps.setInt(4, nationID);
+            
+            ps.executeUpdate();
+            
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;
     }
     
     public WarMapping insertWar(int nationID, int enemyID) {
@@ -660,13 +689,13 @@ public abstract class Database {
             
             String stmt = "INSERT INTO ClaimedChunks(NationID, World, Xcoord, Zcoord) values";
             for(Chunk chunk : chunks) {
-            	if(chunk.equals(chunks.get(chunks.size()-1))) stmt += "(?,?,?,?,?)";
-            	else stmt += "(?,?,?,?,?),";
+            	if(chunk.equals(chunks.get(chunks.size()-1))) stmt += "(?,?,?,?)";
+            	else stmt += "(?,?,?,?),";
             }
             
             ps = conn.prepareStatement(stmt);
             
-            int count = 0;
+            int count = 1;
             for(Chunk chunk : chunks) {
                 ps.setInt(count++, nationID);
                 ps.setString(count++, chunk.getWorld().getName());
@@ -728,13 +757,39 @@ public abstract class Database {
             }
             ps = conn.prepareStatement(stmt);
             
-            int count = 0;
+            int count = 1;
             for(Chunk chunk : chunks) {
             	ps.setInt(count++, nationID);
             	ps.setString(count++, chunk.getWorld().getName());
                 ps.setInt(count++, chunk.getX());
                 ps.setInt(count++, chunk.getZ());	
             }
+            
+            ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+    }
+    
+    public void updateChunksNationID(int original, int newNation) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("UPDATE ClaimedChunks SET NationID = ? WHERE NationID = ?");
+            
+            ps.setInt(1, newNation); 
+            ps.setInt(2, original);
             
             ps.executeUpdate();
             return;

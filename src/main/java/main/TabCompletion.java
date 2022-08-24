@@ -12,7 +12,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import interfaces.ParentCommand;
-import interfaces.SubChildCommand;
 import managers.CommandManager;
 
 /**
@@ -48,9 +47,7 @@ public class TabCompletion implements TabCompleter{
 		
 		if(commandManager.getStringList().contains(command.getName().toLowerCase())) {
 			ParentCommand commands = commandManager.getCommandByName(command.getName());
-			if(args.length > 1 && args[0] != null) {
-				getCommandArgs(uuid, commands, args[args.length-2], tabCommands);
-			}
+			if(args.length > 1 && args[0] != null) getCommandArgs(uuid, commands, args[args.length-2], tabCommands);
 			else {
 				tabCommands.addAll(Arrays.asList(commands.getArguments(uuid)));
 				for(ParentCommand comman : commands.getSubCommands()) {
@@ -72,13 +69,6 @@ public class TabCompletion implements TabCompleter{
 	 * @param tabCommands {@link List} of arguments to show in the tab section
 	 * */
 	public void getCommandArgs(UUID uuid, ParentCommand command, String arg, List<String> tabCommands) {
-		if(command instanceof SubChildCommand) {
-			SubChildCommand subchild = (SubChildCommand) command;
-			List<String> args = Arrays.asList(subchild.getArguments(uuid)), subargs = Arrays.asList(subchild.getSubArguments());
-			if(args.contains(arg)) tabCommands.addAll(subargs);
-			return;
-		}
-		
 		if (command.getSubCommands() == null || command.getSubCommands().isEmpty()) return;
 		for(ParentCommand subcommand : command.getSubCommands()) {
 			if(subcommand.getArguments(uuid) == null) continue;

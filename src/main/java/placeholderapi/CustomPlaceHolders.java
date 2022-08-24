@@ -48,6 +48,7 @@ public class CustomPlaceHolders extends PlaceholderExpansion{
 		PlayerMapping play = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(play.getUUID());
 		
+		NationMapping nation = mappingRepo.getNationByPlayer(play);
 		switch(params) {
 		case "player_argument":
 			return main.getCommandManager().getLastArg(offlinePlayer.getName());
@@ -56,9 +57,14 @@ public class CustomPlaceHolders extends PlaceholderExpansion{
 		case "player_killpoints":
 			return String.valueOf(play.getKillpoints());
 		case "nation_name":
-			NationMapping nation = mappingRepo.getNationByPlayer(play);
 			if(nation != null) return nation.getName();
 			return "";
+		case "nation_description":
+			if(nation != null) return nation.getDescription();
+			return "";
+		case "remaining_chunkamount":
+			int number = nation.getMaxChunks()-nation.getClaimedChunks().size();
+			return number + "";
 		}
 		return null;
 	}

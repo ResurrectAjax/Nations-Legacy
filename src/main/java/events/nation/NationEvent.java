@@ -1,4 +1,4 @@
-package events;
+package events.nation;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -23,6 +23,10 @@ public class NationEvent extends Event{
 		this.isCancelled = cancelled;
 	}
 	
+	public boolean isCancelled() {
+		return isCancelled;
+	}
+
 	public HandlerList getHandlers() {
 	    return handlers;
 	}

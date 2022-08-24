@@ -3,7 +3,7 @@ name: Nations-Legacy
 version: 1.0.0
 author: ResurrectAjax
 description: Nations
-api-version: 1.18
+api-version: 1.19
 depend: [PlaceholderAPI]
 
 commands:

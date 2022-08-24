@@ -3,10 +3,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import events.nation.create.CreateNationEvent;
 import general.GeneralMethods;
 import interfaces.ChildCommand;
 import interfaces.ParentCommand;
@@ -15,9 +17,11 @@ import persistency.MappingRepository;
 
 public class CreateNation extends ChildCommand{
 
+	private ParentCommand parent;
 	private Main main;
-	public CreateNation(Main main) {
-		this.main = main;
+	public CreateNation(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
 	}
 
 	@Override
@@ -68,10 +72,7 @@ public class CreateNation extends ChildCommand{
 		else if(!Pattern.matches("[a-zA-Z]+", args[1])) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Error.SpecialCharacters.Message"), args[1]));
 		else if(mappingRepo.getPlayerByUUID(player.getUniqueId()).getNationID() != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyInNation.Message"), args[1]));
 		else if(mappingRepo.getNationByName(args[1]) != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyExists.Message"), args[1]));
-		else {
-			mappingRepo.createNation(args[1], mappingRepo.getPlayerByUUID(player.getUniqueId()));
-			sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.Created.Message"), args[1]));
-		}
+		else Bukkit.getPluginManager().callEvent(new CreateNationEvent(sender, args[1]));
 	}
 
 	@Override
@@ -84,6 +85,12 @@ public class CreateNation extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
 	}
 
 }

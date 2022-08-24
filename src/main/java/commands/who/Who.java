@@ -20,8 +20,10 @@ import persistency.PlayerMapping;
 public class Who extends ChildCommand{
 
 	private final Main main;
-	public Who(Main main) {
-		this.main = main;
+	private ParentCommand parent;
+	public Who(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
 	}
 	
 	@Override
@@ -54,11 +56,11 @@ public class Who extends ChildCommand{
 	public String[] getArguments(UUID uuid) {
 		// TODO Auto-generated method stub
 		if(uuid != null) return Bukkit.getOnlinePlayers().stream()
-				.filter(el -> el.getUniqueId().equals(uuid))
+				.filter(el -> !el.getUniqueId().equals(uuid))
 				.map(el -> el.getName())
 				.collect(Collectors.toList())
 				.toArray(new String[Bukkit.getOnlinePlayers().size()-1]);
-		else return Bukkit.getOnlinePlayers().stream()
+		return Bukkit.getOnlinePlayers().stream()
 				.map(el -> el.getName())
 				.collect(Collectors.toList())
 				.toArray(new String[Bukkit.getOnlinePlayers().size()]);
@@ -104,6 +106,12 @@ public class Who extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
 	}
 	
 }

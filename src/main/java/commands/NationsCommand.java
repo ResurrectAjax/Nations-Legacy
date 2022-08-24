@@ -5,9 +5,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import commands.admin.AdminCommand;
+import commands.alliance.AllyCommand;
+import commands.claim.ClaimChunk;
+import commands.claim.UnclaimChunk;
 import commands.create.CreateNation;
+import commands.description.DescriptionCommand;
 import commands.disband.DisbandNation;
 import commands.info.NationInfo;
+import commands.invite.NationInvite;
+import commands.invite.NationInviteAccept;
+import commands.invite.NationInviteDeny;
+import commands.map.Map;
 import commands.who.Who;
 import help.HelpCommand;
 import interfaces.ParentCommand;
@@ -15,16 +23,31 @@ import main.Main;
 
 public class NationsCommand extends ParentCommand{
 	private List<ParentCommand> subcommands;
+	private Main main;
 	
 	public NationsCommand(Main main) {
+		this.main = main;
 		subcommands = new ArrayList<ParentCommand>(Arrays.asList(
-				new CreateNation(main),
-				new NationInfo(main),
-				new Who(main),
-				new DisbandNation(main),
-				new AdminCommand(main),
-				new HelpCommand(main)
+				new CreateNation(this),
+				new NationInfo(this),
+				new Who(this),
+				new DisbandNation(this),
+				new AdminCommand(this),
+				new HelpCommand(this),
+				new ClaimChunk(this),
+				new UnclaimChunk(this),
+				new DescriptionCommand(this),
+				new NationInvite(this),
+				new NationInviteAccept(this),
+				new NationInviteDeny(this),
+				new Map(this),
+				new AllyCommand(this)
 				));
+	}
+	
+	@Override
+	public Main getMain() {
+		return main;
 	}
 	
 	@Override
@@ -67,6 +90,12 @@ public class NationsCommand extends ParentCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,2 +1,5 @@
 Nations:
   maxchunks: 10
+Wilderness:
+  Name: "&2&lWilderness"
+  Description: "It's dangerous to go alone"

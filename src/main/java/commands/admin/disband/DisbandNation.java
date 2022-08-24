@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import events.DisbandNationEvent;
+import events.nation.disband.DisbandNationEvent;
 import general.GeneralMethods;
 import interfaces.ChildCommand;
 import interfaces.ParentCommand;
@@ -17,9 +17,11 @@ import persistency.NationMapping;
 
 public class DisbandNation extends ChildCommand{
 
+	private ParentCommand parent;
 	private Main main;
-	public DisbandNation(Main main) {
-		this.main = main;
+	public DisbandNation(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
 	}
 	
 	@Override
@@ -85,6 +87,12 @@ public class DisbandNation extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
 	}
 
 }

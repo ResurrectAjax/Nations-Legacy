@@ -1,7 +1,7 @@
 package persistency;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -16,12 +16,10 @@ import sql.Database;
 import sql.MysqlMain;
 
 public class MappingRepository {
-	private List<AllianceMapping> alliances = new ArrayList<AllianceMapping>();
-	private List<NationMapping> nations = new ArrayList<NationMapping>();
-	private List<PlayerMapping> players = new ArrayList<PlayerMapping>();
-	private List<WarMapping> wars = new ArrayList<WarMapping>();
-	
-	private List<Chunk> claimedChunks = new ArrayList<Chunk>();
+	private Set<AllianceMapping> alliances = new HashSet<AllianceMapping>();
+	private Set<NationMapping> nations = new HashSet<NationMapping>();
+	private Set<PlayerMapping> players = new HashSet<PlayerMapping>();
+	private Set<WarMapping> wars = new HashSet<WarMapping>();
 	
 	private Database db;
 	private Main main;
@@ -35,20 +33,20 @@ public class MappingRepository {
 	
 	
 	
-	public List<AllianceMapping> getAlliances() {
+	public Set<AllianceMapping> getAlliances() {
 		return alliances;
 	}
-	public List<AllianceMapping> getAlliancesByNationID(int ID) {
-		List<AllianceMapping> alliances = new ArrayList<AllianceMapping>();
+	public Set<AllianceMapping> getAlliancesByNationID(int ID) {
+		Set<AllianceMapping> alliances = new HashSet<AllianceMapping>();
 		for(AllianceMapping alliance : this.alliances) {
 			if(alliance.getNationID() == ID || alliance.getAllyID() == ID) alliances.add(alliance);
 		}
 		return alliances;
 	}
-	public List<AllianceMapping> getAlliancesByNationName(String name) {
+	public Set<AllianceMapping> getAlliancesByNationName(String name) {
 		NationMapping nation = getNationByName(name);
 		
-		List<AllianceMapping> alliances = new ArrayList<AllianceMapping>();
+		Set<AllianceMapping> alliances = new HashSet<AllianceMapping>();
 		for(AllianceMapping alliance : this.alliances) {
 			if(alliance.getNationID() == nation.getNationID() || alliance.getAllyID() == nation.getNationID()) alliances.add(alliance);
 		}
@@ -66,16 +64,19 @@ public class MappingRepository {
 		
 		this.alliances.add(db.insertAlliance(nationID, allyID));
 	}
-	public List<NationMapping> getAllianceNationsByNationID(int nationID) {
+	public void removeAlliance(int nationID, int allyID) {
+		this.alliances.remove(getAllianceByNationIDs(nationID, allyID));
+		this.db.deleteAlliance(nationID, allyID);
+	}
+	public Set<NationMapping> getAllianceNationsByNationID(int nationID) {
 		return getAlliancesByNationID(nationID).stream()
-				.map(el -> getNationByID(el.getAllyID()) != null ? getNationByID(el.getAllyID()) : getNationByID(el.getNationID()))
-				.filter(el -> el.getNationID() != nationID)
-				.collect(Collectors.toList());
+				.map(el -> el.getNationID() != nationID ? getNationByID(el.getNationID()) : getNationByID(el.getAllyID()))
+				.collect(Collectors.toSet());
 	}
 
 	
 
-	public List<NationMapping> getNations() {
+	public Set<NationMapping> getNations() {
 		return nations;
 	}
 	public NationMapping getNationByName(String name) {
@@ -100,7 +101,7 @@ public class MappingRepository {
 	public void createNation(String name, PlayerMapping leader) {
 		FileConfiguration config = main.getConfig();
 		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return;
-		NationMapping nation = db.insertNation(name, leader, config.getInt("nations.maxchunks"));
+		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.maxchunks"));
 		this.nations.add(nation);
 	}
 	/**
@@ -116,7 +117,7 @@ public class MappingRepository {
 
 
 
-	public List<PlayerMapping> getPlayers() {
+	public Set<PlayerMapping> getPlayers() {
 		return players;
 	}
 	public PlayerMapping getPlayerByUUID(UUID uuid) {
@@ -135,8 +136,8 @@ public class MappingRepository {
 		if(player == null || player.getNationID() == null) return null;
 		return getNationByID(player.getNationID());
 	}
-	public List<PlayerMapping> getPlayersByNationID(int nationID) {
-		List<PlayerMapping> players = new ArrayList<PlayerMapping>();
+	public Set<PlayerMapping> getPlayersByNationID(int nationID) {
+		Set<PlayerMapping> players = new HashSet<PlayerMapping>();
 		for(PlayerMapping player : players) {
 			if(player.getNationID() == nationID) players.add(player);
 		}
@@ -154,20 +155,20 @@ public class MappingRepository {
 
 	
 
-	public List<WarMapping> getWars() {
+	public Set<WarMapping> getWars() {
 		return wars;
 	}
-	public List<WarMapping> getWarsByNationID(int ID) {
-		List<WarMapping> wars = new ArrayList<WarMapping>();
+	public Set<WarMapping> getWarsByNationID(int ID) {
+		Set<WarMapping> wars = new HashSet<WarMapping>();
 		for(WarMapping war : this.wars) {
 			if(war.getNation().getNationID() == ID || war.getEnemy().getNationID() == ID) wars.add(war);
 		}
 		return wars;
 	}
-	public List<WarMapping> getWarsByNationName(String name) {
+	public Set<WarMapping> getWarsByNationName(String name) {
 		NationMapping nation = getNationByName(name);
 		
-		List<WarMapping> wars = new ArrayList<WarMapping>();
+		Set<WarMapping> wars = new HashSet<WarMapping>();
 		for(WarMapping war : this.wars) {
 			if(war.getNation().getNationID() == nation.getNationID() || war.getEnemy().getNationID() == nation.getNationID()) wars.add(war);
 		}
@@ -185,19 +186,17 @@ public class MappingRepository {
 		
 		this.wars.add(db.insertWar(nationID, enemyID));
 	}
-	public List<NationMapping> getWarNationsByNationID(int nationID) {
+	public Set<NationMapping> getWarNationsByNationID(int nationID) {
 		return getWarsByNationID(nationID).stream()
 				.map(el -> el.getEnemy() != null ? el.getEnemy() : el.getNation())
 				.filter(el -> el.getNationID() != nationID)
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 	
-
 	
-	public List<Chunk> getAllClaimedChunks() {
-		return claimedChunks;
+	public NationMapping getNationByChunk(Chunk chunk) {
+		return nations.stream().filter(el -> el.getClaimedChunks().contains(chunk)).findFirst().orElse(null);
 	}
-	
 
 
 
@@ -211,9 +210,5 @@ public class MappingRepository {
 		nations.addAll(db.getAllNations());
 		alliances.addAll(db.getAllAlliances());
 		wars.addAll(db.getAllWars());
-		
-		for(NationMapping nation : nations) {
-			claimedChunks.addAll(nation.getClaimedChunks());
-		}
 	}
 }

@@ -18,6 +18,7 @@ import general.GeneralMethods;
 import gui.GuiManager;
 import interfaces.ParentCommand;
 import listeners.JoinListener;
+import listeners.PlayerMoveListener;
 import managers.CommandManager;
 import managers.FileManager;
 import persistency.MappingRepository;
@@ -45,6 +46,8 @@ public class Main extends JavaPlugin{
  			"%nations_player_rank%",
  			"%nations_player_killpoints%",
  			"%nations_nation_name%",
+ 			"%nations_nation_description%",
+ 			"%nations_remaining_chunkamount%",
  			"%rel_nations_syntax%",
  			"%rel_nations_nation_name%",
  			"%rel_nations_enemy_nation%"
@@ -92,6 +95,7 @@ public class Main extends JavaPlugin{
 	 * */
 	private void loadListeners() {
 		getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 	}
 	
 	/**

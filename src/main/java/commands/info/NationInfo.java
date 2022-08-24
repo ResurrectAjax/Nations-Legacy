@@ -1,6 +1,7 @@
 package commands.info;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -21,9 +22,10 @@ import persistency.PlayerMapping;
 
 public class NationInfo extends ChildCommand{
 	private final Main main;
-	
-	public NationInfo(Main main) {
-		this.main = main;
+	private ParentCommand parent;
+	public NationInfo(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
 	}
 
 	@Override
@@ -61,6 +63,7 @@ public class NationInfo extends ChildCommand{
 		
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));
+		sender.sendMessage(GeneralMethods.format("  &bDescription: &f" + nationMap.getDescription()));
 		sender.sendMessage(GeneralMethods.format("  &bLeaders: &a" + givePlayerList(nationMap.getLeaders())));
 		sender.sendMessage(GeneralMethods.format("  &bOfficers: &a" + givePlayerList(nationMap.getOfficers())));
 		sender.sendMessage(GeneralMethods.format("  &bMembers: &a" + givePlayerList(nationMap.getMembers())));
@@ -68,10 +71,10 @@ public class NationInfo extends ChildCommand{
 		sender.sendMessage(GeneralMethods.format("  &bEnemies: " + giveNationList(mappingRepo.getWarNationsByNationID(nationMap.getNationID()), ChatColor.RED, ChatColor.GREEN)));
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
 	}
-	private String givePlayerList(List<PlayerMapping> players) {
+	private String givePlayerList(Set<PlayerMapping> players) {
 		return players.stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID()).getName()).collect(Collectors.joining(", "));
 	}
-	private String giveNationList(List<NationMapping> nations, ChatColor nameColor, ChatColor joiningColor) {
+	private String giveNationList(Set<NationMapping> nations, ChatColor nameColor, ChatColor joiningColor) {
 		return nations.stream().map(el -> nameColor + el.getName()).collect(Collectors.joining(joiningColor + ", "));
 	}
 
@@ -131,6 +134,12 @@ public class NationInfo extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
 	}
 	
 	

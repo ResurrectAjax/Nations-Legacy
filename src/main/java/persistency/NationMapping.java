@@ -1,7 +1,13 @@
 package persistency;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Chunk;
 
@@ -13,13 +19,13 @@ import sql.Database;
 public class NationMapping {
 	private int nationID;
 	private int maxChunks;
-	private String name;
-	private List<PlayerMapping> leaders = new ArrayList<PlayerMapping>();
-	private List<PlayerMapping> officers = new ArrayList<PlayerMapping>();
-	private List<PlayerMapping> members = new ArrayList<PlayerMapping>();
-	private List<Chunk> claimedChunks = new ArrayList<Chunk>();
-	private List<Chunk> newChunks = new ArrayList<Chunk>();
-	private List<Chunk> deletedChunks = new ArrayList<Chunk>();
+	private String name, description = "";
+	private Set<PlayerMapping> leaders = new HashSet<PlayerMapping>();
+	private Set<PlayerMapping> officers = new HashSet<PlayerMapping>();
+	private Set<PlayerMapping> members = new HashSet<PlayerMapping>();
+	private Set<Chunk> claimedChunks = new HashSet<Chunk>();
+	private Set<Chunk> newChunks = new HashSet<Chunk>();
+	private Set<Chunk> deletedChunks = new HashSet<Chunk>();
 	private List<Flag> flags = new ArrayList<Flag>();
 	
 	private Database db;
@@ -34,11 +40,12 @@ public class NationMapping {
 	
 	
 	
-	public NationMapping(int nationID, String name, int maxChunks, List<PlayerMapping> leaders, List<PlayerMapping> officers, List<PlayerMapping> members, List<Chunk> claimedChunks, List<Flag> flags, Database db) {
+	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> leaders, Collection<PlayerMapping> officers, Collection<PlayerMapping> members, Collection<Chunk> claimedChunks, Collection<Flag> flags, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
 		this.nationID = nationID;
 		setName(name);
+		setDescription(description);
 		addLeaders(leaders);
 		addOfficers(officers);
 		addMembers(members);
@@ -69,10 +76,22 @@ public class NationMapping {
 	
 	
 	
-	public List<PlayerMapping> getLeaders() {
+	public String getDescription() {
+		return description;
+	}
+
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+
+
+	public Set<PlayerMapping> getLeaders() {
 		return leaders;
 	}
-	public boolean addLeaders(List<PlayerMapping> leaders) {
+	public boolean addLeaders(Collection<PlayerMapping> leaders) {
 		for(PlayerMapping player : leaders) {
 			if(this.leaders.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) return false;
 		}
@@ -93,10 +112,10 @@ public class NationMapping {
 	
 	
 	
-	public List<PlayerMapping> getOfficers() {
+	public Set<PlayerMapping> getOfficers() {
 		return officers;
 	}
-	public boolean addOfficers(List<PlayerMapping> officers) {
+	public boolean addOfficers(Collection<PlayerMapping> officers) {
 		for(PlayerMapping player : officers) {
 			if(this.officers.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) return false;
 		}
@@ -122,10 +141,10 @@ public class NationMapping {
 	}
 	
 	
-	public List<PlayerMapping> getMembers() {
+	public Set<PlayerMapping> getMembers() {
 		return members;
 	}
-	public boolean addMembers(List<PlayerMapping> members) {
+	public boolean addMembers(Collection<PlayerMapping> members) {
 		for(PlayerMapping player : members) {
 			if(this.members.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) return false;
 		}
@@ -156,6 +175,14 @@ public class NationMapping {
 		this.officers.add(member);
 		member.setRank(Rank.Officer);
 		return true;
+	}
+	
+	public Set<PlayerMapping> getAllMembers() {
+		Set<PlayerMapping> members = new HashSet<PlayerMapping>();
+		members.addAll(this.members);
+		members.addAll(this.officers);
+		members.addAll(this.leaders);
+		return members;
 	}
 	
 	
@@ -192,10 +219,10 @@ public class NationMapping {
 	
 	
 	
-	public List<Chunk> getClaimedChunks() {
+	public Set<Chunk> getClaimedChunks() {
 		return claimedChunks;
 	}
-	public boolean addClaimedChunks(List<Chunk> claimedChunks) {
+	public boolean addClaimedChunks(Collection<Chunk> claimedChunks) {
 		for(Chunk chunk : claimedChunks) {
 			if(this.claimedChunks.contains(chunk)) return false;
 		}
@@ -205,7 +232,8 @@ public class NationMapping {
 	public boolean addClaimedChunk(Chunk chunk) {
 		MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
 		
-		if(mappingRepo.getAllClaimedChunks().contains(chunk)) return false;
+		
+		if(mappingRepo.getNations().stream().map(el -> el.getClaimedChunks()).flatMap(Collection::stream).collect(Collectors.toSet()).contains(chunk)) return false;
 		this.claimedChunks.add(chunk);
 		this.newChunks.add(chunk);
 		return true;
@@ -216,15 +244,27 @@ public class NationMapping {
 		this.deletedChunks.add(chunk);
 		return true;
 	}
+	public boolean unclaimAll() {
+		if(claimedChunks.isEmpty()) return false;
+		claimedChunks.clear();
+		db.deleteAllClaimedChunks(nationID);
+		return true;
+	}
 	public void saveChunks() {
-		if(!deletedChunks.isEmpty()) db.deleteClaimedChunks(deletedChunks, nationID);
-		if(!newChunks.isEmpty()) db.addClaimedChunks(newChunks, nationID);
+		if(!deletedChunks.isEmpty()) {
+			db.deleteClaimedChunks(new ArrayList<Chunk>(deletedChunks), nationID);
+			deletedChunks.clear();
+		}
+		if(!newChunks.isEmpty()) {
+			db.addClaimedChunks(new ArrayList<Chunk>(newChunks), nationID);
+			newChunks.clear();
+		}
 	}
 	
 	public List<Flag> getFlags() {
 		return flags;
 	}
-	public boolean addFlags(List<Flag> flags) {
+	public boolean addFlags(Collection<Flag> flags) {
 		for(Flag flag : this.flags) {
 			if(flags.contains(flag)) return false;
 		}
@@ -235,6 +275,10 @@ public class NationMapping {
 		if(this.flags.contains(flag)) return false;
 		this.flags.add(flag);
 		return true;
+	}
+	
+	public void update() {
+		db.updateNation(this);
 	}
 
 	
@@ -251,6 +295,14 @@ public class NationMapping {
 			player.setNationID(null);
 			player.setRank(Rank.Nationless);
 		}
+		removeInvites();
+		
 		db.deleteNation(nationID);
+	}
+	
+	private void removeInvites() {
+		MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
+		HashMap<UUID, Set<Integer>> invites = Main.getInstance().getCommandManager().getPlayerInvites();
+		invites.keySet().stream().forEach(el -> invites.get(el).removeIf(val -> mappingRepo.getNationByID(val).getName().equalsIgnoreCase(getName())));
 	}
 }

@@ -81,8 +81,9 @@ public abstract class ParentCommand {
 	 * @param args array of arguments the player sent
 	 * */
 	public void perform(CommandSender sender, String[] args) {
-		if(this instanceof NationsCommand) perform(sender, args, 1);
-		else if(this instanceof AdminCommand) perform(sender, args, 2);
+		if(getFirstParent() instanceof NationsCommand) perform(sender, args, 1);
+		else if(getFirstParent() instanceof AdminCommand) perform(sender, args, 2);
+		else perform(sender, args, 1);
 	}
 	
 	private void perform(CommandSender sender, String[] args, int neededArgs) {
@@ -94,8 +95,23 @@ public abstract class ParentCommand {
 		else {
 			Main main = Main.getInstance();
 			ParentCommand baseCommand = main.getCommandManager().getCommandByName(this.getName());
-			new HelpCommand(main).createList(sender, baseCommand, 1);
+			new HelpCommand(this).createList(sender, baseCommand, 1);
 		}
+	}
+	
+	public abstract ParentCommand getParentCommand();
+	
+	private ParentCommand getFirstParent() {
+		ParentCommand parent = this.getParentCommand();
+		while(parent != null && parent.getParentCommand() != null) {
+			if(parent instanceof AdminCommand) break;
+			parent = parent.getParentCommand();
+		}
+		return parent;
+	}
+	
+	public Main getMain() {
+		return this.getParentCommand().getMain();
 	}
 	
 	/**

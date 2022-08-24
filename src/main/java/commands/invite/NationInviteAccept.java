@@ -1,0 +1,108 @@
+package commands.invite;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import events.nation.join.JoinNationEvent;
+import general.GeneralMethods;
+import interfaces.ChildCommand;
+import interfaces.ParentCommand;
+import main.Main;
+import managers.CommandManager;
+import persistency.MappingRepository;
+import persistency.NationMapping;
+
+public class NationInviteAccept extends ChildCommand{
+	private Main main;
+	private ParentCommand parent;
+	public NationInviteAccept(ParentCommand parent) {
+		this.main = parent.getMain();
+		this.parent = parent;
+	}
+	
+	@Override
+	public void perform(CommandSender sender, String[] args) {
+		CommandManager manager = main.getCommandManager();
+		FileConfiguration language = main.getLanguage();
+		Player player = (Player) sender;
+		
+		MappingRepository mappingRepo = main.getMappingRepo();
+		NationMapping nation = mappingRepo.getNationByName(args.length < 2 ? "" : args[1]);
+		
+		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		
+		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
+		else if(!manager.getPlayerInvites().containsKey(player.getUniqueId()) || 
+				nation == null || 
+				!manager.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
+		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender));
+	}
+
+	@Override
+	public String[] getArguments(UUID uuid) {
+		MappingRepository mappingRepo = main.getMappingRepo();
+		Set<String> invites = !main.getCommandManager()
+				.getPlayerInvites()
+				.containsKey(uuid) ? new HashSet<String>() : main.getCommandManager().getPlayerInvites().get(uuid).stream()
+						.map(el -> mappingRepo.getNationByID(el).getName())
+						.collect(Collectors.toSet());
+		return invites.toArray(new String[invites.size()]);
+	}
+
+	@Override
+	public String getPermissionNode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasTabCompletion() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "accept";
+	}
+
+	@Override
+	public String getSyntax() {
+		// TODO Auto-generated method stub
+		return "/nations accept <nation>";
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return "Accept a nation invite";
+	}
+
+	@Override
+	public List<ParentCommand> getSubCommands() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isConsole() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ParentCommand getParentCommand() {
+		// TODO Auto-generated method stub
+		return parent;
+	}
+
+}

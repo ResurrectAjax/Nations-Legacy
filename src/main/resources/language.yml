@@ -10,7 +10,7 @@ Command:
     NotExist:
       Message: '&bNations-Legacy &8: &eThat command doesn''t exist.'
     BadSyntax:
-      Message: '&bNations-Legacy &8: &ePlease do %rel_nations_syntax% instead.'
+      Message: '&bNations-Legacy &8: &ePlease do %rel_relnations_syntax% instead.'
     NoPermission:
       Message: '&bNations-Legacy &8: &eYou don''t have permission to execute this command.'
   Nations:
@@ -20,16 +20,102 @@ Command:
       AlreadyExists:
         Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e already exists.'
       AlreadyInNation:
-        Message: '&bNations-Legacy &8: &e You''re already in a nation.'
+        Message: '&bNations-Legacy &8: &eYou''re already in a nation.'
       Created:
         Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been created.'
     Disband:
       Disbanded:
         Message: '&bNations-Legacy &8: &c&l%nations_nation_name%&e has been disbanded.'
-      NotALeader:
-        Message: '&bNations-Legacy &8: &e You''re not a leader of your nation.'
+    Claim:
+      TurnedOn:
+        Message: '&bNations-Legacy &8: &eClaiming has been turned &a&lON&e.'
+      TurnedOff:
+        Message: '&bNations-Legacy &8: &eClaiming has been turned &c&lOFF&e.'
+      ClaimedChunk:
+        Message: '&bNations-Legacy &8: &eChunk has been claimed, %nations_remaining_chunkamount% chunks left'
+      MaxChunks: 
+        Message: '&bNations-Legacy &8: &eMax amount of chunks reached'
+    Unclaim:
+      TurnedOn:
+        Message: '&bNations-Legacy &8: &eUnclaiming has been turned &a&lON&e.'
+      TurnedOff:
+        Message: '&bNations-Legacy &8: &eUnclaiming has been turned &c&lOFF&e.'
+      UnclaimedChunk:
+        Message: '&bNations-Legacy &8: &eChunk has been unclaimed'
+      UnclaimedAll:
+        Message: '&bNations-Legacy &8: &eAll chunks have been unclaimed'
+      NoChunks:
+        Message: '&bNations-Legacy &8: &eNo chunks left to unclaim'
+    Description:
+      Set:
+        Message: '&bNations-Legacy &8: &eDescription has been set'
+      Remove:
+        Message: '&bNations-Legacy &8: &eDescription has been removed'
+    Alliance:
+      Add:
+        Send:
+          NationAtWar:
+            Message: '&bNations-Legacy &8: &eYou cannot be allied with an enemy nation.'
+          RequestSent:
+            Message: '&bNations-Legacy &8: &eYour alliance request has been sent to &9&l%nations_player_argument%&e. '
+          AlreadySent:
+            Message: '&bNations-Legacy &8: &eYou have already sent an alliance request to this nation.'
+          AlreadyAlly:
+            Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e is already an ally of your nation.'
+          Self:
+            Message: '&bNations-Legacy &8: &eYour nation cannot be an ally with itself.'
+          Expired:
+            Message: '&bNations-Legacy &8: &eThe invite sent to &9&l%nations_player_argument%&e has expired.'
+          CancelRequest:
+            Message: '&bNations-Legacy &8: &eYou''ve cancelled &9&l%nations_player_argument%&e''s alliance request.'
+        Receive:
+          RequestReceived:
+            Message: '&bNations-Legacy &8: &9&l%nations_player_argument%&e has requested an alliance. '
+          NoRequest:
+            Message: '&bNations-Legacy &8: &eYou don''t have an alliance request from this nation!'
+          Accepted:
+            Message: '&bNations-Legacy &8: &eAn alliance between &a&l%rel_relnations_nation1_name%&e and &a&l%rel_relnations_nation2_name%&e has been made.'
+          Denied:
+            Message: '&bNations-Legacy &8: &eAn alliance between &a&l%rel_relnations_nation1_name%&e and &a&l%rel_relnations_nation2_name%&e has been denied.'
+      Remove:
+        NotAnAlly:
+          Message: '&bNations-Legacy &8: &eYour nation does not have an alliance with &c&l%nations_player_argument%&e.'
+        Removed:
+          Message: '&bNations-Legacy &8: &a&l%rel_relnations_nation1_name%&e is no longer allied with &9&l%rel_relnations_nation2_name%&e.'
   Player:
     NotExist:
-      Message: '&bNations-Legacy &8: &e That player doesn''t exist.'
+      Message: '&bNations-Legacy &8: &eThat player doesn''t exist.'
     NotInNation:
-      Message: '&bNations-Legacy &8: &e You''re not part of a nation.'
+      Message: '&bNations-Legacy &8: &eYou''re not part of a nation.'
+    NotALeader:
+      Message: '&bNations-Legacy &8: &eYou''re not a leader of your nation.'
+    NotALeaderOrOfficer:
+      Message: '&bNations-Legacy &8: &eYou''re not a leader or an officer of your nation.'
+    JoinedNation:
+      Message: '&bNations-Legacy &8: &eYou''ve joined &a&l%nations_nation_name%&e.'
+    DeniedNation:
+      Message: '&bNations-Legacy &8: &eYou''ve denied &a&l%nations_player_argument%&e''s invitation.'
+    CancelInvitation:
+      Message: '&bNations-Legacy &8: &eYou''ve cancelled &a&l%nations_player_argument%&e''s invitation.'
+    Invite:
+      Send:
+        InviteSent:
+          Message: '&bNations-Legacy &8: &eYour invite has been sent to &a&l%nations_player_argument%&e.'
+        AlreadySent:
+          Message: '&bNations-Legacy &8: &e%nations_player_argument% has already received an invite.'
+        SelfInvite:
+          Message: '&bNations-Legacy &8: &eYou can''t invite yourself.'
+        Expired:
+          Message: '&bNations-Legacy &8: &eThe invite you sent to &a&l%nations_player_argument%&e has expired.'
+        AlreadyInNation:
+          Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e is already a member of a nation.'
+      Receive:
+        InviteReceived:
+          Message: '&bNations-Legacy &8: &eYou have been invited to join &c&l%nations_player_argument%&e. '
+        NoInvite:
+          Message: '&bNations-Legacy &8: &e&eYou don''t have an invitation to join this nation!'
+        Accepted:
+          Message: '&bNations-Legacy &8: &a&l%player_name%&e has joined the nation.'
+        Denied:
+          Message: '&bNations-Legacy &8: &a&l%player_name%&e has denied the invitation.'
+        

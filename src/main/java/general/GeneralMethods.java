@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
@@ -66,7 +67,7 @@ public class GeneralMethods {
 	 * @param color the color of the base text and hover text
 	 * @return String message
 	 * */
-	public TextComponent createHoverText(String string, String hover, String command, ChatColor color) {
+	public static TextComponent createHoverText(String string, String hover, String command, ChatColor color) {
 		TextComponent message = new TextComponent(string);
 		
 		message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(color + hover)));
@@ -160,8 +161,20 @@ public class GeneralMethods {
  		return ChatColor.translateAlternateColorCodes('&', newStr);
 	}
  	
+ 	public static String relFormat(CommandSender sender1, CommandSender sender2, String input, String value) {
+ 		String newStr = input;
+ 		if(Main.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null && sender1 instanceof Player && sender2 instanceof Player) {
+ 			newStr = PlaceholderAPI.setPlaceholders((OfflinePlayer) sender1, input);
+ 			return GeneralMethods.format(PlaceholderAPI.setRelationalPlaceholders((Player) sender1, (Player) sender2, newStr));
+ 		}
+ 		for(String format : Main.getInstance().getFormats()) {
+ 			if(input.contains(format)) newStr = input.replaceAll(format, value);
+ 		}
+ 		return ChatColor.translateAlternateColorCodes('&', newStr);
+ 	}
+ 	
  	public static String getBadSyntaxMessage(String syntax) {
- 		return GeneralMethods.formatCustom(Main.getInstance().getLanguage().getString("Command.Error.BadSyntax.Message"), "%rel_nations_syntax%", syntax);
+ 		return GeneralMethods.formatCustom(Main.getInstance().getLanguage().getString("Command.Error.BadSyntax.Message"), "%rel_relnations_syntax%", syntax);
  	}
  	
  	private static String formatCustom(String input, String special, String value) {
