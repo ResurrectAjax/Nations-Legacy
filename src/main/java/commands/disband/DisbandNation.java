@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 
 import enumeration.Rank;
 import events.nation.disband.DisbandNationEvent;
-import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
+import general.GeneralMethods;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -22,7 +22,7 @@ public class DisbandNation extends ChildCommand{
 	protected Main main;
 	private ParentCommand parent;
 	public DisbandNation(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
@@ -36,7 +36,7 @@ public class DisbandNation extends ChildCommand{
 		
 		if(nation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
 		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-		else Bukkit.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation));
+		else Bukkit.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
 	}
 
 	@Override
@@ -91,6 +91,12 @@ public class DisbandNation extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

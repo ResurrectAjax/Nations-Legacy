@@ -10,10 +10,9 @@ import org.bukkit.entity.Player;
 
 import enumeration.Rank;
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
-import managers.CommandManager;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -22,7 +21,7 @@ public class ClaimChunk extends ChildCommand{
 	private ParentCommand parent;
 	private Main main;
 	public ClaimChunk(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	@Override
@@ -68,7 +67,6 @@ public class ClaimChunk extends ChildCommand{
 		FileConfiguration language = main.getLanguage();
 		
 		Player player = (Player) sender;
-		CommandManager manager = main.getCommandManager();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
@@ -79,13 +77,13 @@ public class ClaimChunk extends ChildCommand{
 		else {
 			switch(args[1]) {
 			case "on":
-				if(manager.getClaimingSet().contains(player.getUniqueId())) return;
-				manager.setIsClaiming(player.getUniqueId());
+				if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
+				mappingRepo.setIsClaiming(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Claim.TurnedOn.Message"), args[1]));
 				break;
 			case "off":
-				if(!manager.getClaimingSet().contains(player.getUniqueId())) return;
-				manager.getClaimingSet().remove(player.getUniqueId());
+				if(!mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
+				mappingRepo.getClaimingSet().remove(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), args[1]));
 				mappingRepo.getNationByPlayer(playerMap).saveChunks();
 				break;
@@ -101,6 +99,11 @@ public class ClaimChunk extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

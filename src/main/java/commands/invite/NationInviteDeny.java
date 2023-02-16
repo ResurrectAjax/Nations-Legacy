@@ -13,10 +13,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
-import managers.CommandManager;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 
@@ -24,13 +23,12 @@ public class NationInviteDeny extends ChildCommand{
 	private Main main;
 	private ParentCommand parent;
 	public NationInviteDeny(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		CommandManager manager = main.getCommandManager();
 		FileConfiguration language = main.getLanguage();
 		Player player = (Player) sender;
 		
@@ -40,11 +38,11 @@ public class NationInviteDeny extends ChildCommand{
 		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
 		
 		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!manager.getPlayerInvites().containsKey(player.getUniqueId()) || 
+		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 
 				nation == null || 
-				!manager.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
+				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
 		else {
-			main.getCommandManager().removePlayerInvite(nation.getNationID(), player.getUniqueId());
+			mappingRepo.removePlayerInvite(nation.getNationID(), player.getUniqueId());
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))
 				.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Denied.Message"), nation.getName())));
@@ -55,8 +53,8 @@ public class NationInviteDeny extends ChildCommand{
 	@Override
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
-		Set<String> invites = !main.getCommandManager().getPlayerInvites()
-				.containsKey(uuid) ? new HashSet<String>() : main.getCommandManager().getPlayerInvites().get(uuid).stream()
+		Set<String> invites = !mappingRepo.getPlayerInvites()
+				.containsKey(uuid) ? new HashSet<String>() : mappingRepo.getPlayerInvites().get(uuid).stream()
 						.map(el -> mappingRepo.getNationByID(el).getName())
 						.collect(Collectors.toSet());
 		return invites.toArray(new String[invites.size()]);
@@ -108,6 +106,12 @@ public class NationInviteDeny extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

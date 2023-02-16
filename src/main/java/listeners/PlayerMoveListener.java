@@ -14,10 +14,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import events.nation.claim.ClaimChunkEvent;
 import events.nation.claim.UnclaimChunkEvent;
-import general.GeneralMethods;
 import main.Main;
-import net.md_5.bungee.api.ChatColor;
+import general.GeneralMethods;
 import persistency.MappingRepository;
+import net.md_5.bungee.api.ChatColor;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
@@ -46,7 +46,7 @@ public class PlayerMoveListener implements Listener{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nationMap = mappingRepo.getNationByPlayer(playerMap);
 		if(chunkNation != null) {
-			if(main.getCommandManager().getUnclaimingSet().contains(player.getUniqueId())) {
+			if(main.getMappingRepo().getUnclaimingSet().contains(player.getUniqueId())) {
 				if(!nationMap.getClaimedChunks().contains(chunk)) return;
 				
 				Bukkit.getPluginManager().callEvent(new UnclaimChunkEvent(nationMap, player, chunk));
@@ -55,12 +55,17 @@ public class PlayerMoveListener implements Listener{
 			if(lastNation.containsKey(player.getUniqueId()) && lastNation.get(player.getUniqueId()) != null && lastNation.get(player.getUniqueId()) == chunkNation.getNationID()) return;
 			lastNation.put(player.getUniqueId(), chunkNation.getNationID());
 			
-			String color = chunkNation == nationMap || mappingRepo.getAllianceNationsByNationID(nationMap.getNationID()).contains(chunkNation) ? "&a&l" : mappingRepo.getWarNationsByNationID(nationMap.getNationID()).contains(chunkNation) ? "&c&l" : "&9&l";
+			String color;
+			if(nationMap == null) color = "&9&l";
+			else if(chunkNation == nationMap || mappingRepo.getAllianceNationsByNationID(nationMap.getNationID()).contains(chunkNation)) color = "&a&l";
+			else if (mappingRepo.getWarNationsByNationID(nationMap.getNationID()).contains(chunkNation)) color = "&c&l";
+			else color = "&9&l";
+			
 			player.sendTitle(ChatColor.translateAlternateColorCodes('&',color + chunkNation.getName()), GeneralMethods.format((OfflinePlayer) player, chunkNation.getDescription(), player.getName()), 10, 40, 10);	
 			return;
 		}
 		else {
-			if(main.getCommandManager().getClaimingSet().contains(player.getUniqueId())) {
+			if(main.getMappingRepo().getClaimingSet().contains(player.getUniqueId())) {
 				if(nationMap.getClaimedChunks().contains(chunk)) return;
 				
 				Bukkit.getPluginManager().callEvent(new ClaimChunkEvent(nationMap, player, chunk));	

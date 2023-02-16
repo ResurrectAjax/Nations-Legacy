@@ -1,4 +1,4 @@
-package commands.alliance.add;
+package commands.war.truce;
 
 import java.util.List;
 import java.util.Set;
@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import commands.alliance.AllyCommand;
+import commands.war.WarCommand;
 import general.GeneralMethods;
 import main.Main;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
@@ -17,13 +17,13 @@ import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 
-public class AllyCancel extends ChildCommand{
+public class TruceCancel extends ChildCommand{
 	private Main main;
-	private AllyCommand allyCommand;
+	private WarCommand warCommand;
 	
-	public AllyCancel(AllyCommand allyCommand) {
-		this.main = (Main) allyCommand.getMain();
-		this.allyCommand = allyCommand;
+	public TruceCancel(WarCommand warCommand) {
+		this.main = (Main) warCommand.getMain();
+		this.warCommand = warCommand;
 	}
 	
 	@Override
@@ -39,11 +39,11 @@ public class AllyCancel extends ChildCommand{
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(senderNation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
 		else if(nation == null ||
-				!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) ||  
-				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[2]));
+				!warCommand.getTruceRequests().containsKey(nation.getNationID()) ||  
+				!warCommand.getTruceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Receive.NoRequest.Message"), args[2]));
 		else {
-			allyCommand.removeAllianceRequest(nation.getNationID(), senderNation.getNationID());
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.CancelRequest.Message"), nation.getName()));
+			warCommand.removeTruceRequest(nation.getNationID(), senderNation.getNationID());
+			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.CancelRequest.Message"), nation.getName()));
 		}
 	}
 
@@ -104,7 +104,7 @@ public class AllyCancel extends ChildCommand{
 	@Override
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
-		return allyCommand;
+		return warCommand;
 	}
 
 	@Override

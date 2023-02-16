@@ -12,10 +12,9 @@ import org.bukkit.entity.Player;
 import enumeration.Rank;
 import events.nation.claim.UnclaimAllChunksEvent;
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
-import managers.CommandManager;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -25,7 +24,7 @@ public class UnclaimChunk extends ChildCommand{
 	private ParentCommand parent;
 	private final Main main;
 	public UnclaimChunk(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
@@ -37,7 +36,6 @@ public class UnclaimChunk extends ChildCommand{
 		FileConfiguration language = main.getLanguage();
 		
 		Player player = (Player) sender;
-		CommandManager manager = main.getCommandManager();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
@@ -48,17 +46,25 @@ public class UnclaimChunk extends ChildCommand{
 		else {
 			switch(args[1]) {
 			case "on":
-				if(manager.getUnclaimingSet().contains(player.getUniqueId())) return;
-				manager.setIsUnclaiming(player.getUniqueId());
+				if(mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
+				if(nation.getClaimedChunks().size() == 0) {
+					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
+					return;
+				}
+				mappingRepo.setIsUnclaiming(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOn.Message"), args[1]));
 				break;
 			case "off":
-				if(!manager.getUnclaimingSet().contains(player.getUniqueId())) return;
-				manager.getUnclaimingSet().remove(player.getUniqueId());
+				if(!mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
+				mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), args[1]));
 				mappingRepo.getNationByPlayer(playerMap).saveChunks();
 				break;
 			case "all":
+				if(nation.getClaimedChunks().size() == 0) {
+					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
+					return;
+				}
 				Bukkit.getPluginManager().callEvent(new UnclaimAllChunksEvent(nation, sender));
 				break;
 			}
@@ -117,6 +123,12 @@ public class UnclaimChunk extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

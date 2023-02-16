@@ -18,5 +18,6 @@ public class JoinListener implements Listener{
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		MappingRepository mappingRepo = main.getMappingRepo();
 		if(mappingRepo.getPlayerByUUID(event.getPlayer().getUniqueId()) == null) mappingRepo.addPlayer(event.getPlayer());
+	
 	}
 }

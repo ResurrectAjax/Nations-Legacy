@@ -12,20 +12,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import commands.alliance.AllyCommand;
 import events.nation.NationEvent;
-import general.GeneralMethods;
 import main.Main;
+import general.GeneralMethods;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
 public class RequestAllianceEvent extends NationEvent{
-	private CommandSender sender;
 	private NationMapping receiverNation;
 	
 	public RequestAllianceEvent(NationMapping nation, NationMapping receiver, AllyCommand allyCommand, CommandSender sender) {
-		super(nation);
-		this.sender = sender;
+		super(nation, sender);
 		this.receiverNation = receiver;
 
 		if(super.isCancelled) return;
@@ -77,10 +75,6 @@ public class RequestAllianceEvent extends NationEvent{
 			    }
 			}.runTaskLater(main, 20*60);	
 		}
-	}
-	
-	public CommandSender getSender() {
-		return sender;
 	}
 	
 	public NationMapping getReceiverNation() {

@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import enumeration.Rank;
 import events.nation.NationEvent;
-import general.GeneralMethods;
 import main.Main;
+import general.GeneralMethods;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -17,7 +17,7 @@ import persistency.PlayerMapping;
 public class JoinNationEvent extends NationEvent{
 
 	public JoinNationEvent(NationMapping nation, CommandSender sender) {
-		super(nation);
+		super(nation, sender);
 
 		if(super.isCancelled) return;
 		
@@ -33,7 +33,7 @@ public class JoinNationEvent extends NationEvent{
 		nation.addMember(player);
 		nation.update();
 		
-		main.getCommandManager().removePlayerInvite(nation.getNationID(), player.getUUID());
+		mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
 		Bukkit.getOnlinePlayers().stream()
 			.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
 			.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Accepted.Message"), nation.getName())));

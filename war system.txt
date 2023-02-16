@@ -1,0 +1,10 @@
+killpoints:
+  - Every time a player kills someone from a neutral/enemy nation, their killpoints will add 1 point and the
+    victim will lose 1 point. Regardless of Rank.
+
+  - If the victim and killer are at war, then ranks matter. Killpoints will now be multiplied by the
+    Rank the victim was in. However, these multipliers do not affect the player's personal killpoints, but
+    the war's goal.
+
+  - If nations are at war, every kill will lower the killpointgoal of the victim's nation by 1 and increase
+    the killer's killpoints based on the victim's rank.

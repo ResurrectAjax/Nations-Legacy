@@ -66,5 +66,12 @@
           <version>2.11.1</version>
          <scope>provided</scope>
         </dependency>
+        
+		<dependency>
+			<groupId>me.ResurrectAjax</groupId>
+			<artifactId>AjaxPlugin</artifactId>
+			<version>0.0.1</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>

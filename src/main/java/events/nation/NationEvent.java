@@ -1,4 +1,5 @@
 package events.nation;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -8,15 +9,21 @@ public class NationEvent extends Event{
 
 	private static final HandlerList handlers = new HandlerList();
 
-	private NationMapping nation;
+	protected NationMapping nation;
+	private CommandSender sender;
 	protected boolean isCancelled = false;
 	
-	public NationEvent(NationMapping nation) {
+	public NationEvent(NationMapping nation, CommandSender sender) {
 		this.nation = nation;
+		this.sender = sender;
 	}
 	
 	public NationMapping getNation() {
 		return nation;
+	}
+	
+	public CommandSender getSender() {
+		return sender;
 	}
 	
 	public void setCancelled(boolean cancelled) {

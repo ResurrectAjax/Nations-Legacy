@@ -9,9 +9,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import events.nation.disband.DisbandNationEvent;
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 
@@ -20,7 +20,7 @@ public class DisbandNation extends ChildCommand{
 	private ParentCommand parent;
 	private Main main;
 	public DisbandNation(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
@@ -35,7 +35,7 @@ public class DisbandNation extends ChildCommand{
 		NationMapping nation = mappingRepo.getNationByName(nationName);
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-		else Bukkit.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation));
+		else Bukkit.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
 	}
 
 	@Override
@@ -93,6 +93,12 @@ public class DisbandNation extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

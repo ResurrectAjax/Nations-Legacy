@@ -1,5 +1,6 @@
 package persistency;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -13,18 +14,23 @@ import org.bukkit.entity.Player;
 import enumeration.Rank;
 import main.Main;
 import sql.Database;
-import sql.MysqlMain;
 
-public class MappingRepository {
+public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.MappingRepository{
 	private Set<AllianceMapping> alliances = new HashSet<AllianceMapping>();
 	private Set<NationMapping> nations = new HashSet<NationMapping>();
 	private Set<PlayerMapping> players = new HashSet<PlayerMapping>();
 	private Set<WarMapping> wars = new HashSet<WarMapping>();
 	
+	private Set<UUID> isClaiming = new HashSet<UUID>();
+	private Set<UUID> isUnclaiming = new HashSet<UUID>();
+	
+	private HashMap<UUID, Set<Integer>> playerInvites = new HashMap<UUID, Set<Integer>>();
+	
 	private Database db;
 	private Main main;
 	
 	public MappingRepository(Main main) {
+		super(main);
 		this.main = main;
 		load();
 	}
@@ -98,11 +104,12 @@ public class MappingRepository {
 	 * @param leader - {@link PlayerMapping} leader of the nation
 	 * @param maxChunks - {@link Integer} maximum amount of chunks
 	 * */
-	public void createNation(String name, PlayerMapping leader) {
+	public NationMapping createNation(String name, PlayerMapping leader) {
 		FileConfiguration config = main.getConfig();
-		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return;
+		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return null;
 		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.maxchunks"));
 		this.nations.add(nation);
+		return nation;
 	}
 	/**
 	 * Disband a nation
@@ -186,10 +193,13 @@ public class MappingRepository {
 		
 		this.wars.add(db.insertWar(nationID, enemyID));
 	}
+	public void removeWar(int nationID, int enemyID) {
+		this.wars.remove(getWarByNationIDs(nationID, enemyID));
+		this.db.deleteWar(nationID, enemyID);
+	}
 	public Set<NationMapping> getWarNationsByNationID(int nationID) {
 		return getWarsByNationID(nationID).stream()
-				.map(el -> el.getEnemy() != null ? el.getEnemy() : el.getNation())
-				.filter(el -> el.getNationID() != nationID)
+				.map(el -> el.getNation().getNationID() != nationID ? el.getNation() : el.getEnemy())
 				.collect(Collectors.toSet());
 	}
 	
@@ -197,12 +207,44 @@ public class MappingRepository {
 	public NationMapping getNationByChunk(Chunk chunk) {
 		return nations.stream().filter(el -> el.getClaimedChunks().contains(chunk)).findFirst().orElse(null);
 	}
+	
+	public Set<UUID> getClaimingSet() {
+		return isClaiming;
+	}
+
+	public void setIsClaiming(UUID player) {
+		this.isClaiming.add(player);
+	}
+
+	public Set<UUID> getUnclaimingSet() {
+		return isUnclaiming;
+	}
+
+	public void setIsUnclaiming(UUID player) {
+		this.isUnclaiming.add(player);
+	}
+
+	public HashMap<UUID, Set<Integer>> getPlayerInvites() {
+		return playerInvites;
+	}
+
+	public void addPlayerInvite(Integer nationID, UUID receiver) {
+		Set<Integer> invites = new HashSet<Integer>();
+		if(this.playerInvites.containsKey(receiver)) invites.addAll(this.playerInvites.get(receiver));
+		invites.add(nationID);
+		
+		this.playerInvites.put(receiver, invites);
+	}
+	public void removePlayerInvite(Integer nationID, UUID receiver) {
+		if(!this.playerInvites.containsKey(receiver)) return;
+		this.playerInvites.get(receiver).remove(nationID);
+	}
 
 
 
 	private void load() {
 		//load database
-		this.db = new MysqlMain(main, this);
+		this.db = new Database(main, this);
 		this.db.load();
 		//database
 		

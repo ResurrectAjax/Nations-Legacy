@@ -4,15 +4,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import events.nation.NationEvent;
-import general.GeneralMethods;
 import main.Main;
+import general.GeneralMethods;
 import persistency.NationMapping;
 
 public class SetNationDescriptionEvent extends NationEvent{
 	private String description;
 	
 	public SetNationDescriptionEvent(NationMapping nation, CommandSender sender, String description) {
-		super(nation);
+		super(nation, sender);
 		setDescription(description);
 		
 		if(super.isCancelled) return;

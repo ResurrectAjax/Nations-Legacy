@@ -10,10 +10,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
-import managers.CommandManager;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -23,13 +22,12 @@ public class NationInviteCancel extends ChildCommand{
 	private Main main;
 	private ParentCommand parent;
 	public NationInviteCancel(ParentCommand parent) {
-		this.main = parent.getMain();
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		CommandManager manager = main.getCommandManager();
 		FileConfiguration language = main.getLanguage();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
@@ -42,11 +40,11 @@ public class NationInviteCancel extends ChildCommand{
 		
 		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(send.getNationID() == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(!manager.getPlayerInvites().containsKey(receiver.getUUID()) || 
+		else if(!mappingRepo.getPlayerInvites().containsKey(receiver.getUUID()) || 
 				nation == null || 
-				!manager.getPlayerInvites().get(receiver.getUUID()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
+				!mappingRepo.getPlayerInvites().get(receiver.getUUID()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
 		else {
-			main.getCommandManager().removePlayerInvite(nation.getNationID(), receiver.getUUID());
+			mappingRepo.removePlayerInvite(nation.getNationID(), receiver.getUUID());
 			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.CancelInvitation.Message"), nation.getName()));
 		}
 	}
@@ -54,11 +52,10 @@ public class NationInviteCancel extends ChildCommand{
 	@Override
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
-		CommandManager manager = main.getCommandManager();
 		NationMapping nation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(uuid));
-		
-		Set<String> args = manager.getPlayerInvites().keySet().stream()
-				.filter(el -> manager.getPlayerInvites().get(el).contains(nation.getNationID()))
+		if(nation == null) return null;
+		Set<String> args = mappingRepo.getPlayerInvites().keySet().stream()
+				.filter(el -> mappingRepo.getPlayerInvites().get(el).contains(nation.getNationID()))
 				.map(el -> el.toString())
 				.collect(Collectors.toSet());
 		return args.toArray(new String[args.size()]);
@@ -110,6 +107,12 @@ public class NationInviteCancel extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

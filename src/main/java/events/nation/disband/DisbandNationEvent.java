@@ -5,18 +5,19 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import events.nation.NationEvent;
-import general.GeneralMethods;
 import main.Main;
+import general.GeneralMethods;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
 public class DisbandNationEvent extends NationEvent{
-	public DisbandNationEvent(NationMapping nation) {
-		super(nation);
+	public DisbandNationEvent(NationMapping nation, CommandSender sender) {
+		super(nation, sender);
 		
 		if(super.isCancelled) return;
 		List<PlayerMapping> claimers = new ArrayList<PlayerMapping>();
@@ -24,7 +25,7 @@ public class DisbandNationEvent extends NationEvent{
 		claimers.addAll(nation.getOfficers());
 		if(claimers.stream()
 				.map(el -> el.getUUID())
-				.collect(Collectors.toSet()).removeIf(el -> Main.getInstance().getCommandManager().getClaimingSet().contains(el))) ;
+				.collect(Collectors.toSet()).removeIf(el -> Main.getInstance().getMappingRepo().getClaimingSet().contains(el))) ;
 		
 		FileConfiguration language = Main.getInstance().getLanguage();
 		MappingRepository mappingRepo = Main.getInstance().getMappingRepo();

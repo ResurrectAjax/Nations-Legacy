@@ -5,7 +5,7 @@ import java.util.List;
 
 import commands.description.remove.RemoveDescription;
 import commands.description.set.SetDescription;
-import interfaces.ParentCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 
 public class DescriptionCommand extends ParentCommand{
 	private ParentCommand parent;

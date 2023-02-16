@@ -5,13 +5,14 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import commands.alliance.AllyCommand;
 import events.nation.NationEvent;
-import general.GeneralMethods;
 import main.Main;
+import general.GeneralMethods;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -19,8 +20,8 @@ import persistency.PlayerMapping;
 public class CreateAllianceEvent extends NationEvent{
 	private NationMapping ally;
 	
-	public CreateAllianceEvent(NationMapping nation, NationMapping ally, AllyCommand allyCommand) {
-		super(nation);
+	public CreateAllianceEvent(NationMapping nation, NationMapping ally, AllyCommand allyCommand, CommandSender sender) {
+		super(nation, sender);
 		this.ally = ally;
 
 		if(super.isCancelled) return;

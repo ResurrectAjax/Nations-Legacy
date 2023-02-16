@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import commands.alliance.AllyCommand;
 import enumeration.Rank;
 import events.nation.alliance.RequestAllianceEvent;
-import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
+import general.GeneralMethods;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -26,7 +26,7 @@ public class AllyAdd extends ChildCommand{
 	
 	public AllyAdd(AllyCommand allyCommand) {
 		this.allyCommand = allyCommand;
-		this.main = allyCommand.getMain();
+		this.main = (Main) allyCommand.getMain();
 	}
 	
 	@Override
@@ -106,6 +106,12 @@ public class AllyAdd extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return allyCommand;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

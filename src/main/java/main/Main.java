@@ -5,22 +5,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.Yaml;
 
-import general.GeneralMethods;
-import gui.GuiManager;
-import interfaces.ParentCommand;
+import commands.NationsCommand;
 import listeners.JoinListener;
 import listeners.PlayerMoveListener;
-import managers.CommandManager;
-import managers.FileManager;
+import me.resurrectajax.ajaxplugin.gui.GuiManager;
+import me.resurrectajax.ajaxplugin.managers.CommandManager;
+import me.resurrectajax.ajaxplugin.managers.FileManager;
+import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import persistency.MappingRepository;
 import placeholderapi.CustomPlaceHolders;
 import placeholderapi.CustomRelationalPlaceholders;
@@ -30,15 +27,8 @@ import placeholderapi.CustomRelationalPlaceholders;
  * 
  * @author ResurrectAjax
  * */
-public class Main extends JavaPlugin{
-	private static Main INSTANCE;
-	
-	private MappingRepository mappingRepo;
-	
-	private CommandManager commandManager;
+public class Main extends AjaxPlugin{
 	private GuiManager guiManager;
-	private FileManager fileManager;
-	private FileConfiguration config, language, gui;
 	
 	private List<String> formats = new ArrayList<String>(Arrays.asList(
  			"%nations_player_argument%",
@@ -66,25 +56,17 @@ public class Main extends JavaPlugin{
 	 * @return {@link Main} instance
 	 * */
 	public static Main getInstance() {
-		return INSTANCE;
+		return (Main) AjaxPlugin.getInstance();
 	}
 	
 	/**
 	 * Enable plugin and load files/commands
 	 * */
 	public void onEnable() {
-		
-		loadFiles();
-		loadListeners();
+		super.onEnable();
 		
 		for(Player player : Bukkit.getOnlinePlayers()) {
-			if(mappingRepo.getPlayerByUUID(player.getUniqueId()) == null) mappingRepo.addPlayer(player);	
-		}
-		
-		TabCompletion tabCompleter = new TabCompletion(this);
-		//set the tabCompleter
-		for(ParentCommand command : commandManager.getCommands()) {
-			getCommand(command.getName()).setTabCompleter(tabCompleter);
+			if(getMappingRepo().getPlayerByUUID(player.getUniqueId()) == null) getMappingRepo().addPlayer(player);	
 		}
 		
 		hookIntoPlaceholderAPI();
@@ -93,67 +75,9 @@ public class Main extends JavaPlugin{
 	/**
 	 * Load all the classes that implement {@link Listener}
 	 * */
-	private void loadListeners() {
+	public void loadListeners() {
 		getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
-	}
-	
-	/**
-	 * Handle command execution
-	 * @param sender {@link CommandSender} who sent the command
-	 * @param cmd {@link Command} sent command
-	 * @param label {@link String} label of the command
-	 * @param args {@link String}[] arguments
-	 * */
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		//check all the base commands in this plugin
-		if(commandManager.getCommandByName(cmd.getName()) == null) return false;
-		ParentCommand command = commandManager.getCommandByName(cmd.getName());
-		runCommand(command, sender, args);
-		return true;
-	}
-	
-	/**
-	 * Iterate over all commands and subcommands to find the right command to execute
-	 * @param command {@link ParentCommand} where the method runs from
-	 * @param player {@link Player} who sent the command
-	 * @param args {@link String}[] arguments given with the command
-	 * */
-	private void runCommand(ParentCommand command, CommandSender sender, String[] args) {
-		for(String arg : args) {
-			String permissionNode = command.getPermissionNode();
-			String noPermission = GeneralMethods.format(language.getString("Command.Error.NoPermission.Message"));
-			
-			if(!(sender instanceof Player) && !command.isConsole()) {
-				sender.sendMessage(GeneralMethods.format(language.getString("Command.Error.ByConsole.Message")));
-				return;
-			}
-			if(permissionNode != null && !sender.hasPermission(permissionNode)) {
-				sender.sendMessage(noPermission);
-				return;
-			}
-			if(command.getSubCommands() == null || command.getSubCommands().isEmpty()) {
-				command.perform(sender, args);
-				return;
-			}
-			
-			for(ParentCommand subcommand : command.getSubCommands()) {
-				if(subcommand.getName().equalsIgnoreCase(arg)) {
-					runCommand(subcommand, sender, args);
-					return;
-				}
-			}
-		}
-		command.perform(sender, args);
-	}
-	
-	/**
-	 * Get the command manager
-	 * @return {@link CommandManager} manager
-	 * */
-	public CommandManager getCommandManager() {
-		return commandManager;
 	}
 	
 	/**
@@ -165,19 +89,11 @@ public class Main extends JavaPlugin{
 	}
 
 	/**
-	 * Get the file manager
-	 * @return {@link FileManager} manager
-	 * */
-	public FileManager getFileManager() {
-		return fileManager;
-	}
-
-	/**
 	 * Get the config file
 	 * @return {@link FileConfiguration} config
 	 * */
 	public FileConfiguration getConfig() {
-		return config;
+		return files.get("config.yml");
 	}
 	
 	/**
@@ -185,7 +101,7 @@ public class Main extends JavaPlugin{
 	 * @return {@link FileConfiguration} gui
 	 * */
 	public FileConfiguration getGuiConfig() {
-		return gui;
+		return files.get("gui.yml");
 	}
 
 	/**
@@ -193,7 +109,7 @@ public class Main extends JavaPlugin{
 	 * @return {@link FileConfiguration} language
 	 * */
 	public FileConfiguration getLanguage() {
-		return language;
+		return files.get("language.yml");
 	}
 	
 	/**
@@ -201,41 +117,34 @@ public class Main extends JavaPlugin{
 	 * @return {@link MappingRepository} repository
 	 * */
 	public MappingRepository getMappingRepo() {
-		return mappingRepo;
+		return (MappingRepository) super.getMappingRepo();
 	}
 	
 	/**
 	 * Reload the {@link Yaml} files
 	 * */
 	public void reload() {
-        fileManager.loadFiles();
-        config = fileManager.getConfig("config.yml");
-        language = fileManager.getConfig("language.yml");
-        gui = fileManager.getConfig("gui.yml");
+		super.files = FileManager.loadFiles(
+				"config.yml",
+				"language.yml",
+				"gui.yml"
+				);
     }
 
 	/**
 	 * Load the {@link Yaml} files and classes
 	 * */
-	private void loadFiles() {
-		INSTANCE = this;
+	public void loadFiles() {
+		super.setInstance(this);
 		
 		//load files
-		fileManager = new FileManager(this);
-        fileManager.loadFiles();
-        config = fileManager.getConfig("config.yml");
-        language = fileManager.getConfig("language.yml");
-        gui = fileManager.getConfig("gui.yml");
+		reload();
         //files
         
-        //load MappingRepository
-        mappingRepo = new MappingRepository(this);
-        //MappingRepository
+		super.setMappingRepository(new MappingRepository(this));
 		
 		//load classes
-		commandManager = new CommandManager(this);
-		guiManager = new GuiManager(this);
-		//classes
+		super.setCommandManager(new CommandManager(new NationsCommand(this)));
 	}
 	
 	private void hookIntoPlaceholderAPI() {

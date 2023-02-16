@@ -51,6 +51,35 @@ Command:
         Message: '&bNations-Legacy &8: &eDescription has been set'
       Remove:
         Message: '&bNations-Legacy &8: &eDescription has been removed'
+    War:
+      Add:
+        DeclarationSent:
+          Message: '&bNations-Legacy &8: &c&l%rel_relnations_nation1_name%&e has declared war on &c&l%rel_relnations_nation2_name%&e.'
+        Self:
+          Message: '&bNations-Legacy &8: &eYour nation cannot be at war with itself.'
+        NationAlly:
+          Message: '&bNations-Legacy &8: &eYou cannot be at war with an ally nation.'
+        AlreadyAtWar:
+          Message: '&bNations-Legacy &8: &eYour nation is already at war with &c&l%nations_player_argument%&e.'
+      Truce:
+        Send:
+          RequestSent:
+            Message: '&bNations-Legacy &8: &eYour truce request has been sent to &c&l%nations_player_argument%&e. '
+          NotAtWar:
+            Message: '&bNations-Legacy &8: &eYour nation is not at war with &c&l%nations_player_argument%&e.'
+          AlreadySent:
+            Message: '&bNations-Legacy &8: &eYou have already sent a truce request to this nation.'
+          Expired:
+            Message: '&bNations-Legacy &8: &eThe truce request sent to &c&l%nations_player_argument%&e has expired.'
+        Receive:
+          RequestReceived:
+            Message: '&bNations-Legacy &8: &c&l%nations_nation_name%&e has requested a truce. '
+          NoRequest:
+            Message: '&bNations-Legacy &8: &eYou don''t have a truce request from this nation!'
+          Accepted:
+            Message: '&bNations-Legacy &8: &eA truce between &c&l%rel_relnations_nation1_name%&e and &c&l%rel_relnations_nation2_name%&e has been made.'
+          Denied:
+            Message: '&bNations-Legacy &8: &eA truce between &c&l%rel_relnations_nation1_name%&e and &c&l%rel_relnations_nation2_name%&e has been denied.'
     Alliance:
       Add:
         Send:
@@ -70,7 +99,7 @@ Command:
             Message: '&bNations-Legacy &8: &eYou''ve cancelled &9&l%nations_player_argument%&e''s alliance request.'
         Receive:
           RequestReceived:
-            Message: '&bNations-Legacy &8: &9&l%nations_player_argument%&e has requested an alliance. '
+            Message: '&bNations-Legacy &8: &9&l%nations_nation_name%&e has requested an alliance. '
           NoRequest:
             Message: '&bNations-Legacy &8: &eYou don''t have an alliance request from this nation!'
           Accepted:

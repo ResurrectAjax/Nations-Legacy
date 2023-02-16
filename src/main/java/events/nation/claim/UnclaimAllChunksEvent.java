@@ -11,17 +11,16 @@ import org.bukkit.entity.Player;
 import events.nation.NationEvent;
 import general.GeneralMethods;
 import main.Main;
-import managers.CommandManager;
+import persistency.MappingRepository;
 import persistency.NationMapping;
 
 public class UnclaimAllChunksEvent extends NationEvent{
 
-	private Player player;
 	private List<Chunk> chunks = new ArrayList<Chunk>();
 	
 	public UnclaimAllChunksEvent(NationMapping nation, CommandSender sender) {
-		super(nation);
-		this.player = (Player) sender;
+		super(nation, sender);
+		Player player = (Player) sender;
 		this.chunks.addAll(nation.getClaimedChunks());
 		
 		if(super.isCancelled) return;
@@ -29,9 +28,9 @@ public class UnclaimAllChunksEvent extends NationEvent{
 		Main main = Main.getInstance();
 		FileConfiguration language = main.getLanguage();
 		
-		CommandManager manager = main.getCommandManager();
-		if(manager.getUnclaimingSet().contains(player.getUniqueId())) {
-			manager.getUnclaimingSet().remove(player.getUniqueId());
+		MappingRepository mappingRepo = main.getMappingRepo();
+		if(mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) {
+			mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
 			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), player.getName()));
 		}
 		
@@ -42,10 +41,6 @@ public class UnclaimAllChunksEvent extends NationEvent{
 		
 		sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.UnclaimedAll.Message"), nation.getName()));
 		nation.unclaimAll();
-	}
-
-	public Player getPlayer() {
-		return player;
 	}
 
 	public List<Chunk> getChunk() {

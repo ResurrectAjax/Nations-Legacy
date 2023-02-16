@@ -14,16 +14,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import events.nation.NationEvent;
 import general.GeneralMethods;
 import main.Main;
-import managers.CommandManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
 public class InviteToNationEvent extends NationEvent{
 
 	public InviteToNationEvent(NationMapping nation, CommandSender sender, PlayerMapping receiver) {
-		super(nation);
+		super(nation, sender);
 
 		if(super.isCancelled) return;
 		
@@ -31,19 +31,19 @@ public class InviteToNationEvent extends NationEvent{
 		Player player = (Player) sender;
 		
 		FileConfiguration language = main.getLanguage();
-		CommandManager manager = main.getCommandManager();
-		HashMap<UUID, Set<Integer>> playerInvites = manager.getPlayerInvites();
+		MappingRepository mappingRepo = main.getMappingRepo();
+		HashMap<UUID, Set<Integer>> playerInvites = mappingRepo.getPlayerInvites();
 		if(playerInvites.containsKey(receiver.getUUID()) && playerInvites.get(receiver.getUUID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Send.AlreadySent.Message"), Bukkit.getPlayer(receiver.getUUID()).getName()));
 		else {
 			Player receiverPlay = Bukkit.getPlayer(receiver.getUUID());
-			manager.addPlayerInvite(nation.getNationID(), receiver.getUUID());
+			mappingRepo.addPlayerInvite(nation.getNationID(), receiver.getUUID());
 			
 			//send invite message with hovertext
 			TextComponent accept = GeneralMethods.createHoverText("Accept", "Click to accept", "/nations accept " + nation.getName(), ChatColor.GREEN), 
 					deny = GeneralMethods.createHoverText("Deny", "Click to deny", "/nations deny " + nation.getName(), ChatColor.RED), 
 					cancel = GeneralMethods.createHoverText("Cancel", "Click to cancel", "/nations cancelinvite " + receiverPlay.getName(), ChatColor.RED);
 			
-			manager.setLastArg(sender.getName(), nation.getName().toLowerCase());
+			main.getCommandManager().setLastArg(sender.getName(), nation.getName().toLowerCase());
 			TextComponent text = new TextComponent(GeneralMethods.format((OfflinePlayer) receiverPlay, language.getString("Command.Player.Invite.Receive.InviteReceived.Message"), player.getName()));
 			text.addExtra(accept);
 			text.addExtra(" | ");
@@ -60,10 +60,10 @@ public class InviteToNationEvent extends NationEvent{
 			new BukkitRunnable() {
 			    public void run() {
 			    	//if player hasn't accepted, expire the invite
-			    	HashMap<UUID, Set<Integer>> partyInvites = manager.getPlayerInvites();
+			    	HashMap<UUID, Set<Integer>> partyInvites = mappingRepo.getPlayerInvites();
 			        if(!partyInvites.containsKey(receiver.getUUID()) || !partyInvites.get(receiver.getUUID()).contains(nation.getNationID())) return;
 			        player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Send.Expired.Message"), player.getName()));
-			        manager.removePlayerInvite(nation.getNationID(), receiver.getUUID());
+			        mappingRepo.removePlayerInvite(nation.getNationID(), receiver.getUUID());
 			    }
 			}.runTaskTimer(main, 20*300, 20*300);
 		}

@@ -62,67 +62,55 @@ public class NationRenderer extends MapRenderer{
 				NationMapping playerNation = mappingRepo.getNationByID(mappingRepo.getPlayerByUUID(player.getUniqueId()).getNationID());
 				
 				Color newCol = new Color(color.getRed(), color.getGreen(), color.getBlue());
+				Color red = new Color(220, 0, 0), green = new Color(0, 220, 0), blue = new Color(0, 0, 220);
 				if(playerNation == null) {
-					switch(player.getWorld().getEnvironment()) {
-					case NORMAL:
-						newCol = new Color(color.getRed(), color.getBlue() > 150 ? 60 : color.getGreen(), color.getBlue() < 100 ? color.getBlue()+155 : color.getBlue());
-						break;
-					case NETHER:
-						newCol = new Color(color.getRed(), color.getGreen(), 150);
-						break;
-					case THE_END:
-						newCol = new Color(color.getRed() > 100 ? color.getRed()-100 : color.getRed(), color.getGreen() > 100 ? color.getGreen()-100 : color.getGreen(), color.getBlue() < 200 && color.getBlue() > 100 ? 190 : 200);
-						break;
-					default:
-						newCol = new Color(color.getRed(), color.getBlue() > 150 ? 100 : color.getGreen(), color.getBlue() < 100 ? color.getBlue()+155 : color.getBlue());
-						break;
-					}
+					Color darkBright = color;
+					if(color.getBlue() >= 220) darkBright = new Color(color.getRed(), color.getGreen()+(color.getBlue()/2), color.getBlue());
+					else if(color.getBlue() <= 180) darkBright = color.brighter();
+					else darkBright = color;
+					
+					newCol = blend(darkBright, blue);
 				}
 				else if(nation.getNationID() == playerNation.getNationID() || mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(playerNation)) {
-					switch(player.getWorld().getEnvironment()) {
-					case NORMAL:
-						newCol = new Color(color.getRed(), color.getGreen() < 180 ? color.getGreen()+76 : color.getGreen(), color.getGreen() < 100 && color.getBlue() > 200 ? color.getBlue()-150 : color.getBlue());
-						break;
-					case NETHER:
-						newCol = new Color(color.getRed(), color.getGreen() < 150 ? color.getGreen()+56 : color.getGreen(), color.getBlue());
-						break;
-					case THE_END:
-						newCol = new Color(color.getRed() > 100 ? color.getRed()-100 : color.getRed(), color.getGreen() < 200 && color.getGreen() > 100 ? 190 : 200, color.getBlue() > 100 ? color.getBlue()-100 : color.getBlue());
-						break;
-					default:
-						newCol = new Color(color.getRed(), color.getGreen() < 180 ? color.getGreen()+76 : color.getGreen(), color.getGreen() < 100 && color.getBlue() > 200 ? color.getBlue()-150 : color.getBlue());
-						break;
-					}
+					Color darkBright;
+					if(color.getGreen() >= 240) darkBright = color.darker();
+					else if(color.getGreen() <= 200) darkBright = color.brighter();
+					else darkBright = color;
+					
+					newCol = blend(darkBright, green);
+					
 				}
 				else if(mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(playerNation)) {
-					switch(player.getWorld().getEnvironment()) {
-					case THE_END:
-						newCol = new Color(color.getRed() < 200 && color.getRed() > 100 ? 190 : 200, color.getGreen() > 100 ? color.getGreen()-100 : color.getGreen(), color.getBlue() > 100 ? color.getBlue()-100 : color.getBlue());
-						break;
-					default:
-						newCol = new Color(color.getRed() < 150 ? color.getRed()+106 : color.getRed(), color.getGreen(), color.getBlue());
-						break;
-					}
+					Color darkBright;
+					if(color.getRed() >= 240) darkBright = color.darker();
+					else if(color.getRed() <= 200) darkBright = color.brighter();
+					else darkBright = color;
+					
+					newCol = blend(darkBright, red);
 				}
 				else {
-					switch(player.getWorld().getEnvironment()) {
-					case NORMAL:
-						newCol = new Color(color.getRed(), color.getBlue() > 150 ? 100 : color.getGreen(), color.getBlue() < 100 ? color.getBlue()+155 : color.getBlue());
-						break;
-					case NETHER:
-						newCol = new Color(color.getRed(), color.getGreen(), 150);
-						break;
-					case THE_END:
-						newCol = new Color(color.getRed() > 100 ? color.getRed()-100 : color.getRed(), color.getGreen() > 100 ? color.getGreen()-100 : color.getGreen(), color.getBlue() < 200 && color.getBlue() > 100 ? 190 : 200);
-						break;
-					default:
-						newCol = new Color(color.getRed(), color.getBlue() > 150 ? 100 : color.getGreen(), color.getBlue() < 100 ? color.getBlue()+155 : color.getBlue());
-						break;
-					}
+					Color darkBright = color;
+					if(color.getBlue() >= 220 && color.getGreen() <= 145) darkBright = new Color(color.getRed(), color.getGreen()+(color.getBlue()/2), color.getBlue());
+					else if(color.getBlue() <= 180) darkBright = color.brighter();
+					else darkBright = color;
+					
+					newCol = blend(darkBright, blue);
 				}
 				canvas.setPixelColor(j, i, newCol);	
 			}
 		}
 	}
 
+	public static Color blend(Color c0, Color c1) {
+	    double totalAlpha = c0.getAlpha() + c1.getAlpha();
+	    double weight0 = c0.getAlpha() / totalAlpha;
+	    double weight1 = c1.getAlpha() / totalAlpha;
+
+	    double r = weight0 * c0.getRed() + weight1 * c1.getRed();
+	    double g = weight0 * c0.getGreen() + weight1 * c1.getGreen();
+	    double b = weight0 * c0.getBlue() + weight1 * c1.getBlue();
+	    double a = Math.max(c0.getAlpha(), c1.getAlpha());
+
+	    return new Color((int) r, (int) g, (int) b, (int) a);
+	  }
 }

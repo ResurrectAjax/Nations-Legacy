@@ -35,7 +35,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
  * 
  * @author ResurrectAjax
  * */
-public class GeneralMethods {
+public class GeneralMethods extends me.resurrectajax.ajaxplugin.general.GeneralMethods{
 	/**
      * pad a string to center with special characters
      * @param str - String to center
@@ -57,7 +57,6 @@ public class GeneralMethods {
         }
         return sb.toString();
 	}
-	
 	
 	/**
 	 * turn text into hover text
@@ -134,7 +133,6 @@ public class GeneralMethods {
 	public static String format(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
- 	
  	
 	/**
 	 * replaces text with special strings (%Player%, %Date%) with correct values

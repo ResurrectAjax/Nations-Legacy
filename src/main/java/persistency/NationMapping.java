@@ -302,7 +302,7 @@ public class NationMapping {
 	
 	private void removeInvites() {
 		MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
-		HashMap<UUID, Set<Integer>> invites = Main.getInstance().getCommandManager().getPlayerInvites();
+		HashMap<UUID, Set<Integer>> invites = mappingRepo.getPlayerInvites();
 		invites.keySet().stream().forEach(el -> invites.get(el).removeIf(val -> mappingRepo.getNationByID(val).getName().equalsIgnoreCase(getName())));
 	}
 }

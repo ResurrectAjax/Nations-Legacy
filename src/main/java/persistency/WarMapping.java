@@ -31,13 +31,8 @@ public class WarMapping {
 	private int calculateGoal(NationMapping nation, NationMapping enemy) {
 		int goal = 0;
 		
-		goal += nation.getLeaders().size();
-		goal += nation.getOfficers().size();
-		goal += nation.getMembers().size();
-		
-		goal += enemy.getLeaders().size();
-		goal += enemy.getOfficers().size();
-		goal += enemy.getMembers().size();
+		goal += nation.getAllMembers().size() + enemy.getAllMembers().size();
+		goal *= 2;
 		
 		return goal;
 	}

@@ -15,9 +15,9 @@ import commands.alliance.AllyCommand;
 import enumeration.Rank;
 import events.nation.alliance.CreateAllianceEvent;
 import general.GeneralMethods;
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
 import main.Main;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -27,7 +27,7 @@ public class AllyAccept extends ChildCommand{
 	private AllyCommand allyCommand;
 	
 	public AllyAccept(AllyCommand allyCommand) {
-		this.main = allyCommand.getMain();
+		this.main = (Main) allyCommand.getMain();
 		this.allyCommand = allyCommand;
 	}
 	
@@ -52,13 +52,15 @@ public class AllyAccept extends ChildCommand{
 		else if(mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.AlreadyAlly.Message"), args[2]));
 		else if(!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) || 
 				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new CreateAllianceEvent(nation, senderNation, allyCommand));
+		else Bukkit.getPluginManager().callEvent(new CreateAllianceEvent(nation, senderNation, allyCommand, sender));
 	}
 
 	@Override
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(uuid));
+		if(nation == null) return null;
+		
 		Set<String> invites = !allyCommand.getAllianceRequests().containsKey(nation.getNationID()) ? new HashSet<String>() : allyCommand.getAllianceRequests()
 				.get(nation.getNationID())
 				.stream()
@@ -113,6 +115,12 @@ public class AllyAccept extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return allyCommand;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
-import interfaces.ChildCommand;
-import interfaces.ParentCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 
 public class WarInfo extends ChildCommand{
 
@@ -68,6 +68,12 @@ public class WarInfo extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public String[] getSubArguments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

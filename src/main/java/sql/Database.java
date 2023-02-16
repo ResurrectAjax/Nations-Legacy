@@ -21,8 +21,9 @@ import org.bukkit.Chunk;
 import enumeration.Flag;
 import enumeration.Rank;
 import main.Main;
-import persistency.AllianceMapping;
 import persistency.MappingRepository;
+import me.resurrectajax.ajaxplugin.sql.Errors;
+import persistency.AllianceMapping;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 import persistency.WarMapping;
@@ -32,40 +33,119 @@ import persistency.WarMapping;
  * 
  * @author ResurrectAjax
  * */
-public abstract class Database {
-    private final Main plugin;
+public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     private MappingRepository mappingRepo;
-    Connection connection;
     /**
 	 * Constructor<br>
 	 * @param instance instance of the {@link Main.Main} class
 	 * */
     public Database(Main instance, MappingRepository mappingRepo){
-        plugin = instance;
+    	super(instance);
         this.mappingRepo = mappingRepo;
     }
-
     
-    /**
-     * Get the SQL connection
-     * @return {@link Connection} to the database
-     * */
-    public abstract Connection getSQLConnection();
-
+    private String SQLiteCreateRanksTable = "CREATE TABLE IF NOT EXISTS Ranks (" + 
+    		"`Rank` varchar(32) PRIMARY KEY" +
+            ");"; 
+    
+    private String SQLiteInsertRanks() {
+    	String stmt = "INSERT OR IGNORE INTO Ranks(Rank) values";
+    	for(Rank rank : Rank.values()) {
+    		if(rank.equals(Rank.values()[Rank.values().length-1])) stmt += "('" + rank.toString() + "')";
+    		else stmt += "('" + rank.toString() + "'),";
+    	}
+    	return stmt;
+    }
+    
+    private String SQLiteCreateFlagsTable = "CREATE TABLE IF NOT EXISTS Flags (" + 
+    		"`Flag` varchar(32) PRIMARY KEY" +
+            ");";
+    
+    private String SQLiteCreatePlayersTable = "CREATE TABLE IF NOT EXISTS Players (" + 
+    		"`UUID` varchar(36) PRIMARY KEY, " +
+            "`Killpoints` int NOT NULL, " +
+            "`NationID` int, " +
+            "`Rank` varchar(32) not null, " +
+            "foreign key(Rank) references Ranks(Rank), " +
+            "foreign key(NationID) references Nations(NationID) on delete set null" +
+            ");"; 
+    
+    private String SQLiteCreateNationsTable = "CREATE TABLE IF NOT EXISTS Nations (" + 
+    		"`NationID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    		"`Name` varchar(32) NOT NULL, " + 
+    		"`Description` varchar(32), " +
+            "`Leaders` varchar(32) NOT NULL, " +
+            "`Officers` varchar(32), " +
+            "`Members` varchar(32), " +
+            "`MaxChunks` int not null" +
+            ");"; 
+    
+    private String SQLiteCreateWarsTable = "CREATE TABLE IF NOT EXISTS Wars (" + 
+    		"`NationID` int NOT NULL," +
+    		"`EnemyID` int NOT NULL, " +
+    		"`NationKillpoints` int NOT NULL, " +
+    		"`EnemyKillpoints` int NOT NULL, " +
+    		"`KillpointGoal` int NOT NULL, " +
+    		"primary key(NationID, EnemyID), " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
+    		"foreign key(EnemyID) references Nations(NationID) on delete cascade" +
+            ");";
+    
+    private String SQLiteCreateAlliancesTable = "CREATE TABLE IF NOT EXISTS Alliances (" + 
+    		"`NationID` int NOT NULL, " +
+    		"`AllyID` int NOT NULL, " +
+    		"primary key(NationID, AllyID), " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
+    		"foreign key(AllyID) references Nations(NationID) on delete cascade" +
+            ");";
+    
+    private String SQLiteCreateClaimedChunksTable = "CREATE TABLE IF NOT EXISTS ClaimedChunks (" + 
+    		"`NationID` int NOT NULL, " +
+    		"`World` varchar(32) NOT NULL, " +
+    		"`Xcoord` int NOT NULL, " +
+    		"`Zcoord` int NOT NULL, " +
+    		"primary key(World, Xcoord, Zcoord), " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade" +
+            ");";
+    
+    private String SQLiteCreateFlagLinesTable = "CREATE TABLE IF NOT EXISTS FlagLines (" + 
+    		"`ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    		"`NationID` int NOT NULL, " +
+    		"`Flag` varchar(32) NOT NULL, " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
+    		"foreign key(Flag) references Flags(Flag) on delete cascade" +
+            ");";
+    /* EXAMPLES
+    
+    private String SQLiteCreateBlocksTable = 
+    		"create table if not exists Blocks("
+    		+ "blockID INTEGER PRIMARY KEY AUTOINCREMENT, "
+    		+ "raidID int not null, "
+    		+ "type varchar(32) not null, "
+    		+ "amount int not null, "
+    		+ "isContainer boolean not null check(isContainer in (0, 1)), "
+    		+ "foreign key(raidID) references Raids(raidID) on delete cascade"
+    		+ ");";
+	*/
+    
     /**
      * load database and execute table creation statements
      * */
-    public abstract void load();
-
-    /**
-     * Create the connection with the database and check if the connection is stable
-     * */
-    public void initialize(){
-        connection = getSQLConnection();
+    public void load() {
+    	super.setConnection(getSQLConnection());
         try{
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM Nations WHERE NationID = 1");
-            ResultSet rs = ps.executeQuery();
-            close(ps,rs);
+            Statement s = connection.createStatement();
+            s.executeUpdate(SQLiteCreateRanksTable);
+            s.executeUpdate(SQLiteInsertRanks());
+            s.executeUpdate(SQLiteCreateFlagsTable);
+            s.executeUpdate(SQLiteCreateNationsTable);
+            s.executeUpdate(SQLiteCreatePlayersTable);
+            s.executeUpdate(SQLiteCreateAlliancesTable);
+            s.executeUpdate(SQLiteCreateWarsTable);
+            s.executeUpdate(SQLiteCreateClaimedChunksTable);
+            s.executeUpdate(SQLiteCreateFlagLinesTable);
+            updateFlags();
+            s.close();
    
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
@@ -330,13 +410,17 @@ public abstract class Database {
             ps = conn.prepareStatement("SELECT * FROM Wars;");
    
             rs = ps.executeQuery();
-            while(rs.next()){
-            	
-            	NationMapping nation = mappingRepo.getNationByID(rs.getInt(1)), 
-            			enemy = mappingRepo.getNationByID(rs.getInt(2));
-            	
-                WarMapping war = new WarMapping(nation, enemy, rs.getInt(3), rs.getInt(4), this);
-                wars.add(war);
+            try {
+            	while(rs.next()){
+                	NationMapping nation = mappingRepo.getNationByID(rs.getInt(1)), 
+                			enemy = mappingRepo.getNationByID(rs.getInt(2));
+                	
+                    WarMapping war = new WarMapping(nation, enemy, rs.getInt(3), rs.getInt(4), this);
+                    wars.add(war);
+                }
+            }
+            catch(SQLException ex) {
+            	//exception is thrown for no reason -> silence it
             }
         	return wars;
         } catch (SQLException ex) {
@@ -635,7 +719,7 @@ public abstract class Database {
             ps.setInt(5, war.getKillpointGoal());
             
             ps.executeUpdate();
-            
+            return war;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
         } finally {
@@ -678,6 +762,37 @@ public abstract class Database {
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
         }
+    }
+    
+    public void deleteWar(int nationID, int warID) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+        	
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("DELETE FROM Wars WHERE (NationID = ? AND EnemyID = ?) OR (NationID = ? AND EnemyID = ?);");
+            
+            ps.setInt(1, nationID);
+            ps.setInt(2, warID);
+            ps.setInt(3, warID);
+            ps.setInt(4, nationID);
+            
+            ps.executeUpdate();
+            
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;
     }
     
     public void addClaimedChunks(List<Chunk> chunks, int nationID) {

@@ -11,8 +11,8 @@ import commands.alliance.add.AllyAdd;
 import commands.alliance.add.AllyCancel;
 import commands.alliance.add.AllyDeny;
 import commands.alliance.remove.AllyRemove;
-import help.HelpCommand;
-import interfaces.ParentCommand;
+import me.resurrectajax.ajaxplugin.help.HelpCommand;
+import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 
 public class AllyCommand extends ParentCommand{
 	private ParentCommand parent;

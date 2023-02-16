@@ -1,5 +1,6 @@
-package commands.alliance.remove;
+package commands.war.truce;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -10,9 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import commands.alliance.AllyCommand;
+import commands.war.WarCommand;
 import enumeration.Rank;
-import events.nation.alliance.RemoveAllianceEvent;
+import events.nation.war.AcceptTruceEvent;
 import main.Main;
 import general.GeneralMethods;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
@@ -21,12 +22,13 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class AllyRemove extends ChildCommand{
+public class TruceAccept extends ChildCommand{
 	private Main main;
-	private AllyCommand allyCommand;
-	public AllyRemove(AllyCommand allyCommand) {
+	private WarCommand warCommand;
+	
+	public TruceAccept(WarCommand allyCommand) {
 		this.main = (Main) allyCommand.getMain();
-		this.allyCommand = allyCommand;
+		this.warCommand = allyCommand;
 	}
 	
 	@Override
@@ -36,29 +38,33 @@ public class AllyRemove extends ChildCommand{
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-		NationMapping receivingNation = mappingRepo.getNationByName(args.length > 2 ? args[2] : "");
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
+		NationMapping senderNation = mappingRepo.getNationByName(args.length < 3 ? "" : args[2]);
 		
-		super.beforePerform(sender, args.length > 2 ? args[2] : "");
+		super.beforePerform(sender, args.length < 3 ? "" : args[2]);
 		
-		if(args.length != 3) player.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
+		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
 		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-		else if(receivingNation == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.Self.Message"), args[2]));
-		else if(!mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(receivingNation)) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Remove.NotAnAlly.Message"), args[2]));
-		else Bukkit.getPluginManager().callEvent(new RemoveAllianceEvent(nation, receivingNation, allyCommand, sender));
+		else if(senderNation == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
+		else if(nation == senderNation) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Add.Self.Message"), args[2]));
+		else if(!mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Add.NotAtWar.Message"), args[2]));
+		else if(!warCommand.getTruceRequests().containsKey(nation.getNationID()) || 
+				!warCommand.getTruceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Receive.NoRequest.Message"), args[1]));
+		else Bukkit.getPluginManager().callEvent(new AcceptTruceEvent(nation, senderNation, warCommand, sender));
 	}
 
 	@Override
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
-		PlayerMapping player = mappingRepo.getPlayerByUUID(uuid);
-		
-		if(player.getNationID() == null) return null;
-		
-		Set<String> nations = mappingRepo.getAllianceNationsByNationID(player.getNationID()).stream().map(el -> el.getName()).collect(Collectors.toSet());
-		return nations.toArray(new String[nations.size()]);
+		NationMapping nation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(uuid));
+		if(nation == null) return null;
+		Set<String> invites = !warCommand.getTruceRequests().containsKey(nation.getNationID()) ? new HashSet<String>() : warCommand.getTruceRequests()
+				.get(nation.getNationID())
+				.stream()
+				.map(el -> mappingRepo.getNationByID(el).getName())
+				.collect(Collectors.toSet());
+		return invites.toArray(new String[invites.size()]);
 	}
 
 	@Override
@@ -70,25 +76,25 @@ public class AllyRemove extends ChildCommand{
 	@Override
 	public boolean hasTabCompletion() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "remove";
+		return "accept";
 	}
 
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/nations ally remove <nation>";
+		return "/nations war accept <nation>";
 	}
 
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Remove the alliance and become neutral";
+		return "Accept a truce request";
 	}
 
 	@Override
@@ -100,13 +106,13 @@ public class AllyRemove extends ChildCommand{
 	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	@Override
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
-		return allyCommand;
+		return warCommand;
 	}
 
 	@Override

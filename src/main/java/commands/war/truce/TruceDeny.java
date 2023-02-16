@@ -1,4 +1,4 @@
-package commands.alliance.add;
+package commands.war.truce;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import commands.alliance.AllyCommand;
+import commands.war.WarCommand;
 import enumeration.Rank;
 import main.Main;
 import general.GeneralMethods;
@@ -22,13 +22,13 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class AllyDeny extends ChildCommand{
+public class TruceDeny extends ChildCommand{
 	private Main main;
-	private AllyCommand allyCommand;
+	private WarCommand warCommand;
 	
-	public AllyDeny(AllyCommand allyCommand) {
-		this.main = (Main) allyCommand.getMain();
-		this.allyCommand = allyCommand;
+	public TruceDeny(WarCommand warCommand) {
+		this.main = (Main) warCommand.getMain();
+		this.warCommand = warCommand;
 	}
 	
 	@Override
@@ -47,23 +47,23 @@ public class AllyDeny extends ChildCommand{
 		else if(nation == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
 		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else if(senderNation == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-		else if(nation == senderNation) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.Self.Message"), args[2]));
-		else if(mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.AlreadyAlly.Message"), args[2]));
-		else if(!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) || 
-				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[1]));
+		else if(nation == senderNation) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Add.Self.Message"), args[2]));
+		else if(!mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Add.NotAtWar.Message"), args[2]));
+		else if(!warCommand.getTruceRequests().containsKey(nation.getNationID()) || 
+				!warCommand.getTruceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Receive.NoRequest.Message"), args[1]));
 		else {
-			allyCommand.removeAllianceRequest(nation.getNationID(), senderNation.getNationID());
+			warCommand.removeTruceRequest(nation.getNationID(), senderNation.getNationID());
 			
 			Set<PlayerMapping> players = new HashSet<PlayerMapping>();
 			players.addAll(nation.getAllMembers());
 			players.addAll(senderNation.getAllMembers());
 			
-			Player allyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> senderNation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+			Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> senderNation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
-					if(allyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.Alliance.Add.Receive.Denied.Message"), nation.getName()));
-					el.sendMessage(GeneralMethods.relFormat(player, allyPlayer, language.getString("Command.Nations.Alliance.Add.Receive.Denied.Message"), nation.getName()));
+					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.Truce.Receive.Denied.Message"), nation.getName()));
+					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.Truce.Receive.Denied.Message"), nation.getName()));
 				});
 		}
 	}
@@ -73,7 +73,7 @@ public class AllyDeny extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(uuid));
 		if(nation == null) return null;
-		Set<String> invites = !allyCommand.getAllianceRequests().containsKey(nation.getNationID()) ? new HashSet<String>() : allyCommand.getAllianceRequests()
+		Set<String> invites = !warCommand.getTruceRequests().containsKey(nation.getNationID()) ? new HashSet<String>() : warCommand.getTruceRequests()
 				.get(nation.getNationID())
 				.stream()
 				.map(el -> mappingRepo.getNationByID(el).getName())
@@ -126,7 +126,7 @@ public class AllyDeny extends ChildCommand{
 	@Override
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
-		return allyCommand;
+		return warCommand;
 	}
 
 	@Override
