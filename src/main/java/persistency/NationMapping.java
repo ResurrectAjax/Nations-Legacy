@@ -106,7 +106,7 @@ public class NationMapping {
 		this.leaders.add(leader);
 		leader.setRank(Rank.Leader);
 		leader.setNationID(this.nationID);
-		db.updatePlayer(leader);
+		leader.update();
 		return true;
 	}
 	
@@ -125,11 +125,20 @@ public class NationMapping {
 		}
 		return true;
 	}
+	public boolean addOfficer(PlayerMapping officer) {
+		if(this.leaders.stream().anyMatch(play -> play.getUUID().equals(officer.getUUID()))) return false;
+		this.leaders.add(officer);
+		officer.setRank(Rank.Officer);
+		officer.setNationID(this.nationID);
+		officer.update();
+		return true;
+	}
 	private boolean demoteOfficer(PlayerMapping officer) {
 		if(!this.officers.stream().anyMatch(play -> play.getUUID().equals(play.getUUID()))) return false;
 		this.officers.remove(officer);
 		this.members.add(officer);
 		officer.setRank(Rank.Member);
+		officer.update();
 		return true;
 	}
 	private boolean promoteOfficer(PlayerMapping officer) {
@@ -137,6 +146,7 @@ public class NationMapping {
 		this.members.remove(officer);
 		this.officers.add(officer);
 		officer.setRank(Rank.Officer);
+		officer.update();
 		return true;
 	}
 	
@@ -161,7 +171,9 @@ public class NationMapping {
 		
 		if(isMember) return false;
 		this.members.add(member);
+		member.setNationID(this.nationID);
 		member.setRank(Rank.Member);
+		member.update();
 		return true;
 	}
 	private boolean demoteMember(PlayerMapping member) {
@@ -174,6 +186,7 @@ public class NationMapping {
 		this.members.remove(member);
 		this.officers.add(member);
 		member.setRank(Rank.Officer);
+		member.update();
 		return true;
 	}
 	
@@ -191,24 +204,16 @@ public class NationMapping {
 		if(this.leaders.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) return false;
 		player.setNationID(null);
 		player.setRank(Rank.Nationless);
-		db.updatePlayer(player);
+		player.update();
 		return true;
 	}
-	public String[] demotePlayer(PlayerMapping player) {
-		if(demoteOfficer(player) || demoteMember(player)) {
-			db.updatePlayer(player);
-			return new String[] {"true", player.getRank().toString()};
-		}
-		
-		return new String[] {"false", player.getRank().toString()};
+	public Object[] demotePlayer(PlayerMapping player) {
+		if(demoteOfficer(player) || demoteMember(player)) return new Object[] {true, player.getRank()};
+		return new Object[] {false, player.getRank().toString()};
 	}
-	public String[] promotePlayer(PlayerMapping player) {
-		if(promoteMember(player) || promoteOfficer(player)) {
-			db.updatePlayer(player);
-			return new String[] {"true", player.getRank().toString()};
-		}
-		
-		return new String[] {"false", player.getRank().toString()};
+	public Object[] promotePlayer(PlayerMapping player) {
+		if(promoteMember(player) || promoteOfficer(player)) return new Object[] {"true", player.getRank()};
+		return new Object[] {false, player.getRank()};
 	}
 	
 	
@@ -298,6 +303,15 @@ public class NationMapping {
 		removeInvites();
 		
 		db.deleteNation(nationID);
+	}
+	
+	public int countKillPoints() {
+		List<PlayerMapping> players = new ArrayList<>();
+		players.addAll(members);
+		players.addAll(officers);
+		players.addAll(leaders);
+		
+		return players.stream().map(el -> el.getKillpoints()).reduce(0, (t, u) -> t + u);
 	}
 	
 	private void removeInvites() {

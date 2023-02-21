@@ -16,7 +16,7 @@ import persistency.PlayerMapping;
 
 public class JoinNationEvent extends NationEvent{
 
-	public JoinNationEvent(NationMapping nation, CommandSender sender) {
+	public JoinNationEvent(NationMapping nation, CommandSender sender, Rank rank) {
 		super(nation, sender);
 
 		if(super.isCancelled) return;
@@ -27,10 +27,19 @@ public class JoinNationEvent extends NationEvent{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
 		
-		player.setNationID(nation.getNationID());
-		player.setRank(Rank.Member);
-		player.update();
-		nation.addMember(player);
+		switch(rank) {
+			case Leader: 
+				nation.addLeader(player);
+				break;
+			case Officer:
+				nation.addOfficer(player);
+				break;
+			case Member:
+				nation.addMember(player);
+				break;
+			default:
+				break;
+		}
 		nation.update();
 		
 		mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());

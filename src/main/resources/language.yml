@@ -10,10 +10,13 @@ Command:
     NotExist:
       Message: '&bNations-Legacy &8: &eThat command doesn''t exist.'
     BadSyntax:
-      Message: '&bNations-Legacy &8: &ePlease do %rel_relnations_syntax% instead.'
+      Message: '&bNations-Legacy &8: &ePlease do %Syntax% instead.'
     NoPermission:
       Message: '&bNations-Legacy &8: &eYou don''t have permission to execute this command.'
   Nations:
+  	List:
+  	  EndOfList:
+  	    Message: '&bNations-Legacy &8: &eThis is the end of the list.' 
     NotExist:
       Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e doesn''t exist.'
     Create:

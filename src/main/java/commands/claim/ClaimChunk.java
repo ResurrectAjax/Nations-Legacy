@@ -101,7 +101,7 @@ public class ClaimChunk extends ChildCommand{
 		return parent;
 	}
 	@Override
-	public String[] getSubArguments() {
+	public String[] getSubArguments(String[] args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -73,7 +73,7 @@ public class WarAdd extends ChildCommand{
 	@Override
 	public boolean hasTabCompletion() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class WarAdd extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments() {
+	public String[] getSubArguments(String[] args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

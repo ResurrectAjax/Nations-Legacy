@@ -8,3 +8,10 @@ killpoints:
 
   - If nations are at war, every kill will lower the killpointgoal of the victim's nation by 1 and increase
     the killer's killpoints based on the victim's rank.
+
+Chunk limit:
+  - Every nation has a limited amount of chunks they can claim which increases over time
+
+End War:
+  - When defeating a nation, the enemy nation's chunk limit will 
+    be added to your own, and their chunk limit will be reset to the base limit

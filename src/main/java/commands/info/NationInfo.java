@@ -143,7 +143,7 @@ public class NationInfo extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments() {
+	public String[] getSubArguments(String[] args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import enumeration.Rank;
 import events.nation.join.JoinNationEvent;
 import general.GeneralMethods;
 import main.Main;
@@ -41,7 +42,7 @@ public class NationInviteAccept extends ChildCommand{
 		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 
 				nation == null || 
 				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender));
+		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender, Rank.Member));
 	}
 
 	@Override
@@ -104,7 +105,7 @@ public class NationInviteAccept extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments() {
+	public String[] getSubArguments(String[] args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

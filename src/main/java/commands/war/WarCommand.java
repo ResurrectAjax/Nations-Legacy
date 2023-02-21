@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import commands.war.add.WarAdd;
+import commands.war.info.WarInfo;
 import commands.war.truce.TruceAccept;
 import commands.war.truce.TruceCancel;
 import commands.war.truce.TruceDeny;
@@ -61,6 +62,7 @@ public class WarCommand extends ParentCommand{
 				new TruceAccept(this),
 				new TruceDeny(this),
 				new TruceCancel(this),
+				new WarInfo(this),
 				new HelpCommand(this)
 				);
 	}
