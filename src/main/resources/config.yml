@@ -1,5 +1,14 @@
 Nations:
-  maxchunks: 10
+  Claiming:
+    #MaxChunks: Maximum amount of chunks per player, e.g. nation has 3 members, 10 chunks/member => nation has 30max chunks
+    MaxChunks: 10
+    
+    #ChunkGain: Amount of chunks added to the limit every hour, minutes or seconds
+    #  TimePeriod: Amount of time players of a nation have to be online to gain chunks (h: hours, m: minutes, s: seconds)
+    #  Chunks: Amount of chunks added after TimePeriod
+    ChunkGain:
+      TimePeriod: 1h
+      Chunks: 5
 Wilderness:
   Name: "&2&lWilderness"
   Description: "It's dangerous to go alone"

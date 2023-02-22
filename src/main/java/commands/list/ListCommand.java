@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -45,7 +46,8 @@ public class ListCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		if(GeneralMethods.isInteger(args[2])) generateList(sender, 1);
+		if(args.length <= 1) generateList(sender, 1);
+		else if(GeneralMethods.isInteger(args[1])) generateList(sender, Integer.parseInt(args[1]));
 	}
 	
 	private void generateList(CommandSender sender, int page) {
@@ -55,13 +57,13 @@ public class ListCommand extends ChildCommand{
 			return;
 		}
 		
-		sender.sendMessage(GeneralMethods.padCenter("Nation List", '-', 40));
+		sender.sendMessage(ChatColor.GREEN + GeneralMethods.padCenter("Nations", '-', 35));
 		for(int i = (page * listSize)-listSize; i < page * listSize; i++) {
 			if(i >= nations.size()) break;
 			NationMapping nation = nations.get(i);
-			sender.sendMessage(nation.getName() + " - " + nation.countKillPoints()+ "p");
+			sender.sendMessage(GeneralMethods.format(String.format("&b%d. &6%s &8- &c%sp", (i+1), nation.getName(), nation.countKillPoints())));
 		}
-		sender.sendMessage(GeneralMethods.padCenter("", '-', 40));
+		sender.sendMessage(ChatColor.GREEN + GeneralMethods.padCenter("", '-', 34));
 	}
 
 	@Override

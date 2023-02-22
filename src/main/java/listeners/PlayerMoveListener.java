@@ -65,6 +65,7 @@ public class PlayerMoveListener implements Listener{
 			return;
 		}
 		else {
+			
 			if(main.getMappingRepo().getClaimingSet().contains(player.getUniqueId())) {
 				if(nationMap.getClaimedChunks().contains(chunk)) return;
 				

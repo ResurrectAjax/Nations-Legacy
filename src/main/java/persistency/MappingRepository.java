@@ -107,7 +107,7 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 	public NationMapping createNation(String name, PlayerMapping leader) {
 		FileConfiguration config = main.getConfig();
 		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return null;
-		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.maxchunks"));
+		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.Claiming.MaxChunks"));
 		this.nations.add(nation);
 		return nation;
 	}

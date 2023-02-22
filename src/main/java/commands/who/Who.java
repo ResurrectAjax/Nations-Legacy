@@ -44,12 +44,12 @@ public class Who extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
 		
-		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
+		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 		sender.sendMessage(GeneralMethods.format("&bName: &a" + Bukkit.getOfflinePlayer(playerMap.getUUID()).getName()));
 		sender.sendMessage(GeneralMethods.format("  &bNation: &a" + (nation != null ? nation.getName() : "")));
 		sender.sendMessage(GeneralMethods.format("  &bRank: &a" + playerMap.getRank().toString()));
 		sender.sendMessage(GeneralMethods.format("  &bKillpoints: &c" + playerMap.getKillpoints()));
-		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
+		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 	}
 
 	@Override

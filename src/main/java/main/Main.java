@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.Yaml;
 
 import commands.NationsCommand;
+import listeners.ClaimListener;
 import listeners.JoinListener;
 import listeners.PlayerMoveListener;
 import me.resurrectajax.ajaxplugin.gui.GuiManager;
@@ -78,6 +79,7 @@ public class Main extends AjaxPlugin{
 	public void loadListeners() {
 		getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
+		getServer().getPluginManager().registerEvents(new ClaimListener(this), this);
 	}
 	
 	/**

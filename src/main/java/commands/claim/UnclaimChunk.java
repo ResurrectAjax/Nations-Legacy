@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -44,8 +45,15 @@ public class UnclaimChunk extends ChildCommand{
 		else if(args.length < 2 || !Arrays.asList(getArguments(player.getUniqueId())).contains(arg.toLowerCase())) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(!playerMap.getRank().equals(Rank.Leader) && !playerMap.getRank().equals(Rank.Officer)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
 		else {
-			switch(args[1]) {
+			switch(args[1].toLowerCase()) {
 			case "on":
+				NationMapping chunkNation = mappingRepo.getNationByChunk(player.getLocation().getChunk());
+				if(chunkNation == null || chunkNation.getNationID() != playerMap.getNationID()) {
+					mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
+					player.sendMessage(GeneralMethods.format((OfflinePlayer) player, main.getLanguage().getString("Command.Nations.Unclaim.NotInClaim.Message"), player.getName()));
+					return;
+				}
+				
 				if(mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
 				if(nation.getClaimedChunks().size() == 0) {
 					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));

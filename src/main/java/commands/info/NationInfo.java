@@ -61,7 +61,7 @@ public class NationInfo extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nationMap = mappingRepo.getNationByName(nation);
 		
-		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
+		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));
 		sender.sendMessage(GeneralMethods.format("  &bDescription: &f" + nationMap.getDescription()));
 		sender.sendMessage(GeneralMethods.format("  &bLeaders: &a" + givePlayerList(nationMap.getLeaders())));
@@ -69,7 +69,7 @@ public class NationInfo extends ChildCommand{
 		sender.sendMessage(GeneralMethods.format("  &bMembers: &a" + givePlayerList(nationMap.getMembers())));
 		sender.sendMessage(GeneralMethods.format("  &bAllies: " + giveNationList(mappingRepo.getAllianceNationsByNationID(nationMap.getNationID()), ChatColor.GOLD, ChatColor.GREEN)));
 		sender.sendMessage(GeneralMethods.format("  &bEnemies: " + giveNationList(mappingRepo.getWarNationsByNationID(nationMap.getNationID()), ChatColor.RED, ChatColor.GREEN)));
-		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 40));
+		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 	}
 	private String givePlayerList(Set<PlayerMapping> players) {
 		return players.stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID()).getName()).collect(Collectors.joining(", "));

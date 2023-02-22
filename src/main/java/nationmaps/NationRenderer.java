@@ -1,7 +1,9 @@
 package nationmaps;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Chunk;
@@ -17,6 +19,7 @@ import persistency.NationMapping;
 
 public class NationRenderer extends MapRenderer{
 	private Set<Integer> noRender = new HashSet<Integer>();
+	private Set<Pixel> pixels = new HashSet<Pixel>();
 	
 	@Override
 	public void render(MapView map, MapCanvas canvas, Player player) {
@@ -46,16 +49,22 @@ public class NationRenderer extends MapRenderer{
 				int endChunkZ = startChunkZ + 15, endChunkX = startChunkX + 15;
 				
 				
-				setBorder(canvas, player, nation, startChunkX, endChunkX, startChunkZ, endChunkZ);
+				markTerritory(canvas, player, nation, startChunkX, endChunkX, startChunkZ, endChunkZ);
 				
 				
 			}
 		}
+		
+		for(Pixel pixelA : pixels) {
+			if(isBorder(pixelA)) canvas.setPixelColor(pixelA.x, pixelA.z, pixelA.color);
+		}
 	}
 	
-	private void setBorder(MapCanvas canvas, Player player, NationMapping nation, int startX, int endX, int startZ, int endZ) {
+	private void markTerritory(MapCanvas canvas, Player player, NationMapping nation, int startX, int endX, int startZ, int endZ) {
 		for(int i = startZ; i <= endZ; i++) {
 			for(int j = startX; j <= endX; j++) {
+				Stance stance;
+				
 				Color color = canvas.getBasePixelColor(j, i);
 				
 				MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
@@ -70,6 +79,7 @@ public class NationRenderer extends MapRenderer{
 					else darkBright = color;
 					
 					newCol = blend(darkBright, blue);
+					stance = Stance.NEUTRAL;
 				}
 				else if(nation.getNationID() == playerNation.getNationID() || mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(playerNation)) {
 					Color darkBright;
@@ -78,7 +88,8 @@ public class NationRenderer extends MapRenderer{
 					else darkBright = color;
 					
 					newCol = blend(darkBright, green);
-					
+					if(nation.getNationID() == playerNation.getNationID()) stance = Stance.SELF;
+					else stance = Stance.ALLY;;
 				}
 				else if(mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(playerNation)) {
 					Color darkBright;
@@ -87,6 +98,7 @@ public class NationRenderer extends MapRenderer{
 					else darkBright = color;
 					
 					newCol = blend(darkBright, red);
+					stance = Stance.ENEMY;
 				}
 				else {
 					Color darkBright = color;
@@ -95,13 +107,77 @@ public class NationRenderer extends MapRenderer{
 					else darkBright = color;
 					
 					newCol = blend(darkBright, blue);
+					stance = Stance.NEUTRAL;
 				}
-				canvas.setPixelColor(j, i, newCol);	
+				canvas.setPixelColor(j, i, newCol);
+				
+				if(j == startX || j == endX || i == startZ || i == endZ) pixels.add(new Pixel(j, i, stance));
+				else pixels.add(new Pixel(j, i, stance, newCol));
 			}
 		}
 	}
+	
+	private boolean isBorder(Pixel pixel) {
+		List<Pixel> pixels = Arrays.asList(
+				getPixelByCoordinates(pixel.x-1, pixel.z),
+				getPixelByCoordinates(pixel.x, pixel.z-1),
+				getPixelByCoordinates(pixel.x+1, pixel.z),
+				getPixelByCoordinates(pixel.x, pixel.z+1)
+				);
+		
+		for(Pixel pixelA : pixels) {
+			if(pixelA == null) return true;
+			if(!pixelA.stance.equals(pixel.stance)) return true;
+		}
+		return false;
+	}
+	
+	private Pixel getPixelByCoordinates(int x, int z) {
+		return pixels.stream().filter(el -> el.x == x && el.z == z).findAny().orElse(null);
+	}
+	
+	private class Pixel {
+		private int x, z;
+		private Stance stance;
+		private Color color;
+		
+		public Pixel(int x, int z, Stance stance, Color color) {
+			this.x = x;
+			this.z = z;
+			this.stance = stance;
+		}
+		
+		public Pixel(int x, int z, Stance stance) {
+			this.x = x;
+			this.z = z;
+			this.stance = stance;
+			setBorderColor(stance);
+		}
+		
+		private void setBorderColor(Stance stance) {
+			switch(stance) {
+			case SELF:
+			case ALLY:
+				this.color = Color.GREEN.darker();
+				break;
+			case ENEMY:
+				this.color = Color.RED.darker();
+				break;
+			case NEUTRAL:
+				this.color = Color.BLUE.darker();
+				break;
+			}
+		}
+	}
+	
+	private enum Stance {
+		SELF,
+		ALLY,
+		ENEMY,
+		NEUTRAL
+	}
 
-	public static Color blend(Color c0, Color c1) {
+	private static Color blend(Color c0, Color c1) {
 	    double totalAlpha = c0.getAlpha() + c1.getAlpha();
 	    double weight0 = c0.getAlpha() / totalAlpha;
 	    double weight1 = c1.getAlpha() / totalAlpha;
