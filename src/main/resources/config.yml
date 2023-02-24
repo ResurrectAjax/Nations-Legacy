@@ -9,6 +9,9 @@ Nations:
     ChunkGain:
       TimePeriod: 1h
       Chunks: 5
+  Home:
+    #MaxHomes: Maximum amount of homes per nation
+    MaxHomes: 1
 Wilderness:
   Name: "&2&lWilderness"
   Description: "It's dangerous to go alone"

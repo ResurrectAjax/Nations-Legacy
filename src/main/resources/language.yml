@@ -14,6 +14,17 @@ Command:
     NoPermission:
       Message: '&bNations-Legacy &8: &eYou don''t have permission to execute this command.'
   Nations:
+    Home:
+      SetHome:
+        Set:
+          Message: '&bNations-Legacy &8: &eNew home &a&l%nations_player_argument%&e has been set.' 
+        MaxHomes:
+          Message: '&bNations-Legacy &8: &eYou have reached the max amount of homes.'
+      DelHome:
+        Delete:
+          Message: '&bNations-Legacy &8: &eHome &a&l%nations_player_argument%&e has been deleted.' 
+        NotFound:
+          Message: '&bNations-Legacy &8: &eHome &a&l%nations_player_argument%&e was not found.' 
     List:
       EndOfList:
         Message: '&bNations-Legacy &8: &eThis is the end of the list.' 
@@ -57,6 +68,9 @@ Command:
       Remove:
         Message: '&bNations-Legacy &8: &eDescription has been removed'
     War:
+      Info:
+        NotAtWar:
+          Message: '&bNations-Legacy &8: &eThese nations are not at war with each other.'
       Add:
         DeclarationSent:
           Message: '&bNations-Legacy &8: &c&l%rel_relnations_nation1_name%&e has declared war on &c&l%rel_relnations_nation2_name%&e.'

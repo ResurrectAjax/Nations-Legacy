@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 
 import enumeration.Flag;
 import enumeration.Rank;
 import main.Main;
-import persistency.MappingRepository;
 import me.resurrectajax.ajaxplugin.sql.Errors;
 import persistency.AllianceMapping;
+import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 import persistency.WarMapping;
@@ -115,6 +116,17 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
     		"foreign key(Flag) references Flags(Flag) on delete cascade" +
             ");";
+    
+    private String SQLiteCreateHomesTable = "CREATE TABLE IF NOT EXISTS Homes (" + 
+    		"`NationID` int NOT NULL, " +
+    		"`Name` varchar(32) NOT NULL, " +
+    		"`World` varchar(64) NOT NULL, " +
+    		"`Xcoord` double NOT NULL, " +
+    		"`Ycoord` double NOT NULL, " +
+    		"`Zcoord` double NOT NULL, " +
+    		"primary key(NationID, Name), " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade" +
+            ");";
     /* EXAMPLES
     
     private String SQLiteCreateBlocksTable = 
@@ -143,6 +155,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             s.executeUpdate(SQLiteCreateAlliancesTable);
             s.executeUpdate(SQLiteCreateWarsTable);
             s.executeUpdate(SQLiteCreateClaimedChunksTable);
+            s.executeUpdate(SQLiteCreateHomesTable);
             s.executeUpdate(SQLiteCreateFlagLinesTable);
             updateFlags();
             s.close();
@@ -213,6 +226,8 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         HashMap<Integer, Set<Chunk>> chunkMap = getAllClaimedChunks();
         HashMap<Integer, Set<Flag>> flagMap = getAllNationFlags();
         
+        Set<NationHome> nationHomes = getHomes();
+        
         try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT * FROM Nations;");
@@ -228,7 +243,9 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             	Set<Chunk> chunks = chunkMap.get(nationID) == null ? new HashSet<Chunk>() : chunkMap.get(nationID);
             	Set<Flag> flags = flagMap.get(nationID) == null ? new HashSet<Flag>() : flagMap.get(nationID);
             	
-            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, leaders, officers, members, chunks, flags, this);
+            	HashMap<String, Location> homes = new HashMap<>(nationHomes.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toMap(NationHome::getName, NationHome::getLocation)));
+            	
+            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, leaders, officers, members, chunks, flags, homes, this);
             	nations.add(nation);
             }
         	return nations;
@@ -245,6 +262,65 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             }
         }
         return nations;
+    }
+    
+    private Set<NationHome> getHomes() {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        Set<NationHome> nationHomes = new HashSet<>();
+        
+        try {
+        	
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT * FROM Homes;");
+   
+            rs = ps.executeQuery();
+            while(rs.next()){            	
+            	int nationID = rs.getInt(1);
+            	String name = rs.getString(2), world = rs.getString(3);
+            	double x = rs.getDouble(4), y = rs.getDouble(5), z = rs.getDouble(6);
+            	
+            	nationHomes.add(new NationHome(nationID, name, new Location(Bukkit.getWorld(world), x, y, z)));
+            }
+        	return nationHomes;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return nationHomes;
+    }
+    private class NationHome {
+    	private int nationID;
+    	private String name = null;
+    	private Location location = null;
+    	
+    	public NationHome(int id, String name, Location loc) {
+			this.nationID = id;
+			this.name = name;
+			this.location = loc;
+		}
+
+		public int getNationID() {
+			return nationID;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Location getLocation() {
+			return location;
+		}
     }
     
     public HashMap<Integer, Set<Chunk>> getAllClaimedChunks() {
@@ -588,6 +664,97 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             ps.setInt(7, nation.getNationID());
             
             ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+    }
+    
+    public void insertHome(int nationID, String name, Location loc) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("INSERT OR REPLACE INTO Homes(NationID, Name, World, Xcoord, Ycoord, Zcoord) VALUES(?,?,?,?,?,?)");
+            
+            ps.setInt(1, nationID); 
+            ps.setString(2, name);
+            ps.setString(3, loc.getWorld().getName());
+            ps.setDouble(4, loc.getX()); 
+            ps.setDouble(5, loc.getY());
+            ps.setDouble(6, loc.getZ());
+            
+            ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+    }
+    
+    public HashMap<String, Location> getHomes(int nationID) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        HashMap<String, Location> map = new HashMap<>();
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT * FROM Homes WHERE NationID = ?");
+            ps.setInt(1, nationID);
+            
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+            	map.put(rs.getString(2), new Location(Bukkit.getWorld(rs.getString(3)), rs.getDouble(4), rs.getDouble(5), rs.getDouble(6)));
+            }
+        	return map;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return map;
+    }
+    
+    public void deleteHome(int nationID, String name) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            
+            ps = conn.prepareStatement("DELETE FROM Homes WHERE NationID = ? AND Name = ?");
+            
+            ps.setInt(1, nationID);
+            ps.setString(2, name);
+            
+            ps.executeUpdate();
+            ps.close();
+            
             return;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);

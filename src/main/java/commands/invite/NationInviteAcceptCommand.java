@@ -20,10 +20,10 @@ import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 
-public class NationInviteAccept extends ChildCommand{
+public class NationInviteAcceptCommand extends ChildCommand{
 	private Main main;
 	private ParentCommand parent;
-	public NationInviteAccept(ParentCommand parent) {
+	public NationInviteAcceptCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

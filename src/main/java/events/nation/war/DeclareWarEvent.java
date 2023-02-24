@@ -22,23 +22,29 @@ public class DeclareWarEvent extends NationEvent{
 		super(nation, sender);
 		this.enemy = enemy;
 		
-		if(this.isCancelled) return;
-		
 		Main main = Main.getInstance();
-		FileConfiguration language = main.getLanguage();
-		
-		Player enemyPlayer = enemy.getAllMembers().stream().map(el -> Bukkit.getPlayer(el.getUUID())).filter(el -> el != null).findFirst().orElse(null);
-		
-		Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-		players.addAll(nation.getAllMembers());
-		players.addAll(enemy.getAllMembers());
-		for(PlayerMapping player : players) {
-			if(Bukkit.getPlayer(player.getUUID()) == null) continue;
-			Player playerA = Bukkit.getPlayer(player.getUUID());
+		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
 			
-			playerA.sendMessage(GeneralMethods.relFormat(sender, enemyPlayer, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), enemy.getName()));
-		}
-		main.getMappingRepo().startWar(nation.getNationID(), enemy.getNationID());
+			@Override
+			public void run() {
+				if(isCancelled) return;
+				
+				FileConfiguration language = main.getLanguage();
+				
+				Player enemyPlayer = enemy.getAllMembers().stream().map(el -> Bukkit.getPlayer(el.getUUID())).filter(el -> el != null).findFirst().orElse(null);
+				
+				Set<PlayerMapping> players = new HashSet<PlayerMapping>();
+				players.addAll(nation.getAllMembers());
+				players.addAll(enemy.getAllMembers());
+				for(PlayerMapping player : players) {
+					if(Bukkit.getPlayer(player.getUUID()) == null) continue;
+					Player playerA = Bukkit.getPlayer(player.getUUID());
+					
+					playerA.sendMessage(GeneralMethods.relFormat(sender, enemyPlayer, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), enemy.getName()));
+				}
+				main.getMappingRepo().startWar(nation.getNationID(), enemy.getNationID());
+			}
+		}, 1L);
 	}
 	
 	public NationMapping getEnemy() {

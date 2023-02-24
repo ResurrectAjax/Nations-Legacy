@@ -16,38 +16,57 @@ import persistency.PlayerMapping;
 
 public class JoinNationEvent extends NationEvent{
 
+	private Rank nationRank;
+	
 	public JoinNationEvent(NationMapping nation, CommandSender sender, Rank rank) {
 		super(nation, sender);
-
-		if(super.isCancelled) return;
 		
+		setNationRank(rank);
 		
 		Main main = Main.getInstance();
-		FileConfiguration language = main.getLanguage();
-		MappingRepository mappingRepo = main.getMappingRepo();
-		PlayerMapping player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
-		
-		switch(rank) {
-			case Leader: 
-				nation.addLeader(player);
-				break;
-			case Officer:
-				nation.addOfficer(player);
-				break;
-			case Member:
-				nation.addMember(player);
-				break;
-			default:
-				break;
-		}
-		nation.update();
-		
-		mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
-		Bukkit.getOnlinePlayers().stream()
-			.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
-			.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Accepted.Message"), nation.getName())));
-		
-		sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
+			
+			@Override
+			public void run() {
+				if(isCancelled) return;
+				
+				FileConfiguration language = main.getLanguage();
+				MappingRepository mappingRepo = main.getMappingRepo();
+				PlayerMapping player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
+				
+				switch(nationRank) {
+					case Leader: 
+						nation.addLeader(player);
+						break;
+					case Officer:
+						nation.addOfficer(player);
+						break;
+					case Member:
+						nation.addMember(player);
+						break;
+					default:
+						break;
+				}
+				nation.update();
+				
+				mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
+				Bukkit.getOnlinePlayers().stream()
+					.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
+					.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Accepted.Message"), nation.getName())));
+				
+				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
+			}
+		}, 1L);
 	}
+
+	public Rank getNationRank() {
+		return nationRank;
+	}
+
+	public void setNationRank(Rank nationRank) {
+		this.nationRank = nationRank;
+	}
+	
+	
 
 }

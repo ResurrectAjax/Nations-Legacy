@@ -20,9 +20,9 @@ import persistency.PlayerMapping;
 public class RemoveAllianceEvent extends NationEvent{
 	private NationMapping ally;
 	
-	public RemoveAllianceEvent(NationMapping nation, NationMapping ally, AllyCommand allyCommand, CommandSender sender) {
+	public RemoveAllianceEvent(NationMapping nation, NationMapping allyA, AllyCommand allyCommand, CommandSender sender) {
 		super(nation, sender);
-		this.ally = ally;
+		this.ally = allyA;
 
 		if(super.isCancelled) return;
 		
@@ -30,20 +30,27 @@ public class RemoveAllianceEvent extends NationEvent{
 		FileConfiguration language = main.getLanguage();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
-		mappingRepo.removeAlliance(nation.getNationID(), ally.getNationID());
 		
-		Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-		players.addAll(nation.getAllMembers());
-		players.addAll(ally.getAllMembers());
-		
-		Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-		Player allyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> ally.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-		Bukkit.getOnlinePlayers().stream()
-			.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
-			.forEach(el -> {
-				if(allyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.Alliance.Remove.Removed.Message"), nation.getName()));
-				el.sendMessage(GeneralMethods.relFormat(player, allyPlayer, language.getString("Command.Nations.Alliance.Remove.Removed.Message"), nation.getName()));
-			});
+		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
+			
+			@Override
+			public void run() {
+				mappingRepo.removeAlliance(nation.getNationID(), ally.getNationID());
+				
+				Set<PlayerMapping> players = new HashSet<PlayerMapping>();
+				players.addAll(nation.getAllMembers());
+				players.addAll(ally.getAllMembers());
+				
+				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player allyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> ally.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Bukkit.getOnlinePlayers().stream()
+					.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
+					.forEach(el -> {
+						if(allyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.Alliance.Remove.Removed.Message"), nation.getName()));
+						el.sendMessage(GeneralMethods.relFormat(player, allyPlayer, language.getString("Command.Nations.Alliance.Remove.Removed.Message"), nation.getName()));
+					});
+			}
+		}, 1L);
 	}
 	
 	public NationMapping getAlly() {

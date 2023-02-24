@@ -20,11 +20,11 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class UnclaimChunk extends ChildCommand{
+public class UnclaimChunkCommand extends ChildCommand{
 
 	private ParentCommand parent;
 	private final Main main;
-	public UnclaimChunk(ParentCommand parent) {
+	public UnclaimChunkCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

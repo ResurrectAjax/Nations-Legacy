@@ -1,40 +1,30 @@
-package commands.map;
+package commands.admin.reload;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.file.FileConfiguration;
 
+import general.GeneralMethods;
+import main.Main;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
-import nationmaps.NationMap;
 
-public class Map extends ChildCommand{
-
+public class ReloadCommand extends ChildCommand{
 	private ParentCommand parent;
-	public Map(ParentCommand parent) {
+	private Main main;
+	public ReloadCommand(ParentCommand parent) {
+		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		Player player = (Player) sender;
+		main.reload();
 		
-		ItemStack map = NationMap.getMap(player);
-		ArrayList<ItemStack> inv = new ArrayList<ItemStack>(Arrays.asList(player.getInventory().getContents()));
-		
-		if(inv.stream().filter(el -> el != null).anyMatch(el -> el.getItemMeta().getDisplayName().equals(map.getItemMeta().getDisplayName())
-																							&& el.getItemMeta().getLore() == map.getItemMeta().getLore())) {
-			ItemStack element = inv.stream().filter(el -> el != null && el.getItemMeta().getDisplayName().equals(map.getItemMeta().getDisplayName()) && el.getItemMeta().getLore() == map.getItemMeta().getLore()).findFirst().orElse(null);
-			Integer index = element == null ? null : inv.indexOf(element);
-			
-			if(index != null) player.getInventory().setItem(index, map);
-		}
-		else player.getInventory().addItem(map);
+		FileConfiguration language = main.getLanguage();
+		sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Reload.Message"), sender.getName()));
 	}
 
 	@Override
@@ -58,19 +48,19 @@ public class Map extends ChildCommand{
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "map";
+		return "reload";
 	}
 
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/nations map";
+		return "/nations admin reload";
 	}
 
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Gives a nations map";
+		return "Reloads the configuration files";
 	}
 
 	@Override
@@ -82,7 +72,7 @@ public class Map extends ChildCommand{
 	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -96,5 +86,5 @@ public class Map extends ChildCommand{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 }

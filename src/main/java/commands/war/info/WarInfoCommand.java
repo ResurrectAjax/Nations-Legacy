@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import general.GeneralMethods;
@@ -17,12 +18,12 @@ import persistency.NationMapping;
 import persistency.PlayerMapping;
 import persistency.WarMapping;
 
-public class WarInfo extends ChildCommand{
+public class WarInfoCommand extends ChildCommand{
 
 	private ParentCommand parent;
 	private Main main;
 	private MappingRepository mappingRepo;
-	public WarInfo(ParentCommand parent) {
+	public WarInfoCommand(ParentCommand parent) {
 		this.parent = parent;
 		this.main = (Main) parent.getMain();
 		
@@ -31,38 +32,59 @@ public class WarInfo extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		if(args.length < 1) return;
-		
-		NationMapping nation, enemy;
+		NationMapping nation = null, enemy = null;
 		PlayerMapping player = null;
+		FileConfiguration language = main.getLanguage();
 		if(sender instanceof Player) player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
 		
+		
+		
 		switch(args.length) {
-			case 2:
+			case 3:
+				if(!(sender instanceof Player)) {
+					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Error.ByConsole.Message"), args[2]));
+					return;
+				}
+				
+				super.beforePerform(sender, args[2]);
 				if(player == null || player.getNationID() == null) return;
 				nation = mappingRepo.getNationByID(player.getNationID());
-				enemy = mappingRepo.getNationByName(args[1]);
-				break;
-			case 3:
-				nation = mappingRepo.getNationByName(args[1]);
 				enemy = mappingRepo.getNationByName(args[2]);
 				break;
+			case 4:
+				super.beforePerform(sender, args[3]);
+				nation = mappingRepo.getNationByName(args[2]);
+				enemy = mappingRepo.getNationByName(args[3]);
+				break;
 			default:
+				sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 				return;
 		}
-		if(nation == null || enemy == null) return;
-		createInfo(sender, mappingRepo.getWarByNationIDs(nation.getNationID(), enemy.getNationID()));
+		if(nation == null) {
+			super.beforePerform(sender, args[2]);
+			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
+			return;
+		}
+		if(enemy == null && args.length == 4) {
+			super.beforePerform(sender, args[3]);
+			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[3]));
+			return;
+		}
+		WarMapping war = mappingRepo.getWarByNationIDs(nation.getNationID(), enemy.getNationID());
+		if(war != null) createInfo(sender, war);
+		else if(args.length == 3) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.NotAtWar.Message"), args[2]));
+		else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Info.NotAtWar.Message"), args[3]));
 	}
 	
 	private void createInfo(CommandSender sender, WarMapping war) {
-		sender.sendMessage(GeneralMethods.padCenter("War", '-', 35));
-		sender.sendMessage(String.format("Nations: %s, %s", war.getNation().getName(), war.getEnemy().getName()));
-		sender.sendMessage(String.format("Goal: %dp", war.getKillpointGoal()));
-		sender.sendMessage("Kill Points:");
-		sender.sendMessage(String.format("  %s: %dp", war.getNation().getName(), war.getNation().countKillPoints()));
-		sender.sendMessage(String.format("  %s: %dp", war.getEnemy().getName(), war.getEnemy().countKillPoints()));
-		sender.sendMessage("Nationless/Member = 1p; Officer = 2p; Leader = 3p");
-		sender.sendMessage(GeneralMethods.padCenter("", '-', 34));
+		sender.sendMessage(GeneralMethods.format("&a" + GeneralMethods.padCenter("War", '-', 35)));
+		sender.sendMessage(GeneralMethods.format(String.format("&bNations: &c%s, %s", war.getNation().getName(), war.getEnemy().getName())));
+		sender.sendMessage(GeneralMethods.format(String.format("&bGoal: &c%dp", war.getKillpointGoal())));
+		sender.sendMessage(GeneralMethods.format("&bKill Points:"));
+		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getNation().getName(), war.getNation().countKillPoints())));
+		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getEnemy().getName(), war.getEnemy().countKillPoints())));
+		sender.sendMessage(GeneralMethods.format("&7Nationless/Member = 1p; Officer = 2p; Leader = 3p"));
+		sender.sendMessage(GeneralMethods.format("&a" + GeneralMethods.padCenter("", '-', 34)));
 	}
 
 	@Override

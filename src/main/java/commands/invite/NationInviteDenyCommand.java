@@ -19,10 +19,10 @@ import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 
-public class NationInviteDeny extends ChildCommand{
+public class NationInviteDenyCommand extends ChildCommand{
 	private Main main;
 	private ParentCommand parent;
-	public NationInviteDeny(ParentCommand parent) {
+	public NationInviteDenyCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

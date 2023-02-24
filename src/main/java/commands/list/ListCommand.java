@@ -22,16 +22,18 @@ public class ListCommand extends ChildCommand{
 	private Main main;
 	private int listSize = 10;
 	private int pageAmount;
-	private List<NationMapping> nations;
 	public ListCommand(ParentCommand parent) {
 		this.parent = parent;
 		this.main = (Main) parent.getMain();
-		
+	}
+	
+	@Override
+	public void perform(CommandSender sender, String[] args) {
 		MappingRepository mappingRepo = main.getMappingRepo();
-		nations = mappingRepo.getNations().stream().sorted(new Comparator<NationMapping>() {
+		List<NationMapping> nations = mappingRepo.getNations().stream().sorted(new Comparator<NationMapping>() {
 			@Override
 			public int compare(NationMapping o1, NationMapping o2) {
-				return Integer.compare(o1.countKillPoints(), o2.countKillPoints());
+				return Integer.compare(o2.countKillPoints(), o1.countKillPoints());
 			}
 			
 		}).toList();
@@ -42,15 +44,12 @@ public class ListCommand extends ChildCommand{
 		else {
 			pageAmount = (nations.size() / listSize);
 		}
+		
+		if(args.length <= 1) generateList(sender, nations, 1);
+		else if(GeneralMethods.isInteger(args[1])) generateList(sender, nations, Integer.parseInt(args[1]));
 	}
 	
-	@Override
-	public void perform(CommandSender sender, String[] args) {
-		if(args.length <= 1) generateList(sender, 1);
-		else if(GeneralMethods.isInteger(args[1])) generateList(sender, Integer.parseInt(args[1]));
-	}
-	
-	private void generateList(CommandSender sender, int page) {
+	private void generateList(CommandSender sender, List<NationMapping> nations, int page) {
 		FileConfiguration language = main.getLanguage();
 		if(page > pageAmount) {
 			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.List.EndOfList.Message"), page+""));

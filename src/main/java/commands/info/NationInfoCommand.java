@@ -12,32 +12,35 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class NationInfo extends ChildCommand{
+public class NationInfoCommand extends ChildCommand{
 	private final Main main;
 	private ParentCommand parent;
-	public NationInfo(ParentCommand parent) {
+	public NationInfoCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
 
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		FileConfiguration lang = main.getLanguage();
+		FileConfiguration language = main.getLanguage();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		
-		main.getCommandManager().setLastArg(sender.getName(), args.length < 2 ? "" : args[1]);
+		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
 		
 		if(args.length == 1) {
-			if(!(sender instanceof OfflinePlayer)) return;
+			if(!(sender instanceof OfflinePlayer)) {
+				sender.sendMessage(GeneralMethods.format(language.getString("Command.Error.ByConsole.Message")));
+				return;
+			}
 			
 			String nation = "";
 			NationMapping nationMap = mappingRepo
@@ -46,13 +49,13 @@ public class NationInfo extends ChildCommand{
 					.getUniqueId()));
 			nation = nationMap == null ? null : nationMap.getName();
 			if(nation != null) giveInfo(sender, nation);
-			else sender.sendMessage(GeneralMethods.format(sender, lang.getString("Command.Player.NotInNation.Message"), ""));
+			else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
 			return;
 		}
 		
 		if(args.length > 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format(sender, lang.getString("Command.Error.SpecialCharacters.Message"), args[1]);
-		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format(sender, lang.getString("Command.Nations.NotExist.Message"), args[1]));
+		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format(sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
+		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
 		else giveInfo(sender, args[1]);
 		
 	}
@@ -81,17 +84,24 @@ public class NationInfo extends ChildCommand{
 	@Override
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
-		NationMapping pNation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(uuid));
+		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(uuid);
+		NationMapping pNation = playerMap != null ? mappingRepo.getNationByID(playerMap.getNationID()) : null;
+		List<String> nations;
 		
-		if(pNation != null) return mappingRepo.getNations().stream()
-									.filter(el -> el.getNationID() != pNation.getNationID())
-									.map(el -> el.getName())
-									.collect(Collectors.toList())
-									.toArray(new String[mappingRepo.getNations().size()-1]);
-		else return mappingRepo.getNations().stream()
-				.map(el -> el.getName())
-				.collect(Collectors.toList())
-				.toArray(new String[mappingRepo.getNations().size()]);
+		if(pNation != null) {
+			nations = mappingRepo.getNations().stream()
+					.filter(el -> el.getNationID() != pNation.getNationID())
+					.map(NationMapping::getName)
+					.collect(Collectors.toList());
+			
+			return nations.toArray(new String[nations.size()]);
+		}					
+		else {
+			nations = mappingRepo.getNations().stream()
+					.map(NationMapping::getName)
+					.collect(Collectors.toList());
+			return nations.toArray(new String[nations.size()]);
+		}
 	}
 
 	@Override

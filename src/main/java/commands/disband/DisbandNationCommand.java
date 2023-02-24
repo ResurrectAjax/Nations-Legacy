@@ -17,11 +17,11 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class DisbandNation extends ChildCommand{
+public class DisbandNationCommand extends ChildCommand{
 
 	protected Main main;
 	private ParentCommand parent;
-	public DisbandNation(ParentCommand parent) {
+	public DisbandNationCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

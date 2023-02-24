@@ -55,7 +55,7 @@ public class AllyRemove extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping player = mappingRepo.getPlayerByUUID(uuid);
 		
-		if(player.getNationID() == null) return null;
+		if(player == null || player.getNationID() == null) return null;
 		
 		Set<String> nations = mappingRepo.getAllianceNationsByNationID(player.getNationID()).stream().map(el -> el.getName()).collect(Collectors.toSet());
 		return nations.toArray(new String[nations.size()]);

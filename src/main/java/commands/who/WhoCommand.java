@@ -17,11 +17,11 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class Who extends ChildCommand{
+public class WhoCommand extends ChildCommand{
 
 	private final Main main;
 	private ParentCommand parent;
-	public Who(ParentCommand parent) {
+	public WhoCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

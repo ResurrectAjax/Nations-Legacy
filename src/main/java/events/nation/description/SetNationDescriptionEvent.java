@@ -1,5 +1,6 @@
 package events.nation.description;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -11,19 +12,25 @@ import persistency.NationMapping;
 public class SetNationDescriptionEvent extends NationEvent{
 	private String description;
 	
-	public SetNationDescriptionEvent(NationMapping nation, CommandSender sender, String description) {
+	public SetNationDescriptionEvent(NationMapping nation, CommandSender sender, String descriptionA) {
 		super(nation, sender);
-		setDescription(description);
+		setDescription(descriptionA);
 		
-		if(super.isCancelled) return;
-		
-		FileConfiguration language = Main.getInstance().getLanguage();
-		
-		if(description.isBlank()) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Remove.Message"), nation.getDescription()));
-		else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Set.Message"), description));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 			
-		nation.setDescription(description);
-		nation.update();
+			@Override
+			public void run() {
+				if(isCancelled) return;
+				
+				FileConfiguration language = Main.getInstance().getLanguage();
+				
+				if(description.isBlank()) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Remove.Message"), nation.getDescription()));
+				else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Set.Message"), description));
+					
+				nation.setDescription(description);
+				nation.update();
+			}
+		}, 1L);
 	}
 
 	public String getDescription() {

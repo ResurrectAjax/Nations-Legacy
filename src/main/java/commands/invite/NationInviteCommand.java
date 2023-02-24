@@ -21,10 +21,10 @@ import persistency.NationMapping;
 import persistency.PlayerMapping;
 
 //CHANGE THE MESSAGES, DO SHIT
-public class NationInvite extends ChildCommand{
+public class NationInviteCommand extends ChildCommand{
 	private Main main;
 	private ParentCommand parent;
-	public NationInvite(ParentCommand parent) {
+	public NationInviteCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}

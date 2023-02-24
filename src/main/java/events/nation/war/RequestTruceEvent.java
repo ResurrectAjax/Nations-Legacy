@@ -26,56 +26,63 @@ public class RequestTruceEvent extends NationEvent{
 	public RequestTruceEvent(NationMapping nation, NationMapping enemy, WarCommand warCommand, CommandSender sender) {
 		super(nation, sender);
 		this.receiverNation = enemy;
-
-		if(super.isCancelled) return;
 		
 		Main main = Main.getInstance();
-		Player player = (Player) sender;
 		
-		FileConfiguration language = main.getLanguage();
-		if(warCommand.getTruceRequests().containsKey(enemy.getNationID()) && warCommand.getTruceRequests().get(enemy.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.AlreadySent.Message"), enemy.getName()));
-		else {
-			warCommand.addTruceRequest(enemy.getNationID(), nation.getNationID());
+		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
 			
-			TextComponent accept = GeneralMethods.createHoverText("Accept", "Click to accept", "/nations war accept " + nation.getName(), ChatColor.GREEN), 
-					deny = GeneralMethods.createHoverText("Deny", "Click to deny", "/nations war deny " + nation.getName(), ChatColor.RED), 
-					cancel = GeneralMethods.createHoverText("Cancel", "Click to cancel", "/nations war cancelrequest " + enemy.getName(), ChatColor.RED);
-			
-			TextComponent text = new TextComponent(GeneralMethods.format((OfflinePlayer)player, language.getString("Command.Nations.War.Truce.Receive.RequestReceived.Message"), nation.getName()));
-			text.addExtra(accept);
-			text.addExtra(" | ");
-			text.addExtra(deny);
-			
-			TextComponent senderText = new TextComponent(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.RequestSent.Message"), enemy.getName()));
-			senderText.addExtra(cancel);
-			
-			for(PlayerMapping playerMap : nation.getLeaders()) {
-				Player senderPlay = Bukkit.getPlayer(playerMap.getUUID());
-				senderPlay.spigot().sendMessage(senderText);
-			}
-			
-			for(PlayerMapping playerMap : enemy.getLeaders()) {
-				Player receiverPlay = Bukkit.getPlayer(playerMap.getUUID());
-				if(receiverPlay == null) continue;
+			@Override
+			public void run() {
+				if(isCancelled) return;
 				
-				main.getCommandManager().setLastArg(sender.getName(), enemy.getName().toLowerCase());
-				receiverPlay.spigot().sendMessage(text);
+				Player player = (Player) sender;
+				
+				FileConfiguration language = main.getLanguage();
+				if(warCommand.getTruceRequests().containsKey(enemy.getNationID()) && warCommand.getTruceRequests().get(enemy.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.AlreadySent.Message"), enemy.getName()));
+				else {
+					warCommand.addTruceRequest(enemy.getNationID(), nation.getNationID());
+					
+					TextComponent accept = GeneralMethods.createHoverText("Accept", "Click to accept", "/nations war accept " + nation.getName(), ChatColor.GREEN), 
+							deny = GeneralMethods.createHoverText("Deny", "Click to deny", "/nations war deny " + nation.getName(), ChatColor.RED), 
+							cancel = GeneralMethods.createHoverText("Cancel", "Click to cancel", "/nations war cancelrequest " + enemy.getName(), ChatColor.RED);
+					
+					TextComponent text = new TextComponent(GeneralMethods.format((OfflinePlayer)player, language.getString("Command.Nations.War.Truce.Receive.RequestReceived.Message"), nation.getName()));
+					text.addExtra(accept);
+					text.addExtra(" | ");
+					text.addExtra(deny);
+					
+					TextComponent senderText = new TextComponent(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.RequestSent.Message"), enemy.getName()));
+					senderText.addExtra(cancel);
+					
+					for(PlayerMapping playerMap : nation.getLeaders()) {
+						Player senderPlay = Bukkit.getPlayer(playerMap.getUUID());
+						senderPlay.spigot().sendMessage(senderText);
+					}
+					
+					for(PlayerMapping playerMap : enemy.getLeaders()) {
+						Player receiverPlay = Bukkit.getPlayer(playerMap.getUUID());
+						if(receiverPlay == null) continue;
+						
+						main.getCommandManager().setLastArg(sender.getName(), enemy.getName().toLowerCase());
+						receiverPlay.spigot().sendMessage(text);
+					}
+					
+					//create runnable that runs code after 5min
+					new BukkitRunnable() {
+					    public void run() {
+					    	//if player hasn't accepted, expire the invite
+					    	HashMap<Integer, Set<Integer>> allianceRequests = warCommand.getTruceRequests();
+					        if(!allianceRequests.containsKey(enemy.getNationID()) || !allianceRequests.get(enemy.getNationID()).contains(nation.getNationID())) return;
+					        for(PlayerMapping players : nation.getLeaders()) {
+					        	Player play = Bukkit.getPlayer(players.getUUID());
+					        	play.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.Expired.Message"), play.getName()));	
+					        }
+					        warCommand.removeTruceRequest(enemy.getNationID(), nation.getNationID());
+					    }
+					}.runTaskLater(main, 20*60);	
+				}
 			}
-			
-			//create runnable that runs code after 5min
-			new BukkitRunnable() {
-			    public void run() {
-			    	//if player hasn't accepted, expire the invite
-			    	HashMap<Integer, Set<Integer>> allianceRequests = warCommand.getTruceRequests();
-			        if(!allianceRequests.containsKey(enemy.getNationID()) || !allianceRequests.get(enemy.getNationID()).contains(nation.getNationID())) return;
-			        for(PlayerMapping players : nation.getLeaders()) {
-			        	Player play = Bukkit.getPlayer(players.getUUID());
-			        	play.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.Expired.Message"), play.getName()));	
-			        }
-			        warCommand.removeTruceRequest(enemy.getNationID(), nation.getNationID());
-			    }
-			}.runTaskLater(main, 20*60);	
-		}
+		}, 1L);
 	}
 	
 	public NationMapping getReceiverNation() {

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 
 import enumeration.Flag;
 import enumeration.Rank;
@@ -20,6 +21,7 @@ public class NationMapping {
 	private int nationID;
 	private int maxChunks;
 	private String name, description = "";
+	private HashMap<String, Location> homes = new HashMap<>();
 	private Set<PlayerMapping> leaders = new HashSet<PlayerMapping>();
 	private Set<PlayerMapping> officers = new HashSet<PlayerMapping>();
 	private Set<PlayerMapping> members = new HashSet<PlayerMapping>();
@@ -40,7 +42,7 @@ public class NationMapping {
 	
 	
 	
-	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> leaders, Collection<PlayerMapping> officers, Collection<PlayerMapping> members, Collection<Chunk> claimedChunks, Collection<Flag> flags, Database db) {
+	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> leaders, Collection<PlayerMapping> officers, Collection<PlayerMapping> members, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
 		this.nationID = nationID;
@@ -51,6 +53,7 @@ public class NationMapping {
 		addMembers(members);
 		addClaimedChunks(claimedChunks);
 		addFlags(flags);
+		this.homes.putAll(homes);
 	}
 	
 	
@@ -282,6 +285,26 @@ public class NationMapping {
 		return true;
 	}
 	
+	public void setHome(Location home) {
+		homes.put("home", home);
+		db.insertHome(nationID, "home", home);
+	}
+	public void setHome(String name, Location home) {
+		homes.put(name, home);
+		db.insertHome(nationID, name, home);
+	}
+	
+	public void deleteHome(String name) {
+		homes.remove(name);
+		db.deleteHome(nationID, name);
+	}
+	
+	public HashMap<String, Location> getHomes() {
+		return homes;
+	}
+
+
+
 	public void update() {
 		db.updateNation(this);
 	}

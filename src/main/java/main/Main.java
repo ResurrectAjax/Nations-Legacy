@@ -41,6 +41,8 @@ public class Main extends AjaxPlugin{
  			"%nations_remaining_chunkamount%",
  			"%rel_nations_syntax%",
  			"%rel_nations_nation_name%",
+ 			"%rel_nations_nation1_name%",
+ 			"%rel_nations_nation2_name%",
  			"%rel_nations_enemy_nation%"
 			));
 	

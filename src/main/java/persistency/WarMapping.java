@@ -31,7 +31,10 @@ public class WarMapping {
 	private int calculateGoal(NationMapping nation, NationMapping enemy) {
 		int goal = 0;
 		
-		goal += nation.getAllMembers().size() + enemy.getAllMembers().size();
+		int leaderPoints = (nation.getLeaders().size() * 3) + (enemy.getLeaders().size() * 3);
+		int officerPoints = (nation.getOfficers().size() * 2) + (enemy.getOfficers().size() * 2);
+		int memberPoints = (nation.getMembers().size() * 1) + (enemy.getMembers().size() * 1);
+		goal += leaderPoints + officerPoints + memberPoints;
 		goal *= 2;
 		
 		return goal;

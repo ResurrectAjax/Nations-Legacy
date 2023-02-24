@@ -8,19 +8,20 @@ import org.bukkit.entity.Player;
 
 import commands.admin.AdminCommands;
 import commands.alliance.AllyCommand;
-import commands.claim.ClaimChunk;
-import commands.claim.UnclaimChunk;
-import commands.create.CreateNation;
+import commands.claim.ClaimChunkCommand;
+import commands.claim.UnclaimChunkCommand;
+import commands.create.CreateNationCommand;
 import commands.description.DescriptionCommand;
-import commands.disband.DisbandNation;
-import commands.info.NationInfo;
-import commands.invite.NationInvite;
-import commands.invite.NationInviteAccept;
-import commands.invite.NationInviteDeny;
+import commands.disband.DisbandNationCommand;
+import commands.home.SetHomeCommand;
+import commands.info.NationInfoCommand;
+import commands.invite.NationInviteCommand;
+import commands.invite.NationInviteAcceptCommand;
+import commands.invite.NationInviteDenyCommand;
 import commands.list.ListCommand;
-import commands.map.Map;
+import commands.map.MapCommand;
 import commands.war.WarCommand;
-import commands.who.Who;
+import commands.who.WhoCommand;
 import general.GeneralMethods;
 import main.Main;
 import me.resurrectajax.ajaxplugin.commands.MainCommand;
@@ -33,22 +34,23 @@ public class NationsCommand extends MainCommand{
 		super.setName("nations");
 		
 		super.setSubCommands(Arrays.asList(
-				new CreateNation(this),
-				new NationInfo(this),
-				new Who(this),
-				new DisbandNation(this),
-				new AdminCommands(this),
 				new HelpCommand(this),
-				new ClaimChunk(this),
-				new UnclaimChunk(this),
+				new AdminCommands(this),
+				new CreateNationCommand(this),
+				new NationInfoCommand(this),
+				new WhoCommand(this),
+				new DisbandNationCommand(this),
+				new ClaimChunkCommand(this),
+				new UnclaimChunkCommand(this),
 				new DescriptionCommand(this),
-				new NationInvite(this),
-				new NationInviteAccept(this),
-				new NationInviteDeny(this),
-				new Map(this),
+				new NationInviteCommand(this),
+				new NationInviteAcceptCommand(this),
+				new NationInviteDenyCommand(this),
+				new MapCommand(this),
 				new AllyCommand(this),
 				new WarCommand(this),
-				new ListCommand(this)
+				new ListCommand(this),
+				new SetHomeCommand(this)
 				));
 	}
 

@@ -1,8 +1,8 @@
 package commands.admin;
 import java.util.Arrays;
 
-import commands.admin.disband.DisbandNation;
-import commands.admin.reload.Reload;
+import commands.admin.disband.DisbandNationCommand;
+import commands.admin.reload.ReloadCommand;
 import me.resurrectajax.ajaxplugin.commands.AdminCommand;
 import me.resurrectajax.ajaxplugin.help.HelpCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
@@ -14,9 +14,9 @@ public class AdminCommands extends AdminCommand{
 		super.setPluginName("nations");
 		
 		super.setSubcommands(Arrays.asList(
-				new DisbandNation(this),
+				new DisbandNationCommand(this),
 				new HelpCommand(this),
-				new Reload(this)
+				new ReloadCommand(this)
 				));
 	}
 

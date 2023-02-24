@@ -15,11 +15,11 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 
-public class CreateNation extends ChildCommand{
+public class CreateNationCommand extends ChildCommand{
 
 	private ParentCommand parent;
 	private Main main;
-	public CreateNation(ParentCommand parent) {
+	public CreateNationCommand(ParentCommand parent) {
 		this.main = (Main) parent.getMain();
 		this.parent = parent;
 	}
