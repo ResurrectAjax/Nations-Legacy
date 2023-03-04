@@ -56,12 +56,12 @@ public class AllyCommand extends ParentCommand{
 	public List<ParentCommand> getSubCommands() {
 		// TODO Auto-generated method stub
 		return Arrays.asList(
+				new HelpCommand(this),
 				new AllyAdd(this),
 				new AllyAccept(this),
 				new AllyDeny(this),
 				new AllyCancel(this),
-				new AllyRemove(this),
-				new HelpCommand(this)
+				new AllyRemove(this)
 				);
 	}
 

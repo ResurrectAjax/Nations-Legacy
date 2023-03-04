@@ -16,7 +16,7 @@ public class DeleteHomeEvent extends NationEvent{
 	public DeleteHomeEvent(NationMapping nation, CommandSender sender, String name) {
 		super(nation, sender);
 		
-		if(name != null && !name.isBlank() && !name.isBlank()) this.nationHome = name;
+		if(name != null && !name.isEmpty() && !name.isBlank()) this.nationHome = name;
 		else this.nationHome = "home";
 		
 		Main main = Main.getInstance();

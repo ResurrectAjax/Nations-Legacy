@@ -29,6 +29,7 @@ public class ListCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
+		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		List<NationMapping> nations = mappingRepo.getNations().stream().sorted(new Comparator<NationMapping>() {
 			@Override

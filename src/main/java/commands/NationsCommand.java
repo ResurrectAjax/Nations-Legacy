@@ -13,6 +13,8 @@ import commands.claim.UnclaimChunkCommand;
 import commands.create.CreateNationCommand;
 import commands.description.DescriptionCommand;
 import commands.disband.DisbandNationCommand;
+import commands.home.DeleteHomeCommand;
+import commands.home.HomeCommand;
 import commands.home.SetHomeCommand;
 import commands.info.NationInfoCommand;
 import commands.invite.NationInviteCommand;
@@ -50,7 +52,9 @@ public class NationsCommand extends MainCommand{
 				new AllyCommand(this),
 				new WarCommand(this),
 				new ListCommand(this),
-				new SetHomeCommand(this)
+				new SetHomeCommand(this),
+				new DeleteHomeCommand(this),
+				new HomeCommand(this)
 				));
 	}
 
@@ -65,7 +69,7 @@ public class NationsCommand extends MainCommand{
 		default:
 			AjaxPlugin main = AjaxPlugin.getInstance();
 			ParentCommand mainCommand = main.getCommandManager().getMainCommand();
-			new HelpCommand(mainCommand).createList(sender, mainCommand, 1);
+			new HelpCommand(mainCommand).sendList(sender, mainCommand, 1);
 			break;
 		}
 	}

@@ -11,7 +11,9 @@ Nations:
       Chunks: 5
   Home:
     #MaxHomes: Maximum amount of homes per nation
+    #Delay: Dalay in seconds before player gets teleported
     MaxHomes: 1
+    Delay: 5s
 Wilderness:
   Name: "&2&lWilderness"
   Description: "It's dangerous to go alone"

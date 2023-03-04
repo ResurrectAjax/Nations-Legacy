@@ -66,6 +66,7 @@ public class NationInfoCommand extends ChildCommand{
 		
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));
+		sender.sendMessage(GeneralMethods.format("  &bKill Points: &c" + nationMap.countKillPoints() + "p"));
 		sender.sendMessage(GeneralMethods.format("  &bDescription: &f" + nationMap.getDescription()));
 		sender.sendMessage(GeneralMethods.format("  &bLeaders: &a" + givePlayerList(nationMap.getLeaders())));
 		sender.sendMessage(GeneralMethods.format("  &bOfficers: &a" + givePlayerList(nationMap.getOfficers())));

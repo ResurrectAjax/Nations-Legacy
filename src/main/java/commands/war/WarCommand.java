@@ -57,13 +57,13 @@ public class WarCommand extends ParentCommand{
 	@Override
 	public List<ParentCommand> getSubCommands() {
 		return Arrays.asList(
+				new HelpCommand(this),
 				new WarAdd(this),
 				new WarTruce(this),
 				new TruceAccept(this),
 				new TruceDeny(this),
 				new TruceCancel(this),
-				new WarInfoCommand(this),
-				new HelpCommand(this)
+				new WarInfoCommand(this)
 				);
 	}
 

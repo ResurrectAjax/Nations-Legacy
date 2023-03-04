@@ -24,7 +24,12 @@ Command:
         Delete:
           Message: '&bNations-Legacy &8: &eHome &a&l%nations_player_argument%&e has been deleted.' 
         NotFound:
-          Message: '&bNations-Legacy &8: &eHome &a&l%nations_player_argument%&e was not found.' 
+          Message: '&bNations-Legacy &8: &eHome &a&l%nations_player_argument%&e was not found.'
+      Home:
+        Teleporting:
+          Message: '&bNations-Legacy &8: &eTeleporting to &a&l%nations_player_argument%&e in &c5 seconds&e, don''t move.'
+        Cancelled:
+          Message: '&bNations-Legacy &8: &eTeleport cancelled, you moved.'
     List:
       EndOfList:
         Message: '&bNations-Legacy &8: &eThis is the end of the list.' 

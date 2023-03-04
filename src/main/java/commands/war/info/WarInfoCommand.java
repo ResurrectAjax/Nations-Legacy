@@ -81,8 +81,8 @@ public class WarInfoCommand extends ChildCommand{
 		sender.sendMessage(GeneralMethods.format(String.format("&bNations: &c%s, %s", war.getNation().getName(), war.getEnemy().getName())));
 		sender.sendMessage(GeneralMethods.format(String.format("&bGoal: &c%dp", war.getKillpointGoal())));
 		sender.sendMessage(GeneralMethods.format("&bKill Points:"));
-		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getNation().getName(), war.getNation().countKillPoints())));
-		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getEnemy().getName(), war.getEnemy().countKillPoints())));
+		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getNation().getName(), war.getNationKillpoints())));
+		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getEnemy().getName(), war.getEnemyKillpoints())));
 		sender.sendMessage(GeneralMethods.format("&7Nationless/Member = 1p; Officer = 2p; Leader = 3p"));
 		sender.sendMessage(GeneralMethods.format("&a" + GeneralMethods.padCenter("", '-', 34)));
 	}
