@@ -41,7 +41,7 @@ public class InviteToNationEvent extends NationEvent{
 				FileConfiguration language = main.getLanguage();
 				MappingRepository mappingRepo = main.getMappingRepo();
 				HashMap<UUID, Set<Integer>> playerInvites = mappingRepo.getPlayerInvites();
-				if(playerInvites.containsKey(receiver.getUUID()) && playerInvites.get(receiver.getUUID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Send.AlreadySent.Message"), Bukkit.getPlayer(receiver.getUUID()).getName()));
+				if(playerInvites.containsKey(receiver.getUUID()) && playerInvites.get(receiver.getUUID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Send.AlreadySent.Message"), Bukkit.getPlayer(receiver.getUUID()).getName()));
 				else {
 					Player receiverPlay = Bukkit.getPlayer(receiver.getUUID());
 					mappingRepo.addPlayerInvite(nation.getNationID(), receiver.getUUID());
@@ -59,7 +59,7 @@ public class InviteToNationEvent extends NationEvent{
 					
 					receiverPlay.spigot().sendMessage(text);
 					
-					text = new TextComponent(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Send.InviteSent.Message"), receiverPlay.getName()));
+					text = new TextComponent(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Send.InviteSent.Message"), receiverPlay.getName()));
 					text.addExtra(cancel);
 					
 					player.spigot().sendMessage(text);
@@ -70,7 +70,7 @@ public class InviteToNationEvent extends NationEvent{
 					    	//if player hasn't accepted, expire the invite
 					    	HashMap<UUID, Set<Integer>> partyInvites = mappingRepo.getPlayerInvites();
 					        if(!partyInvites.containsKey(receiver.getUUID()) || !partyInvites.get(receiver.getUUID()).contains(nation.getNationID())) return;
-					        player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Send.Expired.Message"), player.getName()));
+					        player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Send.Expired.Message"), player.getName()));
 					        mappingRepo.removePlayerInvite(nation.getNationID(), receiver.getUUID());
 					    }
 					}.runTaskTimer(main, 20*300, 20*300);

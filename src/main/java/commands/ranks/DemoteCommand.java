@@ -36,11 +36,11 @@ public class DemoteCommand extends ChildCommand{
 		
 		if(args.length != 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		if(!(sender instanceof Player)) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Error.ByConsole.Message"), args[1]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.ByConsole.Message"), args[1]));
 			return;
 		}
 		if(Bukkit.getPlayer(args[1]) == null) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotExist.Message"), args[1]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotExist.Message"), args[1]));
 			return;
 		}
 		
@@ -49,17 +49,17 @@ public class DemoteCommand extends ChildCommand{
 		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(player.getUUID());
 		
 		if(demoter.getNationID() == null) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), args[1]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[1]));
 			return;
 		}
 		NationMapping nation = mappingRepo.getNationByID(demoter.getNationID());
 		
 		if(player.getNationID() != demoter.getNationID()) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInSameNation.Message"), args[1]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInSameNation.Message"), args[1]));
 			return;
 		}
 		if(!demoter.getRank().equals(Rank.Leader)) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeader.Message"), args[1]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), args[1]));
 			return;
 		}
 		if(player.getRank().equals(Rank.Leader) || player.getRank().equals(Rank.Member)) {

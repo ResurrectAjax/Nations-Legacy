@@ -1,6 +1,7 @@
 package events.nation.home;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -28,7 +29,7 @@ public class DeleteHomeEvent extends NationEvent{
 				
 				nation.deleteHome(nationHome);
 				FileConfiguration language = main.getLanguage();
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Home.DelHome.Delete.Message"), nation.getName()));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.DelHome.Delete.Message"), nation.getName()));
 			}
 		}, 1L);
 	}

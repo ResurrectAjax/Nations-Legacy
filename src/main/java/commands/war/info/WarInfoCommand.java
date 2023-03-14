@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public class WarInfoCommand extends ChildCommand{
 		switch(args.length) {
 			case 3:
 				if(!(sender instanceof Player)) {
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Error.ByConsole.Message"), args[2]));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.ByConsole.Message"), args[2]));
 					return;
 				}
 				
@@ -62,18 +63,18 @@ public class WarInfoCommand extends ChildCommand{
 		}
 		if(nation == null) {
 			super.beforePerform(sender, args[2]);
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
 			return;
 		}
 		if(enemy == null && args.length == 4) {
 			super.beforePerform(sender, args[3]);
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[3]));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[3]));
 			return;
 		}
 		WarMapping war = mappingRepo.getWarByNationIDs(nation.getNationID(), enemy.getNationID());
 		if(war != null) createInfo(sender, war);
-		else if(args.length == 3) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.NotAtWar.Message"), args[2]));
-		else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Info.NotAtWar.Message"), args[3]));
+		else if(args.length == 3) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.NotAtWar.Message"), args[2]));
+		else sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Info.NotAtWar.Message"), args[3]));
 	}
 	
 	private void createInfo(CommandSender sender, WarMapping war) {

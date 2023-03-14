@@ -2,6 +2,7 @@ package events.nation.claim;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -34,24 +35,24 @@ public class UnclaimChunkEvent extends NationEvent{
 				
 				if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) {
 					mappingRepo.getClaimingSet().remove(player.getUniqueId());
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), player.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), player.getName()));
 				}
 				
 				if(nation.getClaimedChunks().size() == 1) {
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.UnclaimedChunk.Message"), nation.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.UnclaimedChunk.Message"), nation.getName()));
 					nation.unclaimChunk(chunk);
 					
 					if(!mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
 					mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), nation.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), nation.getName()));
 					
 					PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 					mappingRepo.getNationByPlayer(playerMap).saveChunks();
 					return;
 				}
 				
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.UnclaimedChunk.Message"), nation.getName()));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.UnclaimedChunk.Message"), nation.getName()));
 				nation.unclaimChunk(chunk);
 			}
 		}, 1L);

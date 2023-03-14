@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -39,11 +40,11 @@ public class HomeCommand extends ChildCommand{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		FileConfiguration language = main.getLanguage();
 		
-		if(playerMap == null || playerMap.getNationID() == null) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
+		if(playerMap == null || playerMap.getNationID() == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
 		
 		if(!nation.getHomes().containsKey(home)) {
-			player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Home.DelHome.NotFound.Message"), nation.getName()));
+			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.DelHome.NotFound.Message"), nation.getName()));
 			return;
 		}
 		

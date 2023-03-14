@@ -36,7 +36,7 @@ public class RequestAllianceEvent extends NationEvent{
 			@Override
 			public void run() {
 				FileConfiguration language = main.getLanguage();
-				if(allyCommand.getAllianceRequests().containsKey(receiverNation.getNationID()) && allyCommand.getAllianceRequests().get(receiverNation.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.AlreadySent.Message"), receiverNation.getName()));
+				if(allyCommand.getAllianceRequests().containsKey(receiverNation.getNationID()) && allyCommand.getAllianceRequests().get(receiverNation.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.AlreadySent.Message"), receiverNation.getName()));
 				else {
 					allyCommand.addAllianceRequest(receiverNation.getNationID(), nation.getNationID());
 					
@@ -49,7 +49,7 @@ public class RequestAllianceEvent extends NationEvent{
 					text.addExtra(" | ");
 					text.addExtra(deny);
 					
-					TextComponent senderText = new TextComponent(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.RequestSent.Message"), receiverNation.getName()));
+					TextComponent senderText = new TextComponent(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.RequestSent.Message"), receiverNation.getName()));
 					senderText.addExtra(cancel);
 					
 					for(PlayerMapping playerMap : nation.getLeaders()) {
@@ -73,7 +73,7 @@ public class RequestAllianceEvent extends NationEvent{
 					        if(!allianceRequests.containsKey(receiverNation.getNationID()) || !allianceRequests.get(receiverNation.getNationID()).contains(nation.getNationID())) return;
 					        for(PlayerMapping players : nation.getLeaders()) {
 					        	Player play = Bukkit.getPlayer(players.getUUID());
-					        	play.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.Expired.Message"), play.getName()));	
+					        	play.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.Expired.Message"), play.getName()));	
 					        }
 					        allyCommand.removeAllianceRequest(receiverNation.getNationID(), nation.getNationID());
 					    }

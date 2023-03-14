@@ -40,13 +40,13 @@ public class NationInviteDenyCommand extends ChildCommand{
 		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 
 				nation == null || 
-				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
+				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
 		else {
 			mappingRepo.removePlayerInvite(nation.getNationID(), player.getUniqueId());
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))
 				.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Denied.Message"), nation.getName())));
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.DeniedNation.Message"), nation.getName()));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.DeniedNation.Message"), nation.getName()));
 		}
 	}
 

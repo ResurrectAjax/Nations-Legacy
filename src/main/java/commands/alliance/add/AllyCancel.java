@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -37,13 +38,13 @@ public class AllyCancel extends ChildCommand{
 		super.beforePerform(sender, args.length < 3 ? "" : args[2]);
 
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(senderNation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
+		else if(senderNation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
 		else if(nation == null ||
 				!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) ||  
-				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[2]));
+				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[2]));
 		else {
 			allyCommand.removeAllianceRequest(nation.getNationID(), senderNation.getNationID());
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Alliance.Add.Send.CancelRequest.Message"), nation.getName()));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.CancelRequest.Message"), nation.getName()));
 		}
 	}
 

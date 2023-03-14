@@ -49,13 +49,13 @@ public class NationInfoCommand extends ChildCommand{
 					.getUniqueId()));
 			nation = nationMap == null ? null : nationMap.getName();
 			if(nation != null) giveInfo(sender, nation);
-			else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
+			else sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
 			return;
 		}
 		
 		if(args.length > 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format(sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
-		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
+		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
+		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
 		else giveInfo(sender, args[1]);
 		
 	}

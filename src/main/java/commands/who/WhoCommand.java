@@ -36,7 +36,7 @@ public class WhoCommand extends ChildCommand{
 		
 		PlayerMapping playerMap = mappingRepo.getPlayerByName(args.length < 2 ? sender.getName() : name);
 		if(args.length < 2 && sender instanceof OfflinePlayer) getInfo(sender, playerMap);
-		else if(playerMap == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotExist.Message"), name));
+		else if(playerMap == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotExist.Message"), name));
 		else getInfo(sender, playerMap);
 	}
 	

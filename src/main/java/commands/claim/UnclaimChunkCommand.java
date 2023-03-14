@@ -41,9 +41,9 @@ public class UnclaimChunkCommand extends ChildCommand{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
-		if(nation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
+		if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
 		else if(args.length < 2 || !Arrays.asList(getArguments(player.getUniqueId())).contains(arg.toLowerCase())) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!playerMap.getRank().equals(Rank.Leader) && !playerMap.getRank().equals(Rank.Officer)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
+		else if(!playerMap.getRank().equals(Rank.Leader) && !playerMap.getRank().equals(Rank.Officer)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
 		else {
 			switch(args[1].toLowerCase()) {
 			case "on":
@@ -60,17 +60,17 @@ public class UnclaimChunkCommand extends ChildCommand{
 					return;
 				}
 				mappingRepo.setIsUnclaiming(player.getUniqueId());
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOn.Message"), args[1]));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOn.Message"), args[1]));
 				break;
 			case "off":
 				if(!mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
 				mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), args[1]));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), args[1]));
 				mappingRepo.getNationByPlayer(playerMap).saveChunks();
 				break;
 			case "all":
 				if(nation.getClaimedChunks().size() == 0) {
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
 					return;
 				}
 				Bukkit.getPluginManager().callEvent(new UnclaimAllChunksEvent(nation, sender));

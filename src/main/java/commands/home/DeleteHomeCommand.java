@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -44,16 +45,16 @@ public class DeleteHomeCommand extends ChildCommand{
 		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
 		if(nation == null) {
-			player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
+			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
 			return;
 		}
 		if(!playerMap.getRank().equals(Rank.Leader)) {
-			player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 			return;
 		}
 		
 		if(!nation.getHomes().containsKey(home)) {
-			player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Home.DelHome.NotFound.Message"), nation.getName()));
+			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.DelHome.NotFound.Message"), nation.getName()));
 			return;
 		}
 		

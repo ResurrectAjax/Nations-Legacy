@@ -38,7 +38,7 @@ public class RequestTruceEvent extends NationEvent{
 				Player player = (Player) sender;
 				
 				FileConfiguration language = main.getLanguage();
-				if(warCommand.getTruceRequests().containsKey(enemy.getNationID()) && warCommand.getTruceRequests().get(enemy.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.AlreadySent.Message"), enemy.getName()));
+				if(warCommand.getTruceRequests().containsKey(enemy.getNationID()) && warCommand.getTruceRequests().get(enemy.getNationID()).contains(nation.getNationID())) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.AlreadySent.Message"), enemy.getName()));
 				else {
 					warCommand.addTruceRequest(enemy.getNationID(), nation.getNationID());
 					
@@ -51,7 +51,7 @@ public class RequestTruceEvent extends NationEvent{
 					text.addExtra(" | ");
 					text.addExtra(deny);
 					
-					TextComponent senderText = new TextComponent(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.RequestSent.Message"), enemy.getName()));
+					TextComponent senderText = new TextComponent(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.RequestSent.Message"), enemy.getName()));
 					senderText.addExtra(cancel);
 					
 					for(PlayerMapping playerMap : nation.getLeaders()) {
@@ -75,7 +75,7 @@ public class RequestTruceEvent extends NationEvent{
 					        if(!allianceRequests.containsKey(enemy.getNationID()) || !allianceRequests.get(enemy.getNationID()).contains(nation.getNationID())) return;
 					        for(PlayerMapping players : nation.getLeaders()) {
 					        	Player play = Bukkit.getPlayer(players.getUUID());
-					        	play.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.Expired.Message"), play.getName()));	
+					        	play.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.Expired.Message"), play.getName()));	
 					        }
 					        warCommand.removeTruceRequest(enemy.getNationID(), nation.getNationID());
 					    }

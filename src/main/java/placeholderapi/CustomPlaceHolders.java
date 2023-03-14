@@ -50,6 +50,8 @@ public class CustomPlaceHolders extends PlaceholderExpansion{
 		
 		NationMapping nation = mappingRepo.getNationByPlayer(play);
 		switch(params) {
+		case "player_name":
+			return player.getName();
 		case "player_argument":
 			return main.getCommandManager().getLastArg(offlinePlayer.getName());
 		case "player_rank":

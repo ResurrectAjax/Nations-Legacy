@@ -1,12 +1,13 @@
 package events.nation.description;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import events.nation.NationEvent;
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import persistency.NationMapping;
 
 public class SetNationDescriptionEvent extends NationEvent{
@@ -24,8 +25,8 @@ public class SetNationDescriptionEvent extends NationEvent{
 				
 				FileConfiguration language = Main.getInstance().getLanguage();
 				
-				if(description.isBlank()) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Remove.Message"), nation.getDescription()));
-				else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Description.Set.Message"), description));
+				if(description.isBlank()) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Description.Remove.Message"), nation.getDescription()));
+				else sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Description.Set.Message"), description));
 					
 				nation.setDescription(description);
 				nation.update();

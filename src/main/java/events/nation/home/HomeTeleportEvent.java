@@ -2,6 +2,7 @@ package events.nation.home;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
@@ -36,7 +37,7 @@ public class HomeTeleportEvent extends NationEvent{
 				if(isCancelled || !(sender instanceof Entity)) return;
 				Entity entity = (Entity) sender;
 				Location startLoc = entity.getLocation().getBlock().getLocation();
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Home.Home.Teleporting.Message"), home));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.Home.Teleporting.Message"), home));
 				
 				task = Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable() {
 					
@@ -47,7 +48,7 @@ public class HomeTeleportEvent extends NationEvent{
 						
 						if(!startLoc.equals(newLoc)) {
 							Bukkit.getScheduler().cancelTask(task);
-							sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Home.Home.Cancelled.Message"), home));
+							sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.Home.Cancelled.Message"), home));
 							return;
 						}
 						if(loops < teleportDelay) return;

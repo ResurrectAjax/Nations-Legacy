@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -53,7 +54,7 @@ public class ListCommand extends ChildCommand{
 	private void generateList(CommandSender sender, List<NationMapping> nations, int page) {
 		FileConfiguration language = main.getLanguage();
 		if(page > pageAmount) {
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.List.EndOfList.Message"), page+""));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.List.EndOfList.Message"), page+""));
 			return;
 		}
 		

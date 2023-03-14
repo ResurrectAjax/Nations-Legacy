@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -37,15 +38,15 @@ public class UnclaimAllChunksEvent extends NationEvent{
 				MappingRepository mappingRepo = main.getMappingRepo();
 				if(mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) {
 					mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), player.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), player.getName()));
 				}
 				
 				if(nation.getClaimedChunks().size() == 0) {
-					sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
 					return;
 				}
 				
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Unclaim.UnclaimedAll.Message"), nation.getName()));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.UnclaimedAll.Message"), nation.getName()));
 				nation.unclaimAll();
 			}
 		}, 0L);

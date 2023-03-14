@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -71,20 +72,20 @@ public class ClaimChunkCommand extends ChildCommand{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
-		if(nation == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotInNation.Message"), ""));
+		if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
 		else if(args.length < 2 || !Arrays.asList(getArguments(player.getUniqueId())).contains(arg.toLowerCase())) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!playerMap.getRank().equals(Rank.Leader) && !playerMap.getRank().equals(Rank.Officer)) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
+		else if(!playerMap.getRank().equals(Rank.Leader) && !playerMap.getRank().equals(Rank.Officer)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
 		else {
 			switch(args[1]) {
 			case "on":
 				if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
 				mappingRepo.setIsClaiming(player.getUniqueId());
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Claim.TurnedOn.Message"), args[1]));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOn.Message"), args[1]));
 				break;
 			case "off":
 				if(!mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
 				mappingRepo.getClaimingSet().remove(player.getUniqueId());
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), args[1]));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), args[1]));
 				mappingRepo.getNationByPlayer(playerMap).saveChunks();
 				break;
 			}

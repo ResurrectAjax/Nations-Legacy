@@ -54,7 +54,7 @@ public class JoinNationEvent extends NationEvent{
 					.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
 					.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Accepted.Message"), nation.getName())));
 				
-				sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
 			}
 		}, 1L);
 	}

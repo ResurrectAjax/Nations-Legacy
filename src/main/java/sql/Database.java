@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import enumeration.Flag;
 import enumeration.Rank;
@@ -113,6 +114,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"`ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
     		"`NationID` int NOT NULL, " +
     		"`Flag` varchar(32) NOT NULL, " +
+    		"`Allow` TINYINT(1) NOT NULL DEFAULT 0," +
     		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
     		"foreign key(Flag) references Flags(Flag) on delete cascade" +
             ");";
@@ -608,10 +610,10 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        Integer nationID = null;
+        FileConfiguration config = Main.getInstance().getConfig();
         
         try {
-        	Integer nationID = null;
-        	
             conn = getSQLConnection();
             ps = conn.prepareStatement("INSERT INTO Nations(Name, Leaders, MaxChunks) values(?,?,?);", Statement.RETURN_GENERATED_KEYS);
             
@@ -640,6 +642,8 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             } catch (SQLException ex) {
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
+            String allow = config.getString("Nations.Flag.FriendlyFire.Default");
+            if(nationID != null) addNationFlag(Flag.FriendlyFire, nationID, allow.equalsIgnoreCase("allow") ? true : false);
         }
         return null;
     }
@@ -1089,16 +1093,17 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         }
     }
     
-    public void addNationFlag(Flag flag, int nationID) {
+    public void addNationFlag(Flag flag, int nationID, boolean allow) {
     	Connection conn = null;
         PreparedStatement ps = null;
         
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("INSERT INTO FlagLines(NationID, Flag) values(?,?);");
+            ps = conn.prepareStatement("INSERT INTO FlagLines(NationID, Flag, Allow) values(?,?,?);");
             
             ps.setInt(1, nationID);
             ps.setString(2, flag.toString());
+            ps.setInt(3, allow ? 1 : 0);
             
             ps.executeUpdate();
             return;
@@ -1116,15 +1121,16 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         }
     }
     
-    public void removeNationFlag(Flag flag, int nationID) {
+    public void updateNationFlag(Flag flag, int nationID, boolean allow) {
     	Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("DELETE FROM FlagLines WHERE NationID = ? AND Flag = ?");
+            ps = conn.prepareStatement("UPDATE FlagLines SET Allow = ? WHERE NationID = ? AND Flag = ?");
             
-            ps.setInt(1, nationID);
-            ps.setString(2, flag.toString());
+            ps.setInt(1, allow ? 1 : 0);
+            ps.setInt(2, nationID);
+            ps.setString(3, flag.toString());
             
             ps.executeUpdate();
             return;
