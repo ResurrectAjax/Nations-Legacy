@@ -52,6 +52,7 @@ public class HomeTeleportEvent extends NationEvent{
 						}
 						if(loops < teleportDelay) return;
 						entity.teleport(homeLocation);
+						Bukkit.getScheduler().cancelTask(task);
 					}
 				}, 0L, 20L);
 			}

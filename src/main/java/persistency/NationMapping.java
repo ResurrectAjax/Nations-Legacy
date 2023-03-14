@@ -215,7 +215,7 @@ public class NationMapping {
 		return new Object[] {false, player.getRank().toString()};
 	}
 	public Object[] promotePlayer(PlayerMapping player) {
-		if(promoteMember(player) || promoteOfficer(player)) return new Object[] {"true", player.getRank()};
+		if(promoteMember(player) || promoteOfficer(player)) return new Object[] {true, player.getRank()};
 		return new Object[] {false, player.getRank()};
 	}
 	

@@ -17,11 +17,12 @@ import commands.home.DeleteHomeCommand;
 import commands.home.HomeCommand;
 import commands.home.SetHomeCommand;
 import commands.info.NationInfoCommand;
-import commands.invite.NationInviteCommand;
 import commands.invite.NationInviteAcceptCommand;
+import commands.invite.NationInviteCommand;
 import commands.invite.NationInviteDenyCommand;
 import commands.list.ListCommand;
 import commands.map.MapCommand;
+import commands.ranks.PromoteCommand;
 import commands.war.WarCommand;
 import commands.who.WhoCommand;
 import general.GeneralMethods;
@@ -54,7 +55,8 @@ public class NationsCommand extends MainCommand{
 				new ListCommand(this),
 				new SetHomeCommand(this),
 				new DeleteHomeCommand(this),
-				new HomeCommand(this)
+				new HomeCommand(this),
+				new PromoteCommand(this)
 				));
 	}
 
