@@ -45,8 +45,8 @@ public class NationInviteDenyCommand extends ChildCommand{
 			mappingRepo.removePlayerInvite(nation.getNationID(), player.getUniqueId());
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))
-				.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Denied.Message"), nation.getName())));
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.DeniedNation.Message"), nation.getName()));
+				.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.Denied.Message"), nation.getName())));
+			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.DeniedNation.Message"), player.getName()));
 		}
 	}
 

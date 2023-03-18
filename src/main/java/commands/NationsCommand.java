@@ -18,10 +18,13 @@ import commands.home.HomeCommand;
 import commands.home.SetHomeCommand;
 import commands.info.NationInfoCommand;
 import commands.invite.NationInviteAcceptCommand;
+import commands.invite.NationInviteCancel;
 import commands.invite.NationInviteCommand;
 import commands.invite.NationInviteDenyCommand;
+import commands.leave.LeaveCommand;
 import commands.list.ListCommand;
 import commands.map.MapCommand;
+import commands.ranks.DemoteCommand;
 import commands.ranks.PromoteCommand;
 import commands.war.WarCommand;
 import commands.who.WhoCommand;
@@ -49,6 +52,7 @@ public class NationsCommand extends MainCommand{
 				new NationInviteCommand(this),
 				new NationInviteAcceptCommand(this),
 				new NationInviteDenyCommand(this),
+				new NationInviteCancel(this),
 				new MapCommand(this),
 				new AllyCommand(this),
 				new WarCommand(this),
@@ -56,7 +60,9 @@ public class NationsCommand extends MainCommand{
 				new SetHomeCommand(this),
 				new DeleteHomeCommand(this),
 				new HomeCommand(this),
-				new PromoteCommand(this)
+				new PromoteCommand(this),
+				new DemoteCommand(this),
+				new LeaveCommand(this)
 				));
 	}
 

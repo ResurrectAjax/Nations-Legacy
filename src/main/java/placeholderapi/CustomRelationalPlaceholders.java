@@ -32,6 +32,8 @@ public class CustomRelationalPlaceholders extends PlaceholderExpansion implement
 			enemy = mappingRepo.getNationByPlayer(playtwo);
 			WarMapping war = mappingRepo.getWarByNationIDs(nation.getNationID(), enemy.getNationID());
 			return war.getNation().getName();
+		case "player2_name":
+			return two.getName();
 		case "player2_rank":
 			return playtwo.getRank().toString();
 		}

@@ -6,16 +6,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import enumeration.Rank;
 import events.nation.NationEvent;
+import events.nation.disband.DisbandNationEvent;
 import general.GeneralMethods;
 import main.Main;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class LeaveEvent extends NationEvent{
+public class LeaveNationEvent extends NationEvent{
 
-	public LeaveEvent(NationMapping nation, CommandSender sender) {
+	public LeaveNationEvent(NationMapping nation, CommandSender sender) {
 		super(nation, sender);
 		
 		Main main = (Main) Main.getInstance();
@@ -37,7 +39,9 @@ public class LeaveEvent extends NationEvent{
 					.map(el -> Bukkit.getPlayer(el.getUUID()))
 					.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Player.Leave.Message"), sender.getName())));
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Leave.Message"), sender.getName()));
-				nation.kickPlayer(playerMap);
+				
+				if(nation.getLeaders().size() == 1 && playerMap.getRank().equals(Rank.Leader)) main.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
+				else nation.kickPlayer(playerMap);
 			}
 		}, 1L);
 	}

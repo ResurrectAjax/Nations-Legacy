@@ -1,5 +1,6 @@
 package persistency;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import enumeration.Rank;
@@ -34,7 +35,7 @@ public class PlayerMapping {
 	public Integer getNationID() {
 		return nationID;
 	}
-	
+
 	public void setNationID(Integer nationID) {
 		this.nationID = nationID;
 	}
@@ -45,10 +46,27 @@ public class PlayerMapping {
 
 	public void setRank(Rank rank) {
 		this.rank = rank;
-	}
+	} 
 	
 	public void update() {
 		db.updatePlayer(this);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(uuid);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlayerMapping other = (PlayerMapping) obj;
+		return Objects.equals(uuid, other.uuid);
 	}
 	
 }

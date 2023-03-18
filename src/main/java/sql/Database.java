@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,10 +75,15 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"`NationID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
     		"`Name` varchar(32) NOT NULL, " + 
     		"`Description` varchar(32), " +
-            "`Leaders` varchar(32) NOT NULL, " +
-            "`Officers` varchar(32), " +
-            "`Members` varchar(32), " +
             "`MaxChunks` int not null" +
+            ");"; 
+    
+    private String SQLiteCreateNationPlayersTable = "CREATE TABLE IF NOT EXISTS Nation_Players (" + 
+    		"`NationID` INTEGER NOT NULL, " +
+    		"`UUID` varchar(36) NOT NULL, " +
+    		"primary key(NationID, UUID), " +
+    		"foreign key(NationID) references Nations(NationID) on delete cascade, " +
+    		"foreign key(UUID) references Players(UUID) on delete cascade" +
             ");"; 
     
     private String SQLiteCreateWarsTable = "CREATE TABLE IF NOT EXISTS Wars (" + 
@@ -154,6 +158,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             s.executeUpdate(SQLiteCreateFlagsTable);
             s.executeUpdate(SQLiteCreateNationsTable);
             s.executeUpdate(SQLiteCreatePlayersTable);
+            s.executeUpdate(SQLiteCreateNationPlayersTable);
             s.executeUpdate(SQLiteCreateAlliancesTable);
             s.executeUpdate(SQLiteCreateWarsTable);
             s.executeUpdate(SQLiteCreateClaimedChunksTable);
@@ -203,22 +208,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         return players;
     }
     
-    private String getStringFromList(Collection<PlayerMapping> playerList) {
-    	return playerList.stream().map(play -> play.getUUID().toString()).collect(Collectors.joining(","));
-    }
-    
-    private Set<PlayerMapping> getPlayerListFromString(String list) {
-    	if(list == null) return new HashSet<PlayerMapping>();
-    	String[] itemSplit = list.split(",");
-    	Set<PlayerMapping> items = new HashSet<PlayerMapping>();
-    	
-    	for(String item : itemSplit) {
-    		if(item.isBlank() || item.isEmpty()) continue;
-    		items.add(mappingRepo.getPlayerByUUID(UUID.fromString(item)));
-    	}
-    	return items;
-    }
-    
     public Set<NationMapping> getAllNations() {
     	Connection conn = null;
         PreparedStatement ps = null;
@@ -231,23 +220,24 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         Set<NationHome> nationHomes = getHomes();
         
         try {
+        	Set<PlayerMapping> players = getAllNationMembers();
+        	
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT * FROM Nations;");
    
             rs = ps.executeQuery();
             while(rs.next()){
-            	int nationID = rs.getInt(1), maxChunks = rs.getInt(7);
+            	int nationID = rs.getInt(1), maxChunks = rs.getInt(4);
             	String name = rs.getString(2), description = rs.getString(3) == null ? "" : rs.getString(3);
             	
-            	Set<PlayerMapping> leaders = getPlayerListFromString(rs.getString(4)), 
-            			officers = getPlayerListFromString(rs.getString(5)), 
-            			members = getPlayerListFromString(rs.getString(6));
             	Set<Chunk> chunks = chunkMap.get(nationID) == null ? new HashSet<Chunk>() : chunkMap.get(nationID);
             	Set<Flag> flags = flagMap.get(nationID) == null ? new HashSet<Flag>() : flagMap.get(nationID);
             	
             	HashMap<String, Location> homes = new HashMap<>(nationHomes.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toMap(NationHome::getName, NationHome::getLocation)));
             	
-            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, leaders, officers, members, chunks, flags, homes, this);
+            	Set<PlayerMapping> nationMembers = players.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toSet());
+            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, nationMembers, chunks, flags, homes, this);
+            	
             	nations.add(nation);
             }
         	return nations;
@@ -264,6 +254,71 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             }
         }
         return nations;
+    }
+    
+    public Set<PlayerMapping> getAllMembersOfNation(int nationID) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        Set<PlayerMapping> players = new HashSet<>();
+        
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT * FROM Nation_Players WHERE NationID = ?;");
+            ps.setInt(1, nationID);
+            
+            rs = ps.executeQuery();
+            while(rs.next()){
+            	PlayerMapping player = mappingRepo.getPlayerByUUID(UUID.fromString(rs.getString("UUID")));
+            	players.add(player);
+            }
+        	return players;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return players;
+    }
+    
+    public Set<PlayerMapping> getAllNationMembers() {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        Set<PlayerMapping> players = new HashSet<>();
+        
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT * FROM Nation_Players;");
+   
+            rs = ps.executeQuery();
+            while(rs.next()){
+            	PlayerMapping player = mappingRepo.getPlayerByUUID(UUID.fromString(rs.getString("UUID")));
+            	players.add(player);
+            }
+        	return players;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return players;
     }
     
     private Set<NationHome> getHomes() {
@@ -581,12 +636,13 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public void updatePlayer(PlayerMapping player) {
     	Connection conn = null;
         PreparedStatement ps = null;
-        try {
+        try { 	
             conn = getSQLConnection();
             ps = conn.prepareStatement("UPDATE Players SET Killpoints = ?, NationID = ?, Rank = ? WHERE UUID = ?");
                      
             ps.setInt(1, player.getKillpoints());
-            ps.setInt(2, player.getNationID()); 
+            if(player.getNationID() == null) ps.setNull(2, java.sql.Types.NULL);
+            else ps.setInt(2, player.getNationID()); 
             ps.setString(3, player.getRank().toString());
             ps.setString(4, player.getUUID().toString());
             
@@ -612,14 +668,14 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         ResultSet rs = null;
         Integer nationID = null;
         FileConfiguration config = Main.getInstance().getConfig();
+        NationMapping nation = null;
         
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("INSERT INTO Nations(Name, Leaders, MaxChunks) values(?,?,?);", Statement.RETURN_GENERATED_KEYS);
+            ps = conn.prepareStatement("INSERT INTO Nations(Name, MaxChunks) values(?,?);", Statement.RETURN_GENERATED_KEYS);
             
             ps.setString(1, name);
-            ps.setString(2, leader.getUUID().toString());
-            ps.setInt(3, maxChunks);
+            ps.setInt(2, maxChunks);
             
             ps.executeUpdate();
             
@@ -628,8 +684,11 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             	nationID = rs.getInt(1);
             	leader.setNationID(nationID);
             	
-            	return new NationMapping(nationID, name, leader, maxChunks, this);
+            	nation = new NationMapping(nationID, name, leader, maxChunks, this);
             }
+            
+            insertPlayerIntoNation(nationID, leader.getUUID());
+            return nation;
             
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -642,32 +701,113 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             } catch (SQLException ex) {
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
-            String allow = config.getString("Nations.Flag.FriendlyFire.Default");
+            String allow = config.getString("Nations.Flags.FriendlyFire.Default");
             if(nationID != null) addNationFlag(Flag.FriendlyFire, nationID, allow.equalsIgnoreCase("allow") ? true : false);
         }
         return null;
+    }
+    
+    public void insertPlayerIntoNation(int nationID, UUID uuid) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("INSERT INTO Nation_Players(NationID, UUID) values(?,?);");
+            
+            ps.setInt(1, nationID);
+            ps.setString(2, uuid.toString());
+            
+            ps.executeUpdate();
+            
+            PlayerMapping player = mappingRepo.getPlayerByUUID(uuid);
+            player.setNationID(nationID);
+        	
+        	player.update();
+            
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+    }
+    
+    public void removePlayerFromNation(UUID uuid) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("DELETE FROM Nation_Players WHERE UUID = ?;");
+            
+            ps.setString(1, uuid.toString());
+            
+            ps.executeUpdate();
+            
+            PlayerMapping player = mappingRepo.getPlayerByUUID(uuid);
+            player.setNationID(null);
+            player.setRank(Rank.Nationless);
+        	
+        	player.update();
+            
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
     }
 
     public void updateNation(NationMapping nation) {
     	Connection conn = null;
         PreparedStatement ps = null;
         try {
+        	Set<PlayerMapping> dbPlayers = getAllMembersOfNation(nation.getNationID());
+        	Set<PlayerMapping> nationPlayers = nation.getAllMembers();
+        	
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, Leaders = ?, Officers = ?, Members = ?, MaxChunks = ? WHERE NationID = ?");
-                     
-            String leaders = getStringFromList(nation.getLeaders()), 
-            		officers = getStringFromList(nation.getOfficers()), 
-            		members = getStringFromList(nation.getMembers());
+            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, MaxChunks = ? WHERE NationID = ?");
             
             ps.setString(1, nation.getName()); 
             ps.setString(2, nation.getDescription());
-            ps.setString(3, leaders);
-            ps.setString(4, officers); 
-            ps.setString(5, members);
-            ps.setInt(6, nation.getMaxChunks());
-            ps.setInt(7, nation.getNationID());
+            ps.setInt(3, nation.getMaxChunks());
+            ps.setInt(4, nation.getNationID());
             
             ps.executeUpdate();
+            ps.close();
+            
+            Set<PlayerMapping> differences = new HashSet<>();
+            if(dbPlayers.size() < nationPlayers.size()) {
+            	differences = nationPlayers.stream()
+            		.filter(el -> !dbPlayers.contains(el))
+            		.collect(Collectors.toSet());
+            	
+            	for(PlayerMapping player : differences) {
+            		insertPlayerIntoNation(nation.getNationID(), player.getUUID());
+            	}
+            }
+            else if(dbPlayers.size() > nationPlayers.size()) {
+            	differences = dbPlayers.stream()
+                		.filter(el -> !nationPlayers.contains(el))
+                		.collect(Collectors.toSet());
+            	for(PlayerMapping player : differences) {
+            		removePlayerFromNation(player.getUUID());
+            	}
+            	
+            }
             return;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -780,15 +920,15 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         try {
             conn = getSQLConnection();
             
-            ps = conn.prepareStatement("DELETE FROM Nations WHERE NationID = ?");
             
-            ps.setInt(1, nationID);
-            
+            ps = conn.prepareStatement("UPDATE Players SET Rank = ? WHERE NationID = ?");
+            ps.setString(1, Rank.Nationless.toString());
+            ps.setInt(2, nationID);
             ps.executeUpdate();
             ps.close();
             
-            ps = conn.prepareStatement("UPDATE Players SET NationID = NULL, Rank = ?");
-            ps.setString(1, Rank.Nationless.toString());
+            ps = conn.prepareStatement("DELETE FROM Nations WHERE NationID = ?");
+            ps.setInt(1, nationID);
             ps.executeUpdate();
             ps.close();
             

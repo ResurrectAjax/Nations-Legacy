@@ -42,15 +42,15 @@ public class NationMapping {
 	
 	
 	
-	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> leaders, Collection<PlayerMapping> officers, Collection<PlayerMapping> members, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
+	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> players, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
 		this.nationID = nationID;
-		setName(name);
-		setDescription(description);
-		addLeaders(leaders);
-		addOfficers(officers);
-		addMembers(members);
+		this.name = name;
+		this.description = description;
+		addLeaders(players.stream().filter(el -> el.getRank().equals(Rank.Leader)).collect(Collectors.toSet()));
+		addOfficers(players.stream().filter(el -> el.getRank().equals(Rank.Officer)).collect(Collectors.toSet()));
+		addMembers(players.stream().filter(el -> el.getRank().equals(Rank.Member)).collect(Collectors.toSet()));
 		addClaimedChunks(claimedChunks);
 		addFlags(flags);
 		this.homes.putAll(homes);
@@ -75,6 +75,7 @@ public class NationMapping {
 	}
 	public void setName(String name) {
 		this.name = name;
+		this.update();
 	}
 	
 	
@@ -87,6 +88,7 @@ public class NationMapping {
 
 	public void setDescription(String description) {
 		this.description = description;
+		this.update();
 	}
 
 
@@ -145,10 +147,10 @@ public class NationMapping {
 		return true;
 	}
 	private boolean promoteOfficer(PlayerMapping officer) {
-		if(!this.members.stream().anyMatch(play -> play.getUUID().equals(officer.getUUID()))) return false;
-		this.members.remove(officer);
-		this.officers.add(officer);
-		officer.setRank(Rank.Officer);
+		if(!this.officers.stream().anyMatch(play -> play.getUUID().equals(officer.getUUID()))) return false;
+		this.officers.remove(officer);
+		this.leaders.add(officer);
+		officer.setRank(Rank.Leader);
 		officer.update();
 		return true;
 	}
@@ -204,10 +206,10 @@ public class NationMapping {
 	
 	
 	public boolean kickPlayer(PlayerMapping player) {
-		if(this.leaders.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) return false;
 		player.setNationID(null);
 		player.setRank(Rank.Nationless);
 		player.update();
+		db.removePlayerFromNation(player.getUUID());
 		return true;
 	}
 	public Object[] demotePlayer(PlayerMapping player) {

@@ -49,10 +49,12 @@ public class JoinNationEvent extends NationEvent{
 				}
 				nation.update();
 				
-				mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
-				Bukkit.getOnlinePlayers().stream()
-					.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
-					.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Player.Invite.Received.Accepted.Message"), nation.getName())));
+				if(mappingRepo.getPlayerInvites().containsKey(player.getUUID()) && mappingRepo.getPlayerInvites().get(player.getUUID()).contains(nation.getNationID())) {
+					mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
+					Bukkit.getOnlinePlayers().stream()
+						.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
+						.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.Accepted.Message"), nation.getName())));	
+				}
 				
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
 			}

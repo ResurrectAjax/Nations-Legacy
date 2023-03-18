@@ -77,9 +77,8 @@ public class DemoteCommand extends ChildCommand{
 		if(playerMap.getNationID() == null || !playerMap.getRank().equals(Rank.Leader)) return null;
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
 		List<String> players = nation.getAllMembers().stream()
-						.filter(el -> el.getRank()
-						.equals(Rank.Officer))
-						.map(el -> Bukkit.getPlayer(uuid).getName())
+						.filter(el -> el.getRank().equals(Rank.Officer))
+						.map(el -> Bukkit.getPlayer(el.getUUID()).getName())
 						.toList();
 		
 		return players.toArray(new String[players.size()]);

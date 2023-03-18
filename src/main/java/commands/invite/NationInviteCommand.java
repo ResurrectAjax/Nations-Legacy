@@ -37,6 +37,7 @@ public class NationInviteCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		PlayerMapping receiver = mappingRepo.getPlayerByUUID(Bukkit.getPlayer(args.length > 1 ? args[1] : "").getUniqueId());
+		CommandSender receive = (CommandSender)Bukkit.getPlayer(receiver.getUUID());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
 		super.beforePerform(sender, args.length > 1 ? args[1] : "");
@@ -47,7 +48,7 @@ public class NationInviteCommand extends ChildCommand{
 		else if(Bukkit.getPlayer(args[1]) == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotExist.Message"), args[1]));
 		else if(player.getUniqueId().equals(Bukkit.getPlayer(args[1]).getUniqueId())) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Send.SelfInvite.Message"), args[1]));
 		else if(Bukkit.getPlayer(receiver.getUUID()) == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotExist.Message"), args[1]));
-		else if(receiver.getNationID() != null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Send.AlreadyInNation.Message"), args[1]));
+		else if(receiver.getNationID() != null) player.sendMessage(GeneralMethods.relFormat(sender, receive, language.getString("Command.Player.Invite.Send.AlreadyInNation.Message"), args[1]));
 		else Bukkit.getPluginManager().callEvent(new InviteToNationEvent(nation, sender, receiver));
 	}
 

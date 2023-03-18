@@ -35,8 +35,9 @@ public class NationInviteCancel extends ChildCommand {
 
 		PlayerMapping receiver = args.length < 2 ? null : mappingRepo.getPlayerByName(args[1]);
 		PlayerMapping send = mappingRepo.getPlayerByUUID(((Player) sender).getUniqueId());
-
-		NationMapping nation = mappingRepo.getNationByName(args.length < 2 ? "" : args[1]);
+		
+		Integer nationID = send.getNationID();
+		NationMapping nation = mappingRepo.getNationByID(nationID);
 
 		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
 
@@ -45,14 +46,14 @@ public class NationInviteCancel extends ChildCommand {
 		else if (send.getNationID() == null)
 			sender.sendMessage(
 					GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if (!mappingRepo.getPlayerInvites().containsKey(receiver.getUUID()) || nation == null
-				|| !mappingRepo.getPlayerInvites().get(receiver.getUUID()).contains(nation.getNationID()))
+		else if (!mappingRepo.getPlayerInvites().containsKey(receiver.getUUID()) || nationID == null
+				|| !mappingRepo.getPlayerInvites().get(receiver.getUUID()).contains(nationID))
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender,
-					language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
+					language.getString("Command.Player.Invite.Cancel.NoInvite.Message"), args[1]));
 		else {
-			mappingRepo.removePlayerInvite(nation.getNationID(), receiver.getUUID());
+			mappingRepo.removePlayerInvite(nationID, receiver.getUUID());
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender,
-					language.getString("Command.Player.CancelInvitation.Message"), nation.getName()));
+					language.getString("Command.Player.Invite.Cancel.CancelInvitation.Message"), nation.getName()));
 		}
 	}
 

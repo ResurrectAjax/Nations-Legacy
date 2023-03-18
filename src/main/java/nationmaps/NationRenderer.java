@@ -74,7 +74,7 @@ public class NationRenderer extends MapRenderer{
 				Color red = new Color(220, 0, 0), green = new Color(0, 220, 0), blue = new Color(0, 0, 220);
 				if(playerNation == null) {
 					Color darkBright = color;
-					if(color.getBlue() >= 220) darkBright = new Color(color.getRed(), color.getGreen()+(color.getBlue()/2), color.getBlue());
+					if(color.getBlue() >= 220 && color.getGreen() <= 145) darkBright = new Color(color.getRed(), color.getGreen()+(color.getBlue()/2), color.getBlue());
 					else if(color.getBlue() <= 180) darkBright = color.brighter();
 					else darkBright = color;
 					
