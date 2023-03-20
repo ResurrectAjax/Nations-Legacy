@@ -75,7 +75,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"`NationID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
     		"`Name` varchar(32) NOT NULL, " + 
     		"`Description` varchar(32), " +
-            "`MaxChunks` int not null" +
+            "`MaxChunks` int NOT NULL" +
             ");"; 
     
     private String SQLiteCreateNationPlayersTable = "CREATE TABLE IF NOT EXISTS Nation_Players (" + 
@@ -213,6 +213,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         PreparedStatement ps = null;
         ResultSet rs = null;
         
+        FileConfiguration config = plugin.getConfig();
         Set<NationMapping> nations = new HashSet<NationMapping>();
         HashMap<Integer, Set<Chunk>> chunkMap = getAllClaimedChunks();
         HashMap<Integer, Set<Flag>> flagMap = getAllNationFlags();
@@ -236,7 +237,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             	HashMap<String, Location> homes = new HashMap<>(nationHomes.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toMap(NationHome::getName, NationHome::getLocation)));
             	
             	Set<PlayerMapping> nationMembers = players.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toSet());
-            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, nationMembers, chunks, flags, homes, this);
+            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, config.getInt("Nations.Claiming.MaxChunks"), nationMembers, chunks, flags, homes, this);
             	
             	nations.add(nation);
             }
@@ -667,7 +668,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         PreparedStatement ps = null;
         ResultSet rs = null;
         Integer nationID = null;
-        FileConfiguration config = Main.getInstance().getConfig();
+        FileConfiguration config = plugin.getConfig();
         NationMapping nation = null;
         
         try {

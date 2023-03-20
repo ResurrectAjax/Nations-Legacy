@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import sql.Database;
 
 public class NationMapping {
 	private int nationID;
+	private int chunkIncrement;
 	private int maxChunks;
 	private String name, description = "";
 	private HashMap<String, Location> homes = new HashMap<>();
@@ -35,6 +37,7 @@ public class NationMapping {
 	public NationMapping(int nationID, String name, PlayerMapping leader, int maxChunks, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
+		this.chunkIncrement = maxChunks;
 		this.nationID = nationID;
 		setName(name);
 		addLeader(leader);
@@ -42,9 +45,10 @@ public class NationMapping {
 	
 	
 	
-	public NationMapping(int nationID, String name, String description, int maxChunks, Collection<PlayerMapping> players, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
+	public NationMapping(int nationID, String name, String description, int maxChunks, int chunkIncrement, Collection<PlayerMapping> players, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
+		this.chunkIncrement = chunkIncrement;
 		this.nationID = nationID;
 		this.name = name;
 		this.description = description;
@@ -66,6 +70,7 @@ public class NationMapping {
 
 	public void setMaxChunks(int maxChunks) {
 		this.maxChunks = maxChunks;
+		this.update();
 	}
 
 
@@ -179,6 +184,8 @@ public class NationMapping {
 		member.setNationID(this.nationID);
 		member.setRank(Rank.Member);
 		member.update();
+		this.maxChunks += chunkIncrement;
+		this.update();
 		return true;
 	}
 	private boolean demoteMember(PlayerMapping member) {
@@ -209,7 +216,10 @@ public class NationMapping {
 		player.setNationID(null);
 		player.setRank(Rank.Nationless);
 		player.update();
-		db.removePlayerFromNation(player.getUUID());
+		this.members.removeIf(el -> el.equals(player));
+		this.officers.removeIf(el -> el.equals(player));
+		this.maxChunks -= chunkIncrement;
+		this.update();
 		return true;
 	}
 	public Object[] demotePlayer(PlayerMapping player) {
@@ -305,7 +315,11 @@ public class NationMapping {
 		return homes;
 	}
 
-
+	public int getBaseChunkLimit() {
+		return getAllMembers().size()*chunkIncrement;
+	}
+	
+	
 
 	public void update() {
 		db.updateNation(this);
@@ -343,5 +357,26 @@ public class NationMapping {
 		MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
 		HashMap<UUID, Set<Integer>> invites = mappingRepo.getPlayerInvites();
 		invites.keySet().stream().forEach(el -> invites.get(el).removeIf(val -> mappingRepo.getNationByID(val).getName().equalsIgnoreCase(getName())));
+	}
+
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nationID);
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		NationMapping other = (NationMapping) obj;
+		return nationID == other.nationID;
 	}
 }

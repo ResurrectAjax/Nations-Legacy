@@ -40,7 +40,11 @@ public class WarTruce extends ChildCommand{
 		NationMapping receivingNation = mappingRepo.getNationByName(args.length > 2 ? args[2] : "");
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
-		super.beforePerform(sender, args.length > 2 ? args[2] : "");
+		super.setLastArg(sender, args.length > 2 ? args[2] : "");
+		if(receivingNation != null) {
+			PlayerMapping pl = receivingNation.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 		
 		if(args.length != 3) player.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));

@@ -10,17 +10,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import commands.war.WarCommand;
-import events.nation.NationEvent;
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class AcceptTruceEvent extends NationEvent{
+public class AcceptTruceEvent extends WarEvent{
 
 	public AcceptTruceEvent(NationMapping nation, NationMapping enemy, WarCommand warCommand, CommandSender sender) {
-		super(nation, sender);
+		super(nation, enemy, sender);
 		
 		Main main = Main.getInstance();
 		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {

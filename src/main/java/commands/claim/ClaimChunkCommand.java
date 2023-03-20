@@ -63,7 +63,7 @@ public class ClaimChunkCommand extends ChildCommand{
 	@Override
 	public void perform(CommandSender sender, String[] args) {
 		String arg = args.length < 2 ? "" : args[1];
-		super.beforePerform(sender, arg);
+		super.setLastArg(sender, arg);
 		
 		FileConfiguration language = main.getLanguage();
 		

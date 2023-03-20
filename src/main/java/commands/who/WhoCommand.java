@@ -29,7 +29,7 @@ public class WhoCommand extends ChildCommand{
 	@Override
 	public void perform(CommandSender sender, String[] args) {
 		String name = args.length < 2 ? "" : args[1];
-		beforePerform(sender, name);
+		setLastArg(sender, name);
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		FileConfiguration language = main.getLanguage();

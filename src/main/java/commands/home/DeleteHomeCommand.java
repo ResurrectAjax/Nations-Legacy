@@ -36,7 +36,7 @@ public class DeleteHomeCommand extends ChildCommand{
 		Player player = (Player) sender;
 		
 		String home = args.length < 2 ? "home" : args[1];
-		super.beforePerform(sender, home);
+		super.setLastArg(sender, home);
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());

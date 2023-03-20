@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,7 +40,8 @@ public class NationInviteCancel extends ChildCommand {
 		Integer nationID = send.getNationID();
 		NationMapping nation = mappingRepo.getNationByID(nationID);
 
-		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
+		if(receiver != null) super.setLastMentioned(sender, Bukkit.getOfflinePlayer(receiver.getUUID()));
 
 		if (args.length < 2)
 			sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));

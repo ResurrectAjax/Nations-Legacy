@@ -21,6 +21,7 @@ import commands.invite.NationInviteAcceptCommand;
 import commands.invite.NationInviteCancel;
 import commands.invite.NationInviteCommand;
 import commands.invite.NationInviteDenyCommand;
+import commands.kick.KickCommand;
 import commands.leave.LeaveCommand;
 import commands.list.ListCommand;
 import commands.map.MapCommand;
@@ -62,7 +63,8 @@ public class NationsCommand extends MainCommand{
 				new HomeCommand(this),
 				new PromoteCommand(this),
 				new DemoteCommand(this),
-				new LeaveCommand(this)
+				new LeaveCommand(this),
+				new KickCommand(this)
 				));
 	}
 

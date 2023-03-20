@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 
 import main.Main;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.replacer.CharsReplacer;
+import me.clip.placeholderapi.replacer.Replacer;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -63,7 +65,7 @@ public class GeneralMethods extends me.resurrectajax.ajaxplugin.general.GeneralM
  	
  	public static String relFormat(CommandSender sender1, CommandSender sender2, String input, String value) {
  		String newStr = input;
- 		if(Main.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null && sender1 instanceof Player && sender2 instanceof Player) {
+ 		if(Main.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
  			newStr = PlaceholderAPI.setPlaceholders((OfflinePlayer) sender1, input);
  			return GeneralMethods.format(PlaceholderAPI.setRelationalPlaceholders((Player) sender1, (Player) sender2, newStr));
  		}

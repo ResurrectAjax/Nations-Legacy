@@ -66,7 +66,7 @@ public class CreateNationCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		OfflinePlayer player = (OfflinePlayer) sender;
-		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
 		
 		if(args.length != 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(!Pattern.matches("[a-zA-Z]+", args[1])) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Error.SpecialCharacters.Message"), args[1]));

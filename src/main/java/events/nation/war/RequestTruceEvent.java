@@ -11,21 +11,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import commands.war.WarCommand;
-import events.nation.NationEvent;
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class RequestTruceEvent extends NationEvent{
+public class RequestTruceEvent extends WarEvent{
 
-	private NationMapping receiverNation;
-	
 	public RequestTruceEvent(NationMapping nation, NationMapping enemy, WarCommand warCommand, CommandSender sender) {
-		super(nation, sender);
-		this.receiverNation = enemy;
+		super(nation, enemy, sender);
 		
 		Main main = Main.getInstance();
 		
@@ -83,10 +79,6 @@ public class RequestTruceEvent extends NationEvent{
 				}
 			}
 		}, 1L);
-	}
-	
-	public NationMapping getReceiverNation() {
-		return receiverNation;
 	}
 	
 

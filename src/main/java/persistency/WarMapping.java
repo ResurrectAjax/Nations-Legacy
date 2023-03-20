@@ -22,8 +22,8 @@ public class WarMapping {
 		this.nation = nation;
 		this.enemy = enemy;
 		
-		setNationKillpoints(enemyKillpoints);
-		setEnemyKillpoints(enemyKillpoints);
+		this.nationKillpoints = nationKillpoints;
+		this.enemyKillpoints = enemyKillpoints;
 		
 		this.killpointGoal = calculateGoal(nation, enemy);
 	}

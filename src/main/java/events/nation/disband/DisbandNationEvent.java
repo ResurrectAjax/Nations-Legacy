@@ -35,10 +35,7 @@ public class DisbandNationEvent extends NationEvent{
 				FileConfiguration language = Main.getInstance().getLanguage();
 				MappingRepository mappingRepo = Main.getInstance().getMappingRepo();
 				
-				List<PlayerMapping> members = new ArrayList<PlayerMapping>();
-				members.addAll(nation.getLeaders());
-				members.addAll(nation.getOfficers());
-				members.addAll(nation.getMembers());
+				List<PlayerMapping> members = new ArrayList<PlayerMapping>(nation.getAllMembers());
 				
 				List<PlayerMapping> onlineMembers = members.stream()
 						.filter(el -> Bukkit.getPlayer(el.getUUID()) != null)
@@ -46,7 +43,10 @@ public class DisbandNationEvent extends NationEvent{
 				
 				OfflinePlayer player = Bukkit.getOfflinePlayer(onlineMembers.get(0).getUUID());
 				
-				Bukkit.broadcastMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
+				onlineMembers.forEach(el -> {
+					Bukkit.getPlayer(el.getUUID()).sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
+				});
+				
 				mappingRepo.disbandNation(nation);
 			}	
 		}, 1L);

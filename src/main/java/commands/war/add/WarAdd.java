@@ -40,7 +40,11 @@ public class WarAdd extends ChildCommand{
 		NationMapping receivingNation = mappingRepo.getNationByName(args.length > 2 ? args[2] : "");
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
-		super.beforePerform(sender, args.length > 2 ? args[2] : "");
+		super.setLastArg(sender, args.length > 2 ? args[2] : "");
+		if(receivingNation != null) {
+			PlayerMapping pl = receivingNation.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 		
 		if(args.length != 3) player.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
@@ -49,7 +53,7 @@ public class WarAdd extends ChildCommand{
 		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.Self.Message"), args[2]));
 		else if(mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(receivingNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.NationAlly.Message"), args[2]));
 		else if(mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(receivingNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.AlreadyAtWar.Message"), args[2]));
-		else Bukkit.getPluginManager().callEvent(new DeclareWarEvent(nation, receivingNation, parent, sender));
+		else Bukkit.getPluginManager().callEvent(new DeclareWarEvent(nation, receivingNation, sender));
 	}
 
 	@Override

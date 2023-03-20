@@ -32,7 +32,7 @@ public class HomeCommand extends ChildCommand{
 		String home = "home";
 		
 		if(args.length > 1) home = args[1];
-		super.beforePerform(sender, home);
+		super.setLastArg(sender, home);
 		
 		if(!(sender instanceof Player)) return;
 		Player player = (Player) sender;

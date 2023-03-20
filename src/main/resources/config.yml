@@ -1,23 +1,38 @@
 Nations:
   Claiming:
-    #MaxChunks: Maximum amount of chunks per player, e.g. nation has 3 members, 10 chunks/member => nation has 30max chunks
+    # MaxChunks: Maximum amount of chunks per player, e.g. nation has 3 members, 10 chunks/member => nation has 30max chunks
     MaxChunks: 10
     
-    #ChunkGain: Amount of chunks added to the limit every hour, minutes or seconds
-    #  TimePeriod: Amount of time players of a nation have to be online to gain chunks (h: hours, m: minutes, s: seconds)
-    #  Chunks: Amount of chunks added after TimePeriod
+    # ChunkGain: Amount of chunks added to the limit every hour, minutes or seconds
+    #   TimePeriod: Amount of time players of a nation have to be online to gain chunks (h: hours, m: minutes, s: seconds)
+    #   Chunks: Amount of chunks added after TimePeriod
+    #   Limit: Max limit of total chunks a nation can gain with ChunkGain (-1 for infinite)
     ChunkGain:
       TimePeriod: 1h
       Chunks: 5
+      Limit: 100
   Home:
-    #MaxHomes: Maximum amount of homes per nation
-    #Delay: Dalay in seconds before player gets teleported
+    # MaxHomes: Maximum amount of homes per nation
+    # Delay: Dalay in seconds before player gets teleported
     MaxHomes: 1
     Delay: 5s
   Flags:
+    # FriendlyFire: allow nation members to damage each other
+    #   Adjustable: whether nations can decide this flag for themselves
+    #   Default: the default value of this flag
     FriendlyFire:
       Adjustable: false
       Default: "DENY"
+  War:
+    # KillPoints: the amount of kill points players can get from killing someone with a certain rank
+    KillPoints:
+      Leader: 3
+      Officer: 2
+      Member: 1
+      Nationless: 1
+  Combat:
+    # Duration: amount of time a player remains in combat after the last hit
+    Duration: 15s
 Wilderness:
   Name: "&2&lWilderness"
   Description: "It's dangerous to go alone"

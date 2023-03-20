@@ -18,6 +18,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
+import persistency.PlayerMapping;
 
 public class NationInviteDenyCommand extends ChildCommand{
 	private Main main;
@@ -35,7 +36,11 @@ public class NationInviteDenyCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nation = mappingRepo.getNationByName(args.length < 2 ? "" : args[1]);
 		
-		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
+		if(nation != null) {
+			PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 		
 		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 

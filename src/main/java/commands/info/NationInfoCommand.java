@@ -34,7 +34,7 @@ public class NationInfoCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		
-		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
 		
 		if(args.length == 1) {
 			if(!(sender instanceof OfflinePlayer)) {
@@ -63,6 +63,10 @@ public class NationInfoCommand extends ChildCommand{
 	private void giveInfo(CommandSender sender, String nation) {
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nationMap = mappingRepo.getNationByName(nation);
+		if(nationMap != null) {
+			PlayerMapping pl = nationMap.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 		
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));

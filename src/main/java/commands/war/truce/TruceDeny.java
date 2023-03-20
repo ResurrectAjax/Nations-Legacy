@@ -41,7 +41,11 @@ public class TruceDeny extends ChildCommand{
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		NationMapping senderNation = mappingRepo.getNationByName(args.length < 3 ? "" : args[2]);
 		
-		super.beforePerform(sender, args.length < 3 ? "" : args[2]);
+		super.setLastArg(sender, args.length < 3 ? "" : args[2]);
+		if(senderNation != null) {
+			PlayerMapping pl = senderNation.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 		
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));

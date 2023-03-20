@@ -30,7 +30,7 @@ public class DisbandNationCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		String nationName = args.length < 3 ? null : args[2];
-		super.beforePerform(sender, nationName);
+		super.setLastArg(sender, nationName);
 		
 		NationMapping nation = mappingRepo.getNationByName(nationName);
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));

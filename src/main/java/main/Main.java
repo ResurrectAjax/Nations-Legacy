@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 import commands.NationsCommand;
 import listeners.ClaimListener;
 import listeners.JoinListener;
+import listeners.PlayerKillListener;
 import listeners.PlayerMoveListener;
 import me.resurrectajax.ajaxplugin.gui.GuiManager;
 import me.resurrectajax.ajaxplugin.managers.CommandManager;
@@ -82,6 +83,7 @@ public class Main extends AjaxPlugin{
 		getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 		getServer().getPluginManager().registerEvents(new ClaimListener(this), this);
+		getServer().getPluginManager().registerEvents(new PlayerKillListener(this), this);
 	}
 	
 	/**

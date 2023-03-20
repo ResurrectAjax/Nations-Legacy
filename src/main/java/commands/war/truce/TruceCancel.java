@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +18,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
 import persistency.NationMapping;
+import persistency.PlayerMapping;
 
 public class TruceCancel extends ChildCommand{
 	private Main main;
@@ -35,7 +37,11 @@ public class TruceCancel extends ChildCommand{
 		NationMapping senderNation = mappingRepo.getNationByPlayer(mappingRepo.getPlayerByUUID(((Player) sender).getUniqueId()));
 		NationMapping nation = mappingRepo.getNationByName(args.length < 3 ? "" : args[2]);
 		
-		super.beforePerform(sender, args.length < 3 ? "" : args[2]);
+		super.setLastArg(sender, args.length < 3 ? "" : args[2]);
+		if(nation != null) {
+			PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
+		}
 
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(senderNation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));

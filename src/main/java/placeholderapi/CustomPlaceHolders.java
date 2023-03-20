@@ -42,14 +42,15 @@ public class CustomPlaceHolders extends PlaceholderExpansion{
 	}
 
 	@Override
-	public @Nullable String onRequest(OfflinePlayer player, String params) {
+	public @Nullable String onRequest(OfflinePlayer player, String identifier) {
 		Main main = Main.getInstance();
 		MappingRepository mappingRepo = main.getMappingRepo();
-		PlayerMapping play = mappingRepo.getPlayerByUUID(player.getUniqueId());
+		PlayerMapping play = mappingRepo.getPlayerByUUID(player.getUniqueId()), play2;
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(play.getUUID());
+		OfflinePlayer lastMentioned = main.getCommandManager().getLastMentioned(offlinePlayer.getName());
 		
-		NationMapping nation = mappingRepo.getNationByPlayer(play);
-		switch(params) {
+		NationMapping nation = mappingRepo.getNationByPlayer(play), nation2;
+		switch(identifier) {
 		case "player_name":
 			return player.getName();
 		case "player_argument":
@@ -64,9 +65,26 @@ public class CustomPlaceHolders extends PlaceholderExpansion{
 		case "nation_description":
 			if(nation != null) return nation.getDescription();
 			return "";
+		case "gained_chunks":
+			if(nation == null) return "";
+			int value = nation.getMaxChunks()-nation.getBaseChunkLimit();
+			return value + "";
 		case "remaining_chunkamount":
+			if(nation == null) return "";
 			int number = nation.getMaxChunks()-nation.getClaimedChunks().size();
 			return number + "";
+		case "rel_nation_name":
+			if(lastMentioned == null) return "";
+			play2 = mappingRepo.getPlayerByUUID(lastMentioned.getUniqueId());
+			nation2 = mappingRepo.getNationByID(play2.getNationID());
+			return nation2.getName();
+		case "rel_player_name":
+			if(lastMentioned == null) return "";
+			return lastMentioned.getName();
+		case "rel_player_rank":
+			if(lastMentioned == null) return "";
+			play2 = mappingRepo.getPlayerByUUID(lastMentioned.getUniqueId());
+			return play2.getRank().toString();
 		}
 		return null;
 	}

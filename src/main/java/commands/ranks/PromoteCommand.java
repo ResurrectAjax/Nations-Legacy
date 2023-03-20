@@ -30,7 +30,7 @@ public class PromoteCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		super.beforePerform(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
 		
 		FileConfiguration language = main.getLanguage();
 		
@@ -46,6 +46,7 @@ public class PromoteCommand extends ChildCommand{
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping player = mappingRepo.getPlayerByName(args[1]), promoter = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
+		if(player != null) super.setLastMentioned(sender, Bukkit.getOfflinePlayer(player.getUUID()));
 		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(player.getUUID());
 		
 		if(promoter.getNationID() == null) {

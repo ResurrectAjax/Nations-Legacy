@@ -34,7 +34,7 @@ public class SetHomeCommand extends ChildCommand{
 		if(!(sender instanceof Player)) return;
 		Player player = (Player) sender;
 		
-		super.beforePerform(sender, args.length < 2 ? "home" : args[1]);
+		super.setLastArg(sender, args.length < 2 ? "home" : args[1]);
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());

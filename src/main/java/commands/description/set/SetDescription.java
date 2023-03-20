@@ -40,7 +40,7 @@ public class SetDescription extends ChildCommand{
 			desc += (i == args.length-1 ? args[i] : args[i] + " ");
 		}
 		
-		super.beforePerform(sender, args.length < 3 ? "" : args[2]);
+		super.setLastArg(sender, args.length < 3 ? "" : args[2]);
 		
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
 		else if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
