@@ -44,6 +44,7 @@ public class KickCommand extends ChildCommand{
 			super.setLastMentioned(sender, offPlayer);
 			
 			if(senderMap.getNationID() == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotInNation.Message"), offPlayer.getName()));
+			else if(player.getNationID() != senderMap.getNationID()) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotInSameNation.Message"), offPlayer.getName()));
 			else if(!senderMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotALeader.Message"), offPlayer.getName()));
 			else if(player.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Kick.Leader.Message"), offPlayer.getName()));
 			else Bukkit.getPluginManager().callEvent(new KickFromNationEvent(mappingRepo.getNationByID(senderMap.getNationID()), sender, player));

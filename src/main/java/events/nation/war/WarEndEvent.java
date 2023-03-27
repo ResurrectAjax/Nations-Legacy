@@ -71,7 +71,10 @@ public class WarEndEvent extends WarEvent{
 				});
 				
 				winner.setMaxChunks(winner.getMaxChunks()+losingChunkAmount);
+				loser.setGainedChunks(0);
 				loser.setMaxChunks(loser.getBaseChunkLimit());
+				
+				mappingRepo.getChunkGainManager().addChunkGain(loser);
 			}
 		}, 1L);
 	}

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
@@ -19,9 +20,10 @@ import main.Main;
 import sql.Database;
 
 public class NationMapping {
-	private int nationID;
+	private Integer nationID;
 	private int chunkIncrement;
 	private int maxChunks;
+	private int gainedChunks = 0;
 	private String name, description = "";
 	private HashMap<String, Location> homes = new HashMap<>();
 	private Set<PlayerMapping> leaders = new HashSet<PlayerMapping>();
@@ -30,7 +32,7 @@ public class NationMapping {
 	private Set<Chunk> claimedChunks = new HashSet<Chunk>();
 	private Set<Chunk> newChunks = new HashSet<Chunk>();
 	private Set<Chunk> deletedChunks = new HashSet<Chunk>();
-	private List<Flag> flags = new ArrayList<Flag>();
+	private HashMap<Flag, Boolean> flags = new HashMap<Flag, Boolean>();
 	
 	private Database db;
 
@@ -45,9 +47,10 @@ public class NationMapping {
 	
 	
 	
-	public NationMapping(int nationID, String name, String description, int maxChunks, int chunkIncrement, Collection<PlayerMapping> players, Collection<Chunk> claimedChunks, Collection<Flag> flags, HashMap<String, Location> homes, Database db) {
+	public NationMapping(int nationID, String name, String description, int maxChunks, int chunkIncrement, int gainedChunks, Collection<PlayerMapping> players, Collection<Chunk> claimedChunks, HashMap<Flag, Boolean> flags, HashMap<String, Location> homes, Database db) {
 		this.db = db;
 		this.maxChunks = maxChunks;
+		this.gainedChunks = gainedChunks;
 		this.chunkIncrement = chunkIncrement;
 		this.nationID = nationID;
 		this.name = name;
@@ -72,6 +75,16 @@ public class NationMapping {
 		this.maxChunks = maxChunks;
 		this.update();
 	}
+	
+	public int getGainedChunks() {
+		return gainedChunks;
+	}
+	
+	public void setGainedChunks(int gain) {
+		this.gainedChunks = gain;
+	}
+	
+	
 
 
 
@@ -186,6 +199,10 @@ public class NationMapping {
 		member.update();
 		this.maxChunks += chunkIncrement;
 		this.update();
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			Main.getInstance().getMappingRepo().getScoreboardManager().updateScoreboard(el);
+		});
 		return true;
 	}
 	private boolean demoteMember(PlayerMapping member) {
@@ -220,6 +237,10 @@ public class NationMapping {
 		this.officers.removeIf(el -> el.equals(player));
 		this.maxChunks -= chunkIncrement;
 		this.update();
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			Main.getInstance().getMappingRepo().getScoreboardManager().updateScoreboard(el);
+		});
 		return true;
 	}
 	public Object[] demotePlayer(PlayerMapping player) {
@@ -233,7 +254,7 @@ public class NationMapping {
 	
 	
 	
-	public int getNationID() {
+	public Integer getNationID() {
 		return nationID;
 	}
 	
@@ -281,20 +302,15 @@ public class NationMapping {
 		}
 	}
 	
-	public List<Flag> getFlags() {
+	public HashMap<Flag, Boolean> getFlags() {
 		return flags;
 	}
-	public boolean addFlags(Collection<Flag> flags) {
-		for(Flag flag : this.flags) {
-			if(flags.contains(flag)) return false;
-		}
-		this.flags.addAll(flags);
-		return true;
+	public void addFlags(HashMap<Flag, Boolean> flags) {
+		this.flags.putAll(flags);
 	}
-	public boolean addFlag(Flag flag) {
-		if(this.flags.contains(flag)) return false;
-		this.flags.add(flag);
-		return true;
+	public void setFlag(Flag flag, boolean allow) {
+		this.flags.put(flag, allow);
+		this.db.updateNationFlag(flag, this.nationID, allow);
 	}
 	
 	public void setHome(Location home) {
@@ -342,6 +358,7 @@ public class NationMapping {
 		removeInvites();
 		
 		db.deleteNation(nationID);
+		this.nationID = null;
 	}
 	
 	public int countKillPoints() {

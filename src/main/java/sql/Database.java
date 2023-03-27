@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,7 +76,8 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"`NationID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
     		"`Name` varchar(32) NOT NULL, " + 
     		"`Description` varchar(32), " +
-            "`MaxChunks` int NOT NULL" +
+            "`MaxChunks` int NOT NULL," +
+    		"`Gained_Chunks` int NOT NULL DEFAULT 0" +
             ");"; 
     
     private String SQLiteCreateNationPlayersTable = "CREATE TABLE IF NOT EXISTS Nation_Players (" + 
@@ -216,7 +218,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         FileConfiguration config = plugin.getConfig();
         Set<NationMapping> nations = new HashSet<NationMapping>();
         HashMap<Integer, Set<Chunk>> chunkMap = getAllClaimedChunks();
-        HashMap<Integer, Set<Flag>> flagMap = getAllNationFlags();
+        HashMap<Integer, HashMap<Flag, Boolean>> flagMap = getAllNationFlags();
         
         Set<NationHome> nationHomes = getHomes();
         
@@ -228,16 +230,16 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
    
             rs = ps.executeQuery();
             while(rs.next()){
-            	int nationID = rs.getInt(1), maxChunks = rs.getInt(4);
+            	int nationID = rs.getInt(1), maxChunks = rs.getInt(4), gainedChunks = rs.getInt(5);
             	String name = rs.getString(2), description = rs.getString(3) == null ? "" : rs.getString(3);
             	
             	Set<Chunk> chunks = chunkMap.get(nationID) == null ? new HashSet<Chunk>() : chunkMap.get(nationID);
-            	Set<Flag> flags = flagMap.get(nationID) == null ? new HashSet<Flag>() : flagMap.get(nationID);
+            	HashMap<Flag, Boolean> flags = flagMap.get(nationID) == null ? new HashMap<>() : flagMap.get(nationID);
             	
             	HashMap<String, Location> homes = new HashMap<>(nationHomes.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toMap(NationHome::getName, NationHome::getLocation)));
             	
             	Set<PlayerMapping> nationMembers = players.stream().filter(el -> el.getNationID() == nationID).collect(Collectors.toSet());
-            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, config.getInt("Nations.Claiming.MaxChunks"), nationMembers, chunks, flags, homes, this);
+            	NationMapping nation = new NationMapping(nationID, name, description, maxChunks, config.getInt("Nations.Claiming.MaxChunks"), gainedChunks, nationMembers, chunks, flags, homes, this);
             	
             	nations.add(nation);
             }
@@ -422,13 +424,13 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     
     
     
-    public HashMap<Integer, Set<Flag>> getAllNationFlags() {
+    public HashMap<Integer, HashMap<Flag, Boolean>> getAllNationFlags() {
     	Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
-        HashMap<Integer, Set<Flag>> map = new HashMap<Integer, Set<Flag>>();
-        Set<Flag> flags = new HashSet<Flag>();
+        HashMap<Integer, HashMap<Flag, Boolean>> map = new HashMap<Integer, HashMap<Flag, Boolean>>();
+        HashMap<Flag, Boolean> flags = new HashMap<Flag, Boolean>();
         try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT * FROM FlagLines");
@@ -437,11 +439,11 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             
             Integer nationID = null;
             while(rs.next()){
-            	if(nationID != rs.getInt(2)) flags = new HashSet<Flag>();
+            	if(nationID != rs.getInt(2)) flags = new HashMap<>();
             	nationID = rs.getInt(2);
             	
-            	flags.add(Flag.valueOf(rs.getString(3)));
-            	map.put(nationID, new HashSet<Flag>(flags));
+            	flags.put(Flag.valueOf(rs.getString(3)), rs.getInt(4) == 0 ? false : true);
+            	map.put(nationID, new HashMap<>(flags));
             }
         	return map;
         } catch (SQLException ex) {
@@ -668,7 +670,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         PreparedStatement ps = null;
         ResultSet rs = null;
         Integer nationID = null;
-        FileConfiguration config = plugin.getConfig();
         NationMapping nation = null;
         
         try {
@@ -702,8 +703,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             } catch (SQLException ex) {
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
-            String allow = config.getString("Nations.Flags.FriendlyFire.Default");
-            if(nationID != null) addNationFlag(Flag.FriendlyFire, nationID, allow.equalsIgnoreCase("allow") ? true : false);
+            if(nationID != null) addNationFlags(nationID);
         }
         return null;
     }
@@ -780,12 +780,13 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         	Set<PlayerMapping> nationPlayers = nation.getAllMembers();
         	
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, MaxChunks = ? WHERE NationID = ?");
+            ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, MaxChunks = ?, Gained_Chunks = ? WHERE NationID = ?");
             
             ps.setString(1, nation.getName()); 
             ps.setString(2, nation.getDescription());
             ps.setInt(3, nation.getMaxChunks());
-            ps.setInt(4, nation.getNationID());
+            ps.setInt(4, nation.getGainedChunks());
+            ps.setInt(5, nation.getNationID());
             
             ps.executeUpdate();
             ps.close();
@@ -1234,17 +1235,24 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         }
     }
     
-    public void addNationFlag(Flag flag, int nationID, boolean allow) {
+    public void addNationFlags(int nationID) {
     	Connection conn = null;
         PreparedStatement ps = null;
+        FileConfiguration config = plugin.getConfig();
         
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("INSERT INTO FlagLines(NationID, Flag, Allow) values(?,?,?);");
             
-            ps.setInt(1, nationID);
-            ps.setString(2, flag.toString());
-            ps.setInt(3, allow ? 1 : 0);
+            String stmt = "INSERT INTO FlagLines(NationID, Flag, Allow) values";
+            for(Flag flag : Flag.values()) {
+            	String allow = config.getString("Nations.Flags." + flag.toString() + ".Default");
+            	
+            	int index = Arrays.asList(Flag.values()).indexOf(flag);
+            	if(index == Flag.values().length-1) stmt += String.format("(%d,'%s',%d);", nationID, flag.toString(), allow.equalsIgnoreCase("allow") ? 1 : 0);
+            	else  stmt += String.format("(%d,'%s',%d),", nationID, flag.toString(), allow.equalsIgnoreCase("allow") ? 1 : 0);
+            	
+            }
+            ps = conn.prepareStatement(stmt);
             
             ps.executeUpdate();
             return;

@@ -4,43 +4,43 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import events.nation.NationEvent;
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import persistency.MappingRepository;
+import persistency.NationMapping;
 
 public class CreateNationEvent extends NationEvent{
-
-	private String nationName;
 	
-	public CreateNationEvent(CommandSender sender, String name) {
-		super(null, sender);
-		
-		setNationName(name);
+	public CreateNationEvent(NationMapping nation, CommandSender sender) {
+		super(nation, sender);
 		
 		Main main = Main.getInstance();
+		FileConfiguration language = main.getLanguage();
 		Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable() {
 			
 			@Override
 			public void run() {
-				if(isCancelled) return;
-				
 				MappingRepository mappingRepo = main.getMappingRepo();
-				FileConfiguration lang = main.getLanguage();
-				OfflinePlayer player = (OfflinePlayer) sender;
-				nation = mappingRepo.createNation(nationName, mappingRepo.getPlayerByUUID(player.getUniqueId()));
-				sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.Created.Message"), nationName));
+				Player player = (Player) sender;
+				
+				if(isCancelled) mappingRepo.disbandNation(nation);
+				else {
+					mappingRepo.getChunkGainManager().addChunkGain(nation);
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)player, language.getString("Command.Nations.Create.Created.Message"), nation.getName()));
+				}
 			}
 		}, 1L);
 	}
-
-	public String getNationName() {
-		return nationName;
-	}
-
-	public void setNationName(String nationName) {
-		this.nationName = nationName;
+	
+	/**
+	 * Returns the created nation, removed when the event is cancelled
+	 * @return {@link NationMapping} created nation
+	 * */
+	public NationMapping getNation() {
+		return nation;
 	}
 
 }

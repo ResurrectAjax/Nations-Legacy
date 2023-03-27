@@ -11,8 +11,10 @@ import org.bukkit.Chunk;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import chunkgain.ChunkGainManager;
 import enumeration.Rank;
 import main.Main;
+import scoreboard.ScoreboardManager;
 import sql.Database;
 
 public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.MappingRepository{
@@ -26,6 +28,8 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 	
 	private HashMap<UUID, Set<Integer>> playerInvites = new HashMap<UUID, Set<Integer>>();
 	
+	private ChunkGainManager chunkManager;
+	private ScoreboardManager scoreboardManager;
 	private Database db;
 	private Main main;
 	
@@ -58,7 +62,8 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 		}
 		return alliances;
 	}
-	public AllianceMapping getAllianceByNationIDs(int nationID, int allyID) {
+	public AllianceMapping getAllianceByNationIDs(Integer nationID, Integer allyID) {
+		if(nationID == null || allyID == null) return null;
 		for(AllianceMapping alliance : this.alliances) {
 			if((alliance.getNationID() == nationID && alliance.getAllyID() == allyID) || (alliance.getAllyID() == nationID && alliance.getNationID() == allyID)) return alliance;
 		}
@@ -69,10 +74,18 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 				(this.alliances.stream().anyMatch(al -> al.getNationID() == allyID) && this.alliances.stream().anyMatch(al -> al.getAllyID() == nationID))) return;
 		
 		this.alliances.add(db.insertAlliance(nationID, allyID));
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 	}
 	public void removeAlliance(int nationID, int allyID) {
 		this.alliances.remove(getAllianceByNationIDs(nationID, allyID));
 		this.db.deleteAlliance(nationID, allyID);
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 	}
 	public Set<NationMapping> getAllianceNationsByNationID(int nationID) {
 		return getAlliancesByNationID(nationID).stream()
@@ -109,6 +122,10 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return null;
 		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.Claiming.MaxChunks"));
 		this.nations.add(nation);
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 		return nation;
 	}
 	/**
@@ -120,6 +137,10 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 		this.wars.removeIf(el -> el.getEnemy().getNationID() == nation.getNationID() || el.getNation().getNationID() == nation.getNationID());
 		this.nations.remove(nation);
 		nation.disband();
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 	}
 
 
@@ -181,7 +202,8 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 		}
 		return wars;
 	}
-	public WarMapping getWarByNationIDs(int nationID, int warID) {
+	public WarMapping getWarByNationIDs(Integer nationID, Integer warID) {
+		if(nationID == null || warID == null) return null;
 		for(WarMapping war : this.wars) {
 			if((war.getNation().getNationID() == nationID && war.getEnemy().getNationID() == warID) || (war.getNation().getNationID() == warID && war.getEnemy().getNationID() == nationID)) return war;
 		}
@@ -192,10 +214,18 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 				(this.wars.stream().anyMatch(wa -> wa.getNation().getNationID() == enemyID) && this.wars.stream().anyMatch(wa -> wa.getEnemy().getNationID() == nationID))) return;
 		
 		this.wars.add(db.insertWar(nationID, enemyID));
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 	}
 	public void removeWar(int nationID, int enemyID) {
 		this.wars.remove(getWarByNationIDs(nationID, enemyID));
 		this.db.deleteWar(nationID, enemyID);
+		
+		Bukkit.getOnlinePlayers().forEach(el -> {
+			getScoreboardManager().updateScoreboard(el);
+		});
 	}
 	public Set<NationMapping> getWarNationsByNationID(int nationID) {
 		return getWarsByNationID(nationID).stream()
@@ -240,9 +270,20 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 		this.playerInvites.get(receiver).remove(nationID);
 	}
 
+	
+	public ChunkGainManager getChunkGainManager() {
+		return this.chunkManager;
+	}
 
+
+	public ScoreboardManager getScoreboardManager() {
+		return scoreboardManager;
+	}
 
 	private void load() {
+		this.chunkManager = new ChunkGainManager(main);
+		this.scoreboardManager = new ScoreboardManager(main);
+		
 		//load database
 		this.db = new Database(main, this);
 		this.db.load();

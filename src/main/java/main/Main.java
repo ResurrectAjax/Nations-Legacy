@@ -7,13 +7,13 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.Yaml;
 
 import commands.NationsCommand;
+import events.nation.ReloadEvent;
 import listeners.ClaimListener;
-import listeners.JoinListener;
+import listeners.JoinLeaveListener;
 import listeners.PlayerKillListener;
 import listeners.PlayerMoveListener;
 import me.resurrectajax.ajaxplugin.gui.GuiManager;
@@ -71,19 +71,18 @@ public class Main extends AjaxPlugin{
 		
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(getMappingRepo().getPlayerByUUID(player.getUniqueId()) == null) getMappingRepo().addPlayer(player);	
+			getMappingRepo().getScoreboardManager().updateScoreboard(player);
 		}
 		
 		hookIntoPlaceholderAPI();
 	}
 	
-	/**
-	 * Load all the classes that implement {@link Listener}
-	 * */
 	public void loadListeners() {
-		getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+		getServer().getPluginManager().registerEvents(new JoinLeaveListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 		getServer().getPluginManager().registerEvents(new ClaimListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerKillListener(this), this);
+//		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
 	}
 	
 	/**
@@ -100,14 +99,6 @@ public class Main extends AjaxPlugin{
 	 * */
 	public FileConfiguration getConfig() {
 		return files.get("config.yml");
-	}
-	
-	/**
-	 * Get the gui file
-	 * @return {@link FileConfiguration} gui
-	 * */
-	public FileConfiguration getGuiConfig() {
-		return files.get("gui.yml");
 	}
 
 	/**
@@ -127,13 +118,12 @@ public class Main extends AjaxPlugin{
 	}
 	
 	/**
-	 * Reload the {@link Yaml} files
+	 * Reload the plugin
 	 * */
 	public void reload() {
 		super.files = FileManager.loadFiles(
 				"config.yml",
-				"language.yml",
-				"gui.yml"
+				"language.yml"
 				);
     }
 
@@ -144,7 +134,7 @@ public class Main extends AjaxPlugin{
 		super.setInstance(this);
 		
 		//load files
-		reload();
+		Bukkit.getPluginManager().callEvent(new ReloadEvent());
         //files
         
 		super.setMappingRepository(new MappingRepository(this));

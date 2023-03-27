@@ -14,6 +14,7 @@ import main.Main;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import persistency.MappingRepository;
+import persistency.NationMapping;
 
 public class CreateNationCommand extends ChildCommand{
 
@@ -72,7 +73,10 @@ public class CreateNationCommand extends ChildCommand{
 		else if(!Pattern.matches("[a-zA-Z]+", args[1])) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Error.SpecialCharacters.Message"), args[1]));
 		else if(mappingRepo.getPlayerByUUID(player.getUniqueId()).getNationID() != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyInNation.Message"), args[1]));
 		else if(mappingRepo.getNationByName(args[1]) != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyExists.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new CreateNationEvent(sender, args[1]));
+		else {
+			NationMapping nation = mappingRepo.createNation(args[1], mappingRepo.getPlayerByUUID(player.getUniqueId()));
+			Bukkit.getPluginManager().callEvent(new CreateNationEvent(nation, sender));
+		}
 	}
 
 	@Override

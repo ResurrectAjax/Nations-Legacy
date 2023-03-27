@@ -46,7 +46,6 @@ public class DisbandNationEvent extends NationEvent{
 				onlineMembers.forEach(el -> {
 					Bukkit.getPlayer(el.getUUID()).sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
 				});
-				
 				mappingRepo.disbandNation(nation);
 			}	
 		}, 1L);

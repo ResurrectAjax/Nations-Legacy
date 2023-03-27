@@ -8,7 +8,7 @@ Nations:
     #   Chunks: Amount of chunks added after TimePeriod
     #   Limit: Max limit of total chunks a nation can gain with ChunkGain (-1 for infinite)
     ChunkGain:
-      TimePeriod: 1h
+      Interval: 10m
       Chunks: 5
       Limit: 100
   Home:
@@ -21,6 +21,15 @@ Nations:
     #   Adjustable: whether nations can decide this flag for themselves
     #   Default: the default value of this flag
     FriendlyFire:
+      Adjustable: false
+      Default: "DENY"
+    BlockProtection:
+      Adjustable: false
+      Default: "DENY"
+    ChestProtection:
+      Adjustable: false
+      Default: "DENY"
+    InteractProtection:
       Adjustable: false
       Default: "DENY"
   War:

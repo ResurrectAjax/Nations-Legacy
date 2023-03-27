@@ -1,5 +1,8 @@
 package enumeration;
 
 public enum Flag {
-	FriendlyFire
+	FriendlyFire,
+	BlockProtection,
+	ChestProtection,
+	InteractProtection
 }

@@ -3,9 +3,11 @@ package commands.admin.reload;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import events.nation.ReloadEvent;
 import general.GeneralMethods;
 import main.Main;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
@@ -21,7 +23,7 @@ public class ReloadCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		main.reload();
+		Bukkit.getPluginManager().callEvent(new ReloadEvent());
 		
 		FileConfiguration language = main.getLanguage();
 		sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Reload.Message"), sender.getName()));

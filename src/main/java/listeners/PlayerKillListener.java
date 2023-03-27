@@ -121,6 +121,9 @@ public class PlayerKillListener implements Listener{
 			playerMap.setKillpoints(kp2);
 			playerMap.update();
 		}
+		
+		mappingRepo.getScoreboardManager().updateScoreboard(player);
+		mappingRepo.getScoreboardManager().updateScoreboard(Bukkit.getPlayer(playerCombat.getOtherPlayer(uuid)));
 	}
 	
 	private Combat getPlayerCombat(UUID uuid) {
