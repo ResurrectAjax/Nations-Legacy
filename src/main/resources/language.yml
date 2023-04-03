@@ -16,6 +16,16 @@ Command:
     SpecialCharacters:
       Message: '&bNations-Legacy &8: &ePlease don''t use any special characters or numbers.'
   Nations:
+    Flag:
+      Set:
+        Allow:
+          Message: '&bNations-Legacy &8: &eFlag &a&l%nations_player_argument%&e has been set to &a&lALLOW&e.'
+        Deny:
+          Message: '&bNations-Legacy &8: &eFlag &a&l%nations_player_argument%&e has been set to &c&lDENY&e.'
+        NotExist:
+          Message: '&bNations-Legacy &8: &eThat flag doesn''t exist.'
+        NotAdjustable:
+          Message: '&bNations-Legacy &8: &eThat flag cannot be adjusted.'
     Player:
       Leave:
         Message: '&bNations-Legacy &8: &9&l%nations_player_name%&e has left the nation.'
@@ -86,7 +96,7 @@ Command:
         ChunksLost:
           Message: '&bNations-Legacy &8: &eYour nation has lost &c%nations_gained_chunks%&e chunks to &c&l%nations_nation_name%&e.'
         ChunksGained:
-          Message: '&bNations-Legacy &8: &eYour nation has gained &c%nations_gained_chunks%&e chunks from &c&l%nations_nation_name%&e.'
+          Message: '&bNations-Legacy &8: &eYour nation has gained &c%nations_gained_chunks%&e chunks from &c&l%nations_rel_nation_name%&e.'
       Info:
         NotAtWar:
           Message: '&bNations-Legacy &8: &eThese nations are not at war with each other.'
@@ -201,10 +211,10 @@ Command:
       AlreadyHighestRank:
         Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e already has the highest rank.'
       Promoted:
-        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been &a&lpromoted&e to &a&l%nations_rel_player_rank%&e.'
+        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been promoted to &a&l%nations_rel_player_rank%&e.'
     Demote:
       CannotDemote:
         Message: '&bNations-Legacy &8: &eYou cannot demote &a&l%nations_player_argument%&e.'
       Demoted:
-        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been &c&ldemoted&e to &c&l%nations_rel_player_rank%&e.'
+        Message: '&bNations-Legacy &8: &a&l%nations_player_argument%&e has been demoted to &c&l%nations_rel_player_rank%&e.'
         

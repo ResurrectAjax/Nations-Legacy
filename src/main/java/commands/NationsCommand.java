@@ -13,6 +13,7 @@ import commands.claim.UnclaimChunkCommand;
 import commands.create.CreateNationCommand;
 import commands.description.DescriptionCommand;
 import commands.disband.DisbandNationCommand;
+import commands.flag.FlagCommand;
 import commands.home.DeleteHomeCommand;
 import commands.home.HomeCommand;
 import commands.home.SetHomeCommand;
@@ -64,7 +65,8 @@ public class NationsCommand extends MainCommand{
 				new PromoteCommand(this),
 				new DemoteCommand(this),
 				new LeaveCommand(this),
-				new KickCommand(this)
+				new KickCommand(this),
+				new FlagCommand(this)
 				));
 	}
 

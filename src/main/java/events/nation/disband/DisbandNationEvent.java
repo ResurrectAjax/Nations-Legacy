@@ -7,10 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import events.nation.NationEvent;
-import main.Main;
 import general.GeneralMethods;
+import main.Main;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
@@ -44,9 +45,15 @@ public class DisbandNationEvent extends NationEvent{
 				OfflinePlayer player = Bukkit.getOfflinePlayer(onlineMembers.get(0).getUUID());
 				
 				onlineMembers.forEach(el -> {
-					Bukkit.getPlayer(el.getUUID()).sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
+					Player onplayer = Bukkit.getPlayer(el.getUUID());
+					onplayer.sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
+					GeneralMethods.updatePlayerTab(onplayer);
 				});
+				
 				mappingRepo.disbandNation(nation);
+				
+				GeneralMethods.updatePlayerTab((Player) sender);
+				onlineMembers.forEach(el -> GeneralMethods.updatePlayerTab(Bukkit.getPlayer(el.getUUID())));
 			}	
 		}, 1L);
 		

@@ -1,6 +1,7 @@
 package persistency;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,8 +42,9 @@ public class NationMapping {
 		this.maxChunks = maxChunks;
 		this.chunkIncrement = maxChunks;
 		this.nationID = nationID;
-		setName(name);
+		this.name = name;
 		addLeader(leader);
+		Arrays.asList(Flag.values()).forEach(flag -> this.flags.put(flag, Flag.getDefault(flag).equalsIgnoreCase("ALLOW")));
 	}
 	
 	
@@ -130,6 +132,7 @@ public class NationMapping {
 		leader.setRank(Rank.Leader);
 		leader.setNationID(this.nationID);
 		leader.update();
+		this.db.insertPlayerIntoNation(this.nationID, leader.getUUID());
 		return true;
 	}
 	
@@ -154,6 +157,7 @@ public class NationMapping {
 		officer.setRank(Rank.Officer);
 		officer.setNationID(this.nationID);
 		officer.update();
+		this.db.insertPlayerIntoNation(this.nationID, officer.getUUID());
 		return true;
 	}
 	private boolean demoteOfficer(PlayerMapping officer) {
@@ -198,7 +202,7 @@ public class NationMapping {
 		member.setRank(Rank.Member);
 		member.update();
 		this.maxChunks += chunkIncrement;
-		this.update();
+		this.db.insertPlayerIntoNation(this.nationID, member.getUUID());
 		
 		Bukkit.getOnlinePlayers().forEach(el -> {
 			Main.getInstance().getMappingRepo().getScoreboardManager().updateScoreboard(el);
@@ -229,19 +233,19 @@ public class NationMapping {
 	
 	
 	
-	public boolean kickPlayer(PlayerMapping player) {
+	public void kickPlayer(PlayerMapping player) {
 		player.setNationID(null);
 		player.setRank(Rank.Nationless);
 		player.update();
 		this.members.removeIf(el -> el.equals(player));
 		this.officers.removeIf(el -> el.equals(player));
+		this.leaders.removeIf(el -> el.equals(player));
 		this.maxChunks -= chunkIncrement;
-		this.update();
+		this.db.removePlayerFromNation(player.getUUID());
 		
 		Bukkit.getOnlinePlayers().forEach(el -> {
 			Main.getInstance().getMappingRepo().getScoreboardManager().updateScoreboard(el);
 		});
-		return true;
 	}
 	public Object[] demotePlayer(PlayerMapping player) {
 		if(demoteOfficer(player) || demoteMember(player)) return new Object[] {true, player.getRank()};

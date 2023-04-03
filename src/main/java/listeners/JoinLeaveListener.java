@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import chunkgain.ChunkGainManager;
 import events.nation.ReloadEvent;
+import general.GeneralMethods;
 import main.Main;
 import persistency.MappingRepository;
 import persistency.NationMapping;
@@ -68,6 +69,8 @@ public class JoinLeaveListener implements Listener{
 		mappingRepo.getScoreboardManager().updateScoreboard(event.getPlayer());
 		
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(event.getPlayer().getUniqueId());
+		
+		GeneralMethods.updatePlayerTab(event.getPlayer());
 		if(playerMap.getNationID() == null) return;
 		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());

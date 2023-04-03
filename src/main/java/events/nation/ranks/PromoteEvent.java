@@ -1,5 +1,7 @@
 package events.nation.ranks;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -9,8 +11,10 @@ import org.bukkit.entity.Player;
 import events.nation.NationEvent;
 import general.GeneralMethods;
 import main.Main;
+import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
+import persistency.WarMapping;
 
 public class PromoteEvent extends NationEvent{
 	private PlayerMapping promotedPlayer;
@@ -18,6 +22,7 @@ public class PromoteEvent extends NationEvent{
 	public PromoteEvent(NationMapping nation, CommandSender sender, PlayerMapping player) {
 		super(nation, sender);
 		Main main = Main.getInstance();
+		MappingRepository mappingRepo = main.getMappingRepo();
 		FileConfiguration language = main.getLanguage();
 		
 		setPromotedPlayer(player);
@@ -35,6 +40,11 @@ public class PromoteEvent extends NationEvent{
 					Player playerAB = Bukkit.getPlayer(playerA.getUUID());
 					playerAB.sendMessage(GeneralMethods.relFormat(sender, (CommandSender)playerO, language.getString("Command.Player.Promote.Promoted.Message"), playerO.getName()));
 				}
+				
+				Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
+				if(wars.isEmpty()) return;
+				wars.stream().forEach(el -> el.updateGoal());
+				mappingRepo.updateNationWars(nation.getNationID());
 			}
 		}, 1L);
 	}

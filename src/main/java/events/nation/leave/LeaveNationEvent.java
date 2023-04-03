@@ -1,5 +1,7 @@
 package events.nation.leave;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,6 +16,7 @@ import main.Main;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
+import persistency.WarMapping;
 
 public class LeaveNationEvent extends NationEvent{
 
@@ -41,7 +44,14 @@ public class LeaveNationEvent extends NationEvent{
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Leave.Message"), sender.getName()));
 				
 				if(nation.getLeaders().size() == 1 && playerMap.getRank().equals(Rank.Leader)) main.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
-				else nation.kickPlayer(playerMap);
+				else {
+					nation.kickPlayer(playerMap);
+					GeneralMethods.updatePlayerTab((Player)sender);
+					Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
+					if(wars.isEmpty()) return;
+					wars.stream().forEach(el -> el.updateGoal());
+					mappingRepo.updateNationWars(nation.getNationID());
+				}
 			}
 		}, 1L);
 	}

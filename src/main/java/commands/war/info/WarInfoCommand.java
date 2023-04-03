@@ -121,8 +121,8 @@ public class WarInfoCommand extends ChildCommand{
 	
 	@Override
 	public String[] getSubArguments(String[] args) {
-		if(args.length < 2) return null;
-		NationMapping nation = mappingRepo.getNationByName(args[1]);
+		if(args.length < 3) return null;
+		NationMapping nation = mappingRepo.getNationByName(args[2]);
 		if(nation == null) return null;
 		
 		Set<NationMapping> enemies = mappingRepo.getWarNationsByNationID(nation.getNationID());

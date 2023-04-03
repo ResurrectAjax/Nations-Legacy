@@ -94,6 +94,10 @@ public class PlayerKillListener implements Listener{
 			damagerMap.setKillpoints(kp);
 			damagerMap.update();
 			
+			int kp2 = playerMap.getKillpoints()-rankWorth;
+			playerMap.setKillpoints(kp2);
+			playerMap.update();
+			
 			int damagerNationKp, nationKp;
 			if(war.getNation().equals(damagerNation)) {
 				damagerNationKp = war.getNationKillpoints() + rankWorth;

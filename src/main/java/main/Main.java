@@ -12,10 +12,13 @@ import org.yaml.snakeyaml.Yaml;
 
 import commands.NationsCommand;
 import events.nation.ReloadEvent;
+import general.GeneralMethods;
 import listeners.ClaimListener;
 import listeners.JoinLeaveListener;
+import listeners.PlayerInteractListener;
 import listeners.PlayerKillListener;
 import listeners.PlayerMoveListener;
+import listeners.PrefixListener;
 import me.resurrectajax.ajaxplugin.gui.GuiManager;
 import me.resurrectajax.ajaxplugin.managers.CommandManager;
 import me.resurrectajax.ajaxplugin.managers.FileManager;
@@ -72,6 +75,7 @@ public class Main extends AjaxPlugin{
 		for(Player player : Bukkit.getOnlinePlayers()) {
 			if(getMappingRepo().getPlayerByUUID(player.getUniqueId()) == null) getMappingRepo().addPlayer(player);	
 			getMappingRepo().getScoreboardManager().updateScoreboard(player);
+			GeneralMethods.updatePlayerTab(player);
 		}
 		
 		hookIntoPlaceholderAPI();
@@ -82,7 +86,8 @@ public class Main extends AjaxPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
 		getServer().getPluginManager().registerEvents(new ClaimListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerKillListener(this), this);
-//		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
+		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
+		getServer().getPluginManager().registerEvents(new PrefixListener(this), this);
 	}
 	
 	/**

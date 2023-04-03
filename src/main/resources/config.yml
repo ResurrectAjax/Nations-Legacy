@@ -1,4 +1,9 @@
 Nations:
+  # Prefix: whether or not the chat prefix is enabled.
+  Prefix:
+    # Format: first %s = nation name; second %s = player name; third %s = message
+    Format: "&f[&b%s&f]&r %s"
+    Enabled: true
   Claiming:
     # MaxChunks: Maximum amount of chunks per player, e.g. nation has 3 members, 10 chunks/member => nation has 30max chunks
     MaxChunks: 10
@@ -23,13 +28,13 @@ Nations:
     FriendlyFire:
       Adjustable: false
       Default: "DENY"
-    BlockProtection:
+    TerrainEdit:
       Adjustable: false
       Default: "DENY"
-    ChestProtection:
+    StorageAccess:
       Adjustable: false
       Default: "DENY"
-    InteractProtection:
+    Interact:
       Adjustable: false
       Default: "DENY"
   War:

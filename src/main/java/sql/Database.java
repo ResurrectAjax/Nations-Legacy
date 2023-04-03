@@ -430,20 +430,20 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         ResultSet rs = null;
         
         HashMap<Integer, HashMap<Flag, Boolean>> map = new HashMap<Integer, HashMap<Flag, Boolean>>();
-        HashMap<Flag, Boolean> flags = new HashMap<Flag, Boolean>();
+        HashMap<Flag, Boolean> flags = new HashMap<>();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM FlagLines");
+            ps = conn.prepareStatement("SELECT * FROM FlagLines ORDER BY NationID, Flag");
             
             rs = ps.executeQuery();
             
             Integer nationID = null;
             while(rs.next()){
-            	if(nationID != rs.getInt(2)) flags = new HashMap<>();
             	nationID = rs.getInt(2);
+            	if(map.containsKey(nationID)) flags = new HashMap<>(map.get(nationID));
             	
-            	flags.put(Flag.valueOf(rs.getString(3)), rs.getInt(4) == 0 ? false : true);
-            	map.put(nationID, new HashMap<>(flags));
+            	flags.put(Flag.getFromString(rs.getString(3)), rs.getInt(4) == 0 ? false : true);
+            	map.put(nationID, flags);
             }
         	return map;
         } catch (SQLException ex) {
@@ -460,6 +460,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         }
         return map;
     }
+    
     
     protected void updateFlags() {
     	Connection conn = null;
@@ -479,38 +480,10 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             }
             ps.close();
             
-            if(flagStrings.isEmpty()) {
-            	ps = conn.prepareStatement(SQLiteInsertFlags());
-                ps.executeUpdate();
-            	return;
-            }
-            
-            List<String> flags = new ArrayList<String>();
-            for(Flag flag : Flag.values()) {
-            	flags.add(flag.toString());
-            }
-            
-            List<String> difference = new ArrayList<String>(flagStrings);
-            if(flagStrings.retainAll(flags)) difference.removeAll(flagStrings);
-            
-            if(difference.isEmpty()) return;
-            
-        	String stmt = "DELETE FROM Flags WHERE Flag = ?";
-        	for(int i = 1; i <= difference.size(); i++) {
-        		if(i != 1) stmt += " OR Flag = ?";
-        	}
-        	
-        	ps = conn.prepareStatement(stmt);
-
-        	for(int i = 1; i <= difference.size(); i++) {
-        		ps.setString(i, difference.get(i-1));
-        	}
-            ps.executeUpdate();
-            ps.close();
+            if(!flagStrings.isEmpty()) return;
             
             ps = conn.prepareStatement(SQLiteInsertFlags());
             ps.executeUpdate();
-            
         	return;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
@@ -688,8 +661,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             	
             	nation = new NationMapping(nationID, name, leader, maxChunks, this);
             }
-            
-            insertPlayerIntoNation(nationID, leader.getUUID());
             return nation;
             
         } catch (SQLException ex) {
@@ -711,8 +682,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public void insertPlayerIntoNation(int nationID, UUID uuid) {
     	Connection conn = null;
         PreparedStatement ps = null;
-        
-        try {
+		try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("INSERT INTO Nation_Players(NationID, UUID) values(?,?);");
             
@@ -775,10 +745,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public void updateNation(NationMapping nation) {
     	Connection conn = null;
         PreparedStatement ps = null;
-        try {
-        	Set<PlayerMapping> dbPlayers = getAllMembersOfNation(nation.getNationID());
-        	Set<PlayerMapping> nationPlayers = nation.getAllMembers();
-        	
+        try {        	
             conn = getSQLConnection();
             ps = conn.prepareStatement("UPDATE Nations SET Name = ?, Description = ?, MaxChunks = ?, Gained_Chunks = ? WHERE NationID = ?");
             
@@ -790,27 +757,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             
             ps.executeUpdate();
             ps.close();
-            
-            Set<PlayerMapping> differences = new HashSet<>();
-            if(dbPlayers.size() < nationPlayers.size()) {
-            	differences = nationPlayers.stream()
-            		.filter(el -> !dbPlayers.contains(el))
-            		.collect(Collectors.toSet());
-            	
-            	for(PlayerMapping player : differences) {
-            		insertPlayerIntoNation(nation.getNationID(), player.getUUID());
-            	}
-            }
-            else if(dbPlayers.size() > nationPlayers.size()) {
-            	differences = dbPlayers.stream()
-                		.filter(el -> !nationPlayers.contains(el))
-                		.collect(Collectors.toSet());
-            	for(PlayerMapping player : differences) {
-            		removePlayerFromNation(player.getUUID());
-            	}
-            	
-            }
-            return;
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
         } finally {
@@ -853,6 +799,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
                 plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
             }
         }
+    	
     }
     
     public HashMap<String, Location> getHomes(int nationID) {
@@ -888,7 +835,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     }
     
     public void deleteHome(int nationID, String name) {
-    	Connection conn = null;
+		Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
@@ -1077,6 +1024,39 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         }
     }
     
+    public void updateWars(Set<WarMapping> wars) {
+    	Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement(
+            		"WITH Tmp(NationID, EnemyID, NationKillpoints, EnemyKillpoints, KillpointGoal) as (VALUES" + 
+            		wars.stream().map(el -> {
+            			return String.format("(%d, %d, %d, %d, %d)", el.getNation().getNationID(), el.getEnemy().getNationID(), el.getNationKillpoints(), el.getEnemyKillpoints(), el.getKillpointGoal());
+            		}).collect(Collectors.joining(", ")) +
+            		") " +
+            		"UPDATE Wars SET NationKillpoints = (SELECT NationKillpoints FROM Tmp WHERE Wars.NationID = Tmp.NationID AND Wars.EnemyID = Tmp.EnemyID), " + 
+            		"EnemyKillpoints = (SELECT EnemyKillpoints FROM Tmp WHERE Wars.NationID = Tmp.NationID AND Wars.EnemyID = Tmp.EnemyID), " + 
+            		"KillpointGoal = (SELECT KillpointGoal FROM Tmp WHERE Wars.NationID = Tmp.NationID AND Wars.EnemyID = Tmp.EnemyID) " + 
+            		"WHERE NationID IN (SELECT NationID FROM Tmp) AND EnemyID IN (SELECT EnemyID FROM Tmp)"
+            		);
+            
+            ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+    }
+    
     public void deleteWar(int nationID, int warID) {
     	Connection conn = null;
         PreparedStatement ps = null;
@@ -1238,14 +1218,13 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public void addNationFlags(int nationID) {
     	Connection conn = null;
         PreparedStatement ps = null;
-        FileConfiguration config = plugin.getConfig();
         
         try {
             conn = getSQLConnection();
             
             String stmt = "INSERT INTO FlagLines(NationID, Flag, Allow) values";
             for(Flag flag : Flag.values()) {
-            	String allow = config.getString("Nations.Flags." + flag.toString() + ".Default");
+            	String allow = Flag.getDefault(flag);
             	
             	int index = Arrays.asList(Flag.values()).indexOf(flag);
             	if(index == Flag.values().length-1) stmt += String.format("(%d,'%s',%d);", nationID, flag.toString(), allow.equalsIgnoreCase("allow") ? 1 : 0);
@@ -1273,7 +1252,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public void updateNationFlag(Flag flag, int nationID, boolean allow) {
     	Connection conn = null;
         PreparedStatement ps = null;
-        try {
+		try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("UPDATE FlagLines SET Allow = ? WHERE NationID = ? AND Flag = ?");
             

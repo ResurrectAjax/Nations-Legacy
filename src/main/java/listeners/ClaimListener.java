@@ -40,7 +40,7 @@ public class ClaimListener implements Listener{
 			public void run() {
 				NationMapping chunkNation = mappingRepo.getNationByChunk(player.getLocation().getChunk());
 				PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-				if((chunkNation == null && mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) || playerMap.getNationID() != chunkNation.getNationID()) {
+				if((chunkNation == null && mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) || (chunkNation != null && playerMap.getNationID() != chunkNation.getNationID())) {
 					mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
 					player.sendMessage(GeneralMethods.format((OfflinePlayer) player, main.getLanguage().getString("Command.Nations.Unclaim.TurnedOff.Message"), player.getName()));
 					player.sendMessage(GeneralMethods.format((OfflinePlayer) player, main.getLanguage().getString("Command.Nations.Unclaim.NotInClaim.Message"), player.getName()));

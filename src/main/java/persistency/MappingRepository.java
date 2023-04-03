@@ -232,6 +232,9 @@ public class MappingRepository extends me.resurrectajax.ajaxplugin.persistency.M
 				.map(el -> el.getNation().getNationID() != nationID ? el.getNation() : el.getEnemy())
 				.collect(Collectors.toSet());
 	}
+	public void updateNationWars(int nationID) {
+		this.db.updateWars(getWarsByNationID(nationID));
+	}
 	
 	
 	public NationMapping getNationByChunk(Chunk chunk) {

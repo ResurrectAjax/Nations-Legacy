@@ -47,6 +47,8 @@ public class WarEndEvent extends WarEvent{
 				Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> enemy.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
 				OfflinePlayer enemyOffline = enemy.getAllMembers().stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID())).findFirst().orElse(null);
 				
+				main.getCommandManager().setLastMentioned(enemyOffline.getName(), enemyOffline);
+				
 				Set<PlayerMapping> players = new HashSet<>();
 				players.addAll(winner.getAllMembers());
 				players.addAll(loser.getAllMembers());
@@ -66,7 +68,7 @@ public class WarEndEvent extends WarEvent{
 				Bukkit.getOnlinePlayers().stream()
 				.filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
-					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)enemyOffline, language.getString("Command.Nations.War.End.ChunksGained.Message"), enemy.getName()));
+					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksGained.Message"), enemy.getName()));
 					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksGained.Message"), enemy.getName()));
 				});
 				

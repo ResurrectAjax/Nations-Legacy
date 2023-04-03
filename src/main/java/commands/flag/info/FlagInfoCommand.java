@@ -1,7 +1,6 @@
-package commands.info;
+package commands.flag.info;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,23 +19,24 @@ import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
 
-public class NationInfoCommand extends ChildCommand{
-	private final Main main;
-	private ParentCommand parent;
-	public NationInfoCommand(ParentCommand parent) {
-		this.main = (Main) parent.getMain();
-		this.parent = parent;
-	}
+public class FlagInfoCommand extends ChildCommand{
 
+	private Main main;
+	private ParentCommand parent;
+	public FlagInfoCommand(ParentCommand parent) {
+		this.parent = parent;
+		this.main = (Main) parent.getMain();
+	}
+	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
 		FileConfiguration language = main.getLanguage();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		
-		super.setLastArg(sender, args.length < 2 ? "" : args[1]);
+		super.setLastArg(sender, args.length < 3 ? "" : args[2]);
 		
-		if(args.length == 1) {
+		if(args.length == 2) {
 			if(!(sender instanceof OfflinePlayer)) {
 				sender.sendMessage(GeneralMethods.format(language.getString("Command.Error.ByConsole.Message")));
 				return;
@@ -53,10 +53,10 @@ public class NationInfoCommand extends ChildCommand{
 			return;
 		}
 		
-		if(args.length > 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
-		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
-		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
-		else giveInfo(sender, args[1]);
+		if(args.length > 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(getSyntax()));
+		else if(!Pattern.matches("[a-zA-Z]+", args[2])) GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.SpecialCharacters.Message"), args[2]);
+		else if(mappingRepo.getNationByName(args[2]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
+		else giveInfo(sender, args[2]);
 		
 	}
 	
@@ -68,22 +68,13 @@ public class NationInfoCommand extends ChildCommand{
 			super.setLastMentioned(sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("Nation Info", '-', 37));
+		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("Nation Flags", '-', 37));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));
-		sender.sendMessage(GeneralMethods.format("  &bKill Points: &c" + nationMap.countKillPoints() + "p"));
-		sender.sendMessage(GeneralMethods.format("  &bDescription: &f" + nationMap.getDescription()));
-		sender.sendMessage(GeneralMethods.format("  &bLeaders: &a" + givePlayerList(nationMap.getLeaders())));
-		sender.sendMessage(GeneralMethods.format("  &bOfficers: &a" + givePlayerList(nationMap.getOfficers())));
-		sender.sendMessage(GeneralMethods.format("  &bMembers: &a" + givePlayerList(nationMap.getMembers())));
-		sender.sendMessage(GeneralMethods.format("  &bAllies: " + giveNationList(mappingRepo.getAllianceNationsByNationID(nationMap.getNationID()), ChatColor.GOLD, ChatColor.GREEN)));
-		sender.sendMessage(GeneralMethods.format("  &bEnemies: " + giveNationList(mappingRepo.getWarNationsByNationID(nationMap.getNationID()), ChatColor.RED, ChatColor.GREEN)));
+		nationMap.getFlags().entrySet().forEach(entry -> {
+			String allow = entry.getValue() ? "&a&lALLOW" : "&c&lDENY";
+			sender.sendMessage(GeneralMethods.format(String.format("  &b%s: %s", entry.getKey().toString(), allow)));
+		});
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));
-	}
-	private String givePlayerList(Set<PlayerMapping> players) {
-		return players.stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID()).getName()).collect(Collectors.joining(", "));
-	}
-	private String giveNationList(Set<NationMapping> nations, ChatColor nameColor, ChatColor joiningColor) {
-		return nations.stream().map(el -> nameColor + el.getName()).collect(Collectors.joining(joiningColor + ", "));
 	}
 
 	@Override
@@ -110,6 +101,12 @@ public class NationInfoCommand extends ChildCommand{
 	}
 
 	@Override
+	public String[] getSubArguments(String[] args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return null;
@@ -130,13 +127,13 @@ public class NationInfoCommand extends ChildCommand{
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/nations info <nation>";
+		return "/nations flag info <nation>";
 	}
 
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Get the info of a specified nation";
+		return "Get the flag info of a nation";
 	}
 
 	@Override
@@ -157,11 +154,4 @@ public class NationInfoCommand extends ChildCommand{
 		return parent;
 	}
 
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
 }

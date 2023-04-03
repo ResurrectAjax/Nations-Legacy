@@ -40,7 +40,7 @@ public class ChunkGainManager {
 				if(nation.getGainedChunks() < limit || limit == -1) Bukkit.getPluginManager().callEvent(new ChunkGainEvent(nation, null, chunks));
 				else chunkGainTask.remove(nation.getNationID());
 			}
-		}, 0L, interval*20L);
+		}, interval*20L, interval*20L);
 		
 		chunkGainTask.put(nation.getNationID(), task);
 	}

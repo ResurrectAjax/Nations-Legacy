@@ -2,13 +2,15 @@ package general;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import main.Main;
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.clip.placeholderapi.replacer.CharsReplacer;
-import me.clip.placeholderapi.replacer.Replacer;
 import net.md_5.bungee.api.ChatColor;
+import persistency.MappingRepository;
+import persistency.NationMapping;
+import persistency.PlayerMapping;
 
 /**
  * Class of general methods that can be used everywhere
@@ -73,5 +75,20 @@ public class GeneralMethods extends me.resurrectajax.ajaxplugin.general.GeneralM
  			if(input.contains(format)) newStr = input.replaceAll(format, value);
  		}
  		return ChatColor.translateAlternateColorCodes('&', newStr);
+ 	}
+ 	
+ 	public static void updatePlayerTab(Player player) {
+ 		Main main = Main.getInstance();
+ 		MappingRepository mappingRepo = main.getMappingRepo();
+		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
+		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
+		FileConfiguration config = main.getConfig();
+		
+		boolean hasPrefix = config.getBoolean("Nations.Prefix.Enabled");
+		if(!hasPrefix) return;
+		
+		String playerName = player.getDisplayName();
+		String total = String.format(config.getString("Nations.Prefix.Format"), nation != null ? nation.getName() : "&2Wilderness", playerName);
+		player.setPlayerListName(GeneralMethods.format(total));
  	}
 }

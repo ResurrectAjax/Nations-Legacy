@@ -1,5 +1,7 @@
 package events.nation.join;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -13,6 +15,7 @@ import general.GeneralMethods;
 import persistency.MappingRepository;
 import persistency.NationMapping;
 import persistency.PlayerMapping;
+import persistency.WarMapping;
 
 public class JoinNationEvent extends NationEvent{
 
@@ -34,6 +37,11 @@ public class JoinNationEvent extends NationEvent{
 				MappingRepository mappingRepo = main.getMappingRepo();
 				PlayerMapping player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
 				
+				if(player.getNationID() != null) {
+					NationMapping nation = mappingRepo.getNationByID(player.getNationID());
+					nation.kickPlayer(player);
+				}
+				
 				switch(nationRank) {
 					case Leader: 
 						nation.addLeader(player);
@@ -47,7 +55,6 @@ public class JoinNationEvent extends NationEvent{
 					default:
 						break;
 				}
-				nation.update();
 				
 				if(mappingRepo.getPlayerInvites().containsKey(player.getUUID()) && mappingRepo.getPlayerInvites().get(player.getUUID()).contains(nation.getNationID())) {
 					mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
@@ -56,7 +63,12 @@ public class JoinNationEvent extends NationEvent{
 						.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.Accepted.Message"), nation.getName())));	
 				}
 				
+				GeneralMethods.updatePlayerTab((Player)sender);
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
+				Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
+				if(wars.isEmpty()) return;
+				wars.stream().forEach(el -> el.updateGoal());
+				mappingRepo.updateNationWars(nation.getNationID());
 			}
 		}, 1L);
 	}

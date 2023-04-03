@@ -1,5 +1,6 @@
 package persistency;
 
+import enumeration.Rank;
 import sql.Database;
 
 public class WarMapping {
@@ -31,13 +32,17 @@ public class WarMapping {
 	private int calculateGoal(NationMapping nation, NationMapping enemy) {
 		int goal = 0;
 		
-		int leaderPoints = (nation.getLeaders().size() * 3) + (enemy.getLeaders().size() * 3);
-		int officerPoints = (nation.getOfficers().size() * 2) + (enemy.getOfficers().size() * 2);
-		int memberPoints = (nation.getMembers().size() * 1) + (enemy.getMembers().size() * 1);
+		int leaderPoints = (nation.getLeaders().size() * Rank.getRankWorth(Rank.Leader)) + (enemy.getLeaders().size() * Rank.getRankWorth(Rank.Leader));
+		int officerPoints = (nation.getOfficers().size() * Rank.getRankWorth(Rank.Officer)) + (enemy.getOfficers().size() * Rank.getRankWorth(Rank.Officer));
+		int memberPoints = (nation.getMembers().size() * Rank.getRankWorth(Rank.Member)) + (enemy.getMembers().size() * Rank.getRankWorth(Rank.Member));
 		goal += leaderPoints + officerPoints + memberPoints;
 		goal *= 2;
 		
 		return goal;
+	}
+	
+	public void updateGoal() {
+		this.killpointGoal = calculateGoal(nation, enemy);
 	}
 	
 	public int getNationKillpoints() {
