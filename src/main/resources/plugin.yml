@@ -1,4 +1,4 @@
-main: main.Main
+main: me.resurrectajax.nationslegacy.main.Nations
 name: Nations-Legacy
 version: 1.0.0
 author: ResurrectAjax

@@ -16,6 +16,15 @@ Command:
     SpecialCharacters:
       Message: '&bNations-Legacy &8: &ePlease don''t use any special characters or numbers.'
   Nations:
+    Transfer:
+      Self:
+        Message: '&bNations-Legacy &8: &eYou can''t transfer chunks to your own nation.'
+      NotEnough:
+        Message: '&bNations-Legacy &8: &eYou don''t have &c%nations_transfer_amount%&e chunks to spare.'
+      Sent:
+        Message: '&bNations-Legacy &8: &eYou have transferred &c%nations_transfer_amount%&e chunks to &a&l%nations_rel_nation_name%&e.'
+      Received:
+        Message: '&bNations-Legacy &8: &eYour nation has received &c%nations_transfer_amount%&e chunks from &a&l%nations_nation_name%&e.'
     Flag:
       Set:
         Allow:

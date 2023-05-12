@@ -1,9 +1,15 @@
 Nations:
-  # Prefix: whether or not the chat prefix is enabled.
   Prefix:
     # Format: first %s = nation name; second %s = player name; third %s = message
     Format: "&f[&b%s&f]&r %s"
     Enabled: true
+    
+  Transfer:
+    # Chunks: the chunks that will be transferred to the other nation
+    #   Regain: wether the transferring nation can regain the chunks they lost using chunkgain
+    Chunks:
+      Regain: false
+   
   Claiming:
     # MaxChunks: Maximum amount of chunks per player, e.g. nation has 3 members, 10 chunks/member => nation has 30max chunks
     MaxChunks: 10
@@ -13,8 +19,8 @@ Nations:
     #   Chunks: Amount of chunks added after TimePeriod
     #   Limit: Max limit of total chunks a nation can gain with ChunkGain (-1 for infinite)
     ChunkGain:
-      Interval: 10m
-      Chunks: 5
+      Interval: 5m
+      Chunks: 1
       Limit: 100
   Home:
     # MaxHomes: Maximum amount of homes per nation
@@ -44,6 +50,11 @@ Nations:
       Officer: 2
       Member: 1
       Nationless: 1
+    
+    # Chunks: the chunks that will be transferred to the winning nation
+    #   Regain: wether the losing nation can regain the chunks they lost using chunkgain
+    Chunks:
+      Regain: true
   Combat:
     # Duration: amount of time a player remains in combat after the last hit
     Duration: 15s
