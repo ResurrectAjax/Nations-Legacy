@@ -42,8 +42,8 @@ public class ScoreboardManager {
 			else format = "&9&l" + nationName;
 			
 			if(playerA.equals(player)) continue;
-			Objective obj = scoreboard.getObjective("nationname");
-            if(obj == null) obj = scoreboard.registerNewObjective("nationname", "dummy", nation != null ? GeneralMethods.format(format) : GeneralMethods.format("&2&lWilderness"));
+			Objective obj = scoreboard.getObjective(playerA.getName() + "_nationname");
+            if(obj == null) obj = scoreboard.registerNewObjective(playerA.getName() + "_nationname", "dummy", nation != null ? GeneralMethods.format(format) : GeneralMethods.format("&2&lWilderness"));
             else obj.setDisplayName(nation != null ? GeneralMethods.format(format) : GeneralMethods.format("&2&lWilderness"));
             obj.setDisplaySlot(DisplaySlot.BELOW_NAME);
             Score score = obj.getScore(playerA.getName());

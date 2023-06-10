@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,7 +27,13 @@ public class NationRenderer extends MapRenderer{
 		if(noRender.contains(map.getId())) return;
 		noRender.add(map.getId());
 		
-		addChunkBorders(canvas, player);
+		Bukkit.getScheduler().runTask(Nations.getInstance(), new Runnable() {
+			@Override
+			public void run() {
+				addChunkBorders(canvas, player);
+			}
+		});
+		
 	}
 	
 	public void addChunkBorders(MapCanvas canvas, Player player) {

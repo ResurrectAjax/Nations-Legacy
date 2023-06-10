@@ -30,7 +30,7 @@ public class NationMap {
     		map.setScale(MapView.Scale.CLOSEST);
     		
     		map.setTrackingPosition(true);
-            map.addRenderer(new NationRenderer());
+    		map.addRenderer(new NationRenderer());
         }
 	}
 }
