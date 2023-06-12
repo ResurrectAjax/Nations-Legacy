@@ -49,7 +49,7 @@ public class ClaimChunkCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Start or stop claiming chunks for your nation";
+		return main.getLanguage().getString("HelpList.Claim.Description");
 	}
 	@Override
 	public List<ParentCommand> getSubCommands() {

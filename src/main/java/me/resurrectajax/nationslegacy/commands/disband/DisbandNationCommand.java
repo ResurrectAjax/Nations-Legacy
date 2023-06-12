@@ -74,7 +74,7 @@ public class DisbandNationCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Disband your nation";
+		return main.getLanguage().getString("HelpList.Disband.Description");
 	}
 
 	@Override

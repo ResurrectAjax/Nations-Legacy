@@ -52,9 +52,9 @@ public class NationInfoCommand extends ChildCommand{
 			return;
 		}
 		
-		if(args.length > 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
-		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
+		if(args.length != 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
+		else if(!Pattern.matches("[a-zA-Z]+", args[1])) GeneralMethods.format(sender, language.getString("Command.Error.SpecialCharacters.Message"), args[1]);
+		else if(mappingRepo.getNationByName(args[1]) == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
 		else giveInfo(sender, args[1]);
 		
 	}
@@ -140,7 +140,7 @@ public class NationInfoCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Get the info of a specified nation";
+		return main.getLanguage().getString("HelpList.Info.Description");
 	}
 
 	@Override

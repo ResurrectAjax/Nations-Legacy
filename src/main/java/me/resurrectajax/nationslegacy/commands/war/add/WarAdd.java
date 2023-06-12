@@ -97,7 +97,7 @@ public class WarAdd extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Declare war with another nation";
+		return main.getLanguage().getString("HelpList.War.Add.Description");
 	}
 
 	@Override

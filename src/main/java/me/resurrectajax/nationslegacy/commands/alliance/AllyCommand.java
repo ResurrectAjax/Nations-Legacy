@@ -50,7 +50,7 @@ public class AllyCommand extends ParentCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Run an alliance command";
+		return parent.getMain().getLanguage().getString("HelpList.Ally.Description");
 	}
 
 	@Override

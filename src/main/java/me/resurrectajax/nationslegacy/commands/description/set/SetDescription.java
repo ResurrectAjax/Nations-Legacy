@@ -82,7 +82,7 @@ public class SetDescription extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Set the description of your nation";
+		return main.getLanguage().getString("HelpList.Description.Set.Description");
 	}
 
 	@Override

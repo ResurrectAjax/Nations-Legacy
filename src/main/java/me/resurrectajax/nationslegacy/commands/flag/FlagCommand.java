@@ -3,6 +3,7 @@ package me.resurrectajax.nationslegacy.commands.flag;
 import java.util.Arrays;
 import java.util.List;
 
+import me.resurrectajax.ajaxplugin.help.HelpCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.flag.info.FlagInfoCommand;
@@ -42,13 +43,14 @@ public class FlagCommand extends ParentCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Execute a flag command";
+		return parent.getMain().getLanguage().getString("HelpList.Flag.Description");
 	}
 
 	@Override
 	public List<ParentCommand> getSubCommands() {
 		// TODO Auto-generated method stub
 		return Arrays.asList(
+				new HelpCommand(this),
 				new FlagInfoCommand(this),
 				new FlagSetCommand(this)
 				);

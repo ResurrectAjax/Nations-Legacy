@@ -110,7 +110,7 @@ public class ListCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Returns a list of nations ordered by killpoints";
+		return main.getLanguage().getString("HelpList.List.Description");
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public class WhoCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Get the player's information";
+		return main.getLanguage().getString("HelpList.Who.Description");
 	}
 
 	@Override

@@ -5,12 +5,16 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.nationslegacy.algorithms.FillAlgorithm;
 import me.resurrectajax.nationslegacy.events.nation.NationEvent;
+import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
+import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 
 public class ClaimAutoFillEvent extends NationEvent{
@@ -23,6 +27,8 @@ public class ClaimAutoFillEvent extends NationEvent{
 		Player player = (Player) sender;
 		
 		Nations main = Nations.getInstance();
+		FileConfiguration language = main.getLanguage();
+		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		FillAlgorithm algorithm = new FillAlgorithm(main, nation, startChunk);
 		this.claimedChunks = new ArrayList<>(algorithm.fillSquareOutline());
@@ -34,8 +40,19 @@ public class ClaimAutoFillEvent extends NationEvent{
 				if(isCancelled) return;
 				
 				if(claimedChunks.size() > nation.getMaxChunks()-nation.getClaimedChunks().size()) {
-					//error message
+					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.Insufficient.Message"), nation.getName()));
+					if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) {
+						mappingRepo.getClaimingSet().remove(player.getUniqueId());
+						sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), nation.getName()));
+					}
 					return;
+				}
+				if(claimedChunks.size() == nation.getMaxChunks()-nation.getClaimedChunks().size()) {
+					if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) {
+						mappingRepo.getClaimingSet().remove(player.getUniqueId());
+						sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.MaxChunks.Message"), nation.getName()));
+						sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), nation.getName()));
+					}
 				}
 				for(Chunk claim : claimedChunks) {
 					Bukkit.getPluginManager().callEvent(new ClaimChunkEvent(nation, player, claim));

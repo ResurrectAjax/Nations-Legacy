@@ -52,7 +52,7 @@ public class WarCommand extends ParentCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Run a war command";
+		return parent.getMain().getLanguage().getString("HelpList.War.Description");
 	}
 
 	@Override

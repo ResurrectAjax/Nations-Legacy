@@ -56,7 +56,7 @@ public class FlagInfoCommand extends ChildCommand{
 		
 		if(args.length > 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(!Pattern.matches("[a-zA-Z]+", args[2])) GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.SpecialCharacters.Message"), args[2]);
-		else if(mappingRepo.getNationByName(args[2]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
+		else if(mappingRepo.getNationByName(args[2]) == null) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
 		else giveInfo(sender, args[2]);
 		
 	}
@@ -134,7 +134,7 @@ public class FlagInfoCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Get the flag info of a nation";
+		return main.getLanguage().getString("HelpList.Flag.Info.Description");
 	}
 
 	@Override

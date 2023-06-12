@@ -1,7 +1,7 @@
 package me.resurrectajax.nationslegacy.commands.admin;
 import java.util.Arrays;
 
-import me.resurrectajax.ajaxplugin.commands.AdminCommand;
+import me.resurrectajax.ajaxplugin.commands.admin.AdminCommand;
 import me.resurrectajax.ajaxplugin.help.HelpCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;

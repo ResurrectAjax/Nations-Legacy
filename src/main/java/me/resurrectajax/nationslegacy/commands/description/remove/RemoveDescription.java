@@ -77,7 +77,7 @@ public class RemoveDescription extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Remove the description of your nation";
+		return main.getLanguage().getString("HelpList.Description.Remove.Description");
 	}
 
 	@Override

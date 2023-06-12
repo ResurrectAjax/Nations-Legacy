@@ -47,7 +47,7 @@ public class CreateNationCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Create a nation";
+		return main.getLanguage().getString("HelpList.Create.Description");
 	}
 
 	@Override

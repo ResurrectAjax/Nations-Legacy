@@ -119,7 +119,7 @@ public class DemoteCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Demote an officer to member";
+		return main.getLanguage().getString("HelpList.Demote.Description");
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public class SetHomeCommand extends ChildCommand{
 
 	@Override
 	public String getDescription() {
-		return "Sets a nation home at the player's current location";
+		return main.getLanguage().getString("HelpList.Sethome.Description");
 	}
 
 	@Override

@@ -83,7 +83,7 @@ public class JoinNationCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Join a nation as a leader";
+		return main.getLanguage().getString("HelpList.Admin.Join.Description");
 	}
 
 	@Override

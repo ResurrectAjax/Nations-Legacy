@@ -94,7 +94,7 @@ public class AllyRemove extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Remove the alliance and become neutral";
+		return main.getLanguage().getString("HelpList.Ally.Remove.Description");
 	}
 
 	@Override

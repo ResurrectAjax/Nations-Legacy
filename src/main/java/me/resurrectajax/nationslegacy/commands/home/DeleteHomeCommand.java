@@ -99,7 +99,7 @@ public class DeleteHomeCommand extends ChildCommand{
 
 	@Override
 	public String getDescription() {
-		return "Deletes a nation home";
+		return main.getLanguage().getString("HelpList.Delhome.Description");
 	}
 
 	@Override

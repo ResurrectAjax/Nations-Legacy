@@ -119,7 +119,7 @@ public class PromoteCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Promote a member or officer to a higher rank";
+		return main.getLanguage().getString("HelpList.Promote.Description");
 	}
 
 	@Override

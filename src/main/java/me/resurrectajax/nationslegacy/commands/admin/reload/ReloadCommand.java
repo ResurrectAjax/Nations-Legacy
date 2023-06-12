@@ -63,7 +63,7 @@ public class ReloadCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Reloads the configuration files";
+		return main.getLanguage().getString("HelpList.Admin.Reload.Description");
 	}
 
 	@Override

@@ -96,7 +96,7 @@ public class HomeCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Teleport to your nation home";
+		return main.getLanguage().getString("HelpList.Home.Description");
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package me.resurrectajax.nationslegacy.scoreboard;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -22,6 +23,7 @@ public class ScoreboardManager {
 	
 	public void updateScoreboard(Player player) {
 		MappingRepository mappingRepo = main.getMappingRepo();
+		FileConfiguration config = main.getConfig();
 		
 		if(player == null) return; 
 		PlayerMapping playerM = mappingRepo.getPlayerByUUID(player.getUniqueId());
@@ -43,8 +45,8 @@ public class ScoreboardManager {
 			
 			if(playerA.equals(player)) continue;
 			Objective obj = scoreboard.getObjective(playerA.getName() + "_nationname");
-            if(obj == null) obj = scoreboard.registerNewObjective(playerA.getName() + "_nationname", "dummy", nation != null ? GeneralMethods.format(format) : GeneralMethods.format("&2&lWilderness"));
-            else obj.setDisplayName(nation != null ? GeneralMethods.format(format) : GeneralMethods.format("&2&lWilderness"));
+            if(obj == null) obj = scoreboard.registerNewObjective(playerA.getName() + "_nationname", "dummy", nation != null ? GeneralMethods.format(format) : GeneralMethods.format(config.getString("Wilderness.Name")));
+            else obj.setDisplayName(nation != null ? GeneralMethods.format(format) : GeneralMethods.format(config.getString("Wilderness.Name")));
             obj.setDisplaySlot(DisplaySlot.BELOW_NAME);
             Score score = obj.getScore(playerA.getName());
             score.setScore(playerMap.getKillpoints());

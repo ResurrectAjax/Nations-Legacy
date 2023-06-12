@@ -93,7 +93,7 @@ public class FlagSetCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Set a nation flag to allow or deny";
+		return main.getLanguage().getString("HelpList.Flag.Set.Description");
 	}
 
 	@Override

@@ -26,6 +26,7 @@ public class MapCommand extends ChildCommand{
 		Player player = (Player) sender;
 		
 		ItemStack map = NationMap.getMap(player);
+		
 		ArrayList<ItemStack> inv = new ArrayList<ItemStack>(Arrays.asList(player.getInventory().getContents()));
 		
 		if(inv.stream().filter(el -> el != null).anyMatch(el -> el.getItemMeta().getDisplayName().equals(map.getItemMeta().getDisplayName())
@@ -71,7 +72,7 @@ public class MapCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Gives a nations map";
+		return parent.getMain().getLanguage().getString("HelpList.Map.Description");
 	}
 
 	@Override

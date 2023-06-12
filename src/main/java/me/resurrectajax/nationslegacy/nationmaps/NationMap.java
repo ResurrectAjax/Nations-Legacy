@@ -8,6 +8,10 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 
 public class NationMap {
+	public static final int getMapModelData() {
+		return 1521112;
+	}
+	
 	public static ItemStack getMap(Player player) {
 		MapView mapView = Bukkit.createMap(player.getWorld());
 		
@@ -15,6 +19,7 @@ public class NationMap {
 		applyToMap(mapView, map, player);
 		
 		MapMeta meta = (MapMeta) map.getItemMeta();
+		meta.setCustomModelData(getMapModelData());
 		meta.setMapView(mapView);
 		meta.setDisplayName("Nation Map");
 		map.setItemMeta(meta);

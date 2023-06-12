@@ -88,7 +88,7 @@ public class GeneralMethods extends me.resurrectajax.ajaxplugin.general.GeneralM
 		if(!hasPrefix) return;	
 		
 		String playerName = player.getDisplayName();
-		String total = String.format(config.getString("Nations.Prefix.Format"), nation != null ? nation.getName() : "&2Wilderness", playerName);
+		String total = String.format(config.getString("Nations.Prefix.Format"), nation != null ? nation.getName() : config.getString("Wilderness.Name"), playerName);
 		player.setPlayerListName(GeneralMethods.format(total));
  	}
 }

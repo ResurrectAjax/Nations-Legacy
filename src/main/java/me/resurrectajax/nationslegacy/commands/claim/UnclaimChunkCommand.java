@@ -113,7 +113,7 @@ public class UnclaimChunkCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Start or stop unclaiming chunks for your nation";
+		return main.getLanguage().getString("HelpList.Unclaim.Description");
 	}
 
 	@Override

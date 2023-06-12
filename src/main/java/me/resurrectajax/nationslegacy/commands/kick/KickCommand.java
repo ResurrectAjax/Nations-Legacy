@@ -101,7 +101,7 @@ public class KickCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Kick a player from your nation";
+		return main.getLanguage().getString("HelpList.Kick.Description");
 	}
 
 	@Override

@@ -92,7 +92,7 @@ public class WarTruce extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Request a truce with an enemy nation";
+		return main.getLanguage().getString("HelpList.War.Truce.Description");
 	}
 
 	@Override

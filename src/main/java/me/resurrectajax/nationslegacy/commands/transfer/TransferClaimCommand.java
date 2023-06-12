@@ -111,7 +111,7 @@ public class TransferClaimCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Transfer the chunks your nation gained over time to another nation";
+		return main.getLanguage().getString("HelpList.Transfer.Description");
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class DescriptionCommand extends ParentCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Set or remove your nation's description";
+		return parent.getMain().getLanguage().getString("HelpList.Description.Description");
 	}
 
 	@Override

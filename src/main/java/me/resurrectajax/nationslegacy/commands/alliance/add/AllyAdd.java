@@ -93,7 +93,7 @@ public class AllyAdd extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Send an alliance request";
+		return main.getLanguage().getString("HelpList.Ally.Add.Description");
 	}
 
 	@Override

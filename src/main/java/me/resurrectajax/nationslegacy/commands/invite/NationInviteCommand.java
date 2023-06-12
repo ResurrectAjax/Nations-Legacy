@@ -93,7 +93,7 @@ public class NationInviteCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Invite a player to your nation";
+		return main.getLanguage().getString("HelpList.Invite.Description");
 	}
 
 	@Override

@@ -1,3 +1,72 @@
+HelpList:
+  Admin:
+    Description: 'Executes an admin command'
+    Disband:
+      Description: 'Disband a nation'
+    Join:
+      Description: 'Join a nation as a leader'
+    Reload:
+      Description: 'Reloads the configuration files'
+  Ally:
+    Description: 'Run an alliance command'
+    Add:
+      Description: 'Send an alliance request'
+    Remove:
+      Description: 'Remove the alliance and become neutral'
+  Claim:
+    Description: 'Start or stop claiming chunks for your nation'
+  Unclaim:
+    Description: 'Start or stop unclaiming chunks for your nation'
+  Create:
+    Description: 'Create a nation'
+  Description:
+    Description: 'Set or remove your nation''s description'
+    Remove:
+      Description: 'Remove the description of your nation'
+    Set:
+      Description: 'Set the description of your nation'
+  Disband:
+    Description: 'Disband your nation'
+  Flag:
+    Description: 'Execute a flag command'
+    Info:
+      Description: 'Get the flag info of a nation'
+    Set:
+      Description: 'Set a nation flag to allow or deny'
+  Delhome:
+    Description: 'Deletes a nation home'
+  Sethome:
+    Description: 'Sets a nation home at the player''s current location'
+  Home:
+    Description: 'Teleport to your nation home'
+  Info:
+    Description: 'Get the info of a specified nation'
+  Invite:
+    Description: 'Invite a player to your nation'
+  Kick:
+    Description: 'Kick a player from your nation'
+  Leave:
+    Description: 'Leave your nation'
+  List:
+    Description: 'Returns a list of nations ordered by killpoints'
+  Map:
+    Description: 'Gives the player a nation map'
+  Demote:
+    Description: 'Demote an officer to member'
+  Promote:
+    Description: 'Promote a member or officer to a higher rank'
+  Transfer:
+    Description: 'Transfer the chunks your nation gained over time to another nation'
+  War:
+    Description: 'Run a war command'
+    Add:
+      Description: 'Declare war with another nation'
+    Info:
+      Description: 'Get info about a war between two nations'
+    Truce:
+      Description: 'Request a truce with an enemy nation'
+  Who:
+    Description: 'Get the player''s information'
 Command:
   Reload:
     Message: '&bNations-Legacy &8: &eConfig reloaded.'
@@ -80,6 +149,8 @@ Command:
         Message: '&bNations-Legacy &8: &eChunk has been claimed, %nations_remaining_chunkamount% chunks left'
       MaxChunks: 
         Message: '&bNations-Legacy &8: &eMax amount of chunks reached'
+      Insufficient:
+        Message: '&bNations-Legacy &8: &eYou can''t claim past your claim limit'
     Unclaim:
       TurnedOn:
         Message: '&bNations-Legacy &8: &eUnclaiming has been turned &a&lON&e.'

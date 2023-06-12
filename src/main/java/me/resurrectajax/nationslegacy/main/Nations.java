@@ -17,6 +17,7 @@ import me.resurrectajax.nationslegacy.commands.NationsCommand;
 import me.resurrectajax.nationslegacy.events.ReloadEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.listeners.ClaimListener;
+import me.resurrectajax.nationslegacy.listeners.ItemListener;
 import me.resurrectajax.nationslegacy.listeners.JoinLeaveListener;
 import me.resurrectajax.nationslegacy.listeners.PlayerInteractListener;
 import me.resurrectajax.nationslegacy.listeners.PlayerKillListener;
@@ -88,6 +89,7 @@ public class Nations extends AjaxPlugin{
 		getServer().getPluginManager().registerEvents(new PlayerKillListener(this), this);
 		getServer().getPluginManager().registerEvents(new PlayerInteractListener(this), this);
 		getServer().getPluginManager().registerEvents(new PrefixListener(this), this);
+		getServer().getPluginManager().registerEvents(new ItemListener(), this);
 	}
 
 	/**

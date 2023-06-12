@@ -79,7 +79,7 @@ public class LeaveCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Leave your nation";
+		return main.getLanguage().getString("HelpList.Leave.Description");
 	}
 
 	@Override
