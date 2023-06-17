@@ -55,7 +55,7 @@ public class LeaveCommand extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.leave";
 	}
 
 	@Override

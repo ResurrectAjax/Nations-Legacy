@@ -39,7 +39,7 @@ public class ReloadCommand extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.admin.reload";
 	}
 
 	@Override

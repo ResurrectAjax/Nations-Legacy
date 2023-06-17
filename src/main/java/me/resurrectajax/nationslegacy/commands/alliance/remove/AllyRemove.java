@@ -70,7 +70,7 @@ public class AllyRemove extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.ally.remove";
 	}
 
 	@Override

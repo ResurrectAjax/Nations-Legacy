@@ -28,7 +28,7 @@ public class WarCommand extends ParentCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.war";
 	}
 
 	@Override

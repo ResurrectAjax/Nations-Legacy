@@ -12,8 +12,10 @@ import org.yaml.snakeyaml.Yaml;
 
 import me.resurrectajax.ajaxplugin.managers.CommandManager;
 import me.resurrectajax.ajaxplugin.managers.FileManager;
+import me.resurrectajax.ajaxplugin.managers.PermissionManager;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.NationsCommand;
+import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.events.ReloadEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.listeners.ClaimListener;
@@ -24,6 +26,7 @@ import me.resurrectajax.nationslegacy.listeners.PlayerKillListener;
 import me.resurrectajax.nationslegacy.listeners.PlayerMoveListener;
 import me.resurrectajax.nationslegacy.listeners.PrefixListener;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
+import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 import me.resurrectajax.nationslegacy.placeholderapi.CustomPlaceHolders;
 import me.resurrectajax.nationslegacy.placeholderapi.CustomRelationalPlaceholders;
 
@@ -36,18 +39,15 @@ public class Nations extends AjaxPlugin{
 	private static Nations INSTANCE;
 	
 	private List<String> formats = new ArrayList<String>(Arrays.asList(
- 			"%nations_player_argument%",
-			"%nations_player_name%",
- 			"%nations_player_rank%",
- 			"%nations_player_killpoints%",
- 			"%nations_nation_name%",
- 			"%nations_nation_description%",
- 			"%nations_remaining_chunkamount%",
- 			"%rel_nations_syntax%",
- 			"%rel_nations_nation_name%",
- 			"%rel_nations_nation1_name%",
- 			"%rel_nations_nation2_name%",
- 			"%rel_nations_enemy_nation%"
+			"nations_rel_nation_name",
+			"nations_nation_name",
+			"nations_transfer_amount",
+			"nations_player_argument",
+			"nations_player_name",
+			"nations_rel_player_name",
+			"nations_remaining_chunkamount",
+			"nations_gained_chunks",
+			"nations_rel_player_rank"
 			));
 	
 	public List<String> getFormats() {
@@ -124,22 +124,48 @@ public class Nations extends AjaxPlugin{
 				"config.yml",
 				"language.yml"
 				);
+		
+		loadPermissions();
     }
 
+	public void loadPermissions() {
+		super.setPermissionManager(new PermissionManager(this));
+		
+		PermissionManager manager = getPermissionManager();
+		for(Player player : Bukkit.getOnlinePlayers()) {
+			manager.clearStartingWith(player, "nations.player");
+			
+			MappingRepository mappingRepo = getMappingRepo();
+			PlayerMapping playMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
+			
+			List<String> permissions = Rank.getPermissionsByRank(playMap.getRank());
+			permissions.forEach(el -> {
+				if(el.contains("-")) manager.denyPermission(player, el);
+				else manager.grantPermission(player, el);
+			});
+		}
+	}
+	
 	/**
 	 * Load the {@link Yaml} files and classes
 	 * */
 	public void loadFiles() {
 		Nations.INSTANCE = this;
-		
-		//load files
-		Bukkit.getPluginManager().callEvent(new ReloadEvent());
-        //files
         
+		super.files = FileManager.loadFiles( this,
+				"config.yml",
+				"language.yml"
+				);
+		
 		super.setMappingRepository(new MappingRepository(this));
 		
 		//load classes
 		super.setCommandManager(new CommandManager(new NationsCommand(this)));
+		
+		//load files
+		Bukkit.getPluginManager().callEvent(new ReloadEvent());
+        //files
+		
 	}
 	
 	private void hookIntoPlaceholderAPI() {

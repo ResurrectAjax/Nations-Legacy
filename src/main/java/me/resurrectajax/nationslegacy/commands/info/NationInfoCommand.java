@@ -116,7 +116,7 @@ public class NationInfoCommand extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.info";
 	}
 
 	@Override

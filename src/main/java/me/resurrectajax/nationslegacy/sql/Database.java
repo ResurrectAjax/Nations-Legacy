@@ -1,5 +1,6 @@
 package me.resurrectajax.nationslegacy.sql;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.flywaydb.core.Flyway;
 
 import me.resurrectajax.ajaxplugin.sql.Errors;
 import me.resurrectajax.nationslegacy.enumeration.Flag;
@@ -44,6 +46,20 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public Database(Nations instance, MappingRepository mappingRepo){
     	super(instance);
         this.mappingRepo = mappingRepo;
+        
+        loadMigrations();
+    }
+    
+    public void loadMigrations() {
+    	File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
+    	
+    	Flyway flyway = Flyway.configure()
+                .dataSource("jdbc:sqlite:" + dataFolder, "", "")
+                .baselineOnMigrate(true)
+                .load();
+
+        // Run the database migrations
+        flyway.migrate();
     }
     
     private String SQLiteCreateRanksTable = "CREATE TABLE IF NOT EXISTS Ranks (" + 
@@ -155,6 +171,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     	super.setConnection(getSQLConnection());
         try{
             Statement s = connection.createStatement();
+            
             s.executeUpdate(SQLiteCreateRanksTable);
             s.executeUpdate(SQLiteInsertRanks());
             s.executeUpdate(SQLiteCreateFlagsTable);

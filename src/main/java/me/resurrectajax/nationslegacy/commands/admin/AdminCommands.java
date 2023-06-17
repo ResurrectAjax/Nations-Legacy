@@ -14,7 +14,6 @@ public class AdminCommands extends AdminCommand{
 	public AdminCommands(ParentCommand parent) {
 		super(parent);
 		this.main = parent.getMain();
-		super.setPluginName("nations");
 		super.setSubcommands(Arrays.asList(
 				new HelpCommand(this),
 				new DisbandNationCommand(this),

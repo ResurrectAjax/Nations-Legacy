@@ -26,7 +26,7 @@ public class AllyCommand extends ParentCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.ally";
 	}
 
 	@Override

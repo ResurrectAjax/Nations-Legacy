@@ -44,9 +44,9 @@ public class NationsCommand extends MainCommand{
 		super(main);
 		this.main = main;
 		
-		super.setName("nations");
+		super.setPluginName("nations");
 		
-		super.setSubCommands(Arrays.asList(
+		super.setSubcommands(Arrays.asList(
 				new HelpCommand(this),
 				new AdminCommands(this),
 				new CreateNationCommand(this),

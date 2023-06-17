@@ -95,7 +95,7 @@ public class PromoteCommand extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.promote";
 	}
 
 	@Override

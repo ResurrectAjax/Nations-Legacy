@@ -38,7 +38,8 @@ public class DemoteEvent extends NationEvent{
 				for(PlayerMapping playerA : nation.getAllMembers()) {
 					if(Bukkit.getPlayer(playerA.getUUID()) == null) continue;
 					Player playerAB = Bukkit.getPlayer(playerA.getUUID());
-					playerAB.sendMessage(GeneralMethods.relFormat(sender, (CommandSender)playerO, language.getString("Command.Player.Demote.Demoted.Message"), playerO.getName()));
+					PlayerMapping playerOMap = mappingRepo.getPlayerByUUID(playerO.getUniqueId());
+					playerAB.sendMessage(GeneralMethods.relFormat(sender, (CommandSender)playerO, language.getString("Command.Player.Demote.Demoted.Message"), playerO.getName(), playerOMap.getRank().toString()));
 				}
 				
 				Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());

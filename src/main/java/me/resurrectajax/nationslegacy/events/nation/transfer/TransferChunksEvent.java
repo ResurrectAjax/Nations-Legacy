@@ -59,8 +59,7 @@ public class TransferChunksEvent extends NationEvent{
 				receiver.update();
 				
 				String message = language.getString("Command.Nations.Transfer.Sent.Message");
-				message = message.replace("%nations_transfer_amount%", String.format("%d", neededChunkAmount));
-				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, message, receiver.getName()));
+				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, message, String.format("%d", neededChunkAmount), receiver.getName()));
 				
 				receiver.getAllMembers().forEach(el -> {
 					String msg = language.getString("Command.Nations.Transfer.Received.Message");

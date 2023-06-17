@@ -19,7 +19,7 @@ public class FlagCommand extends ParentCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.flag";
 	}
 
 	@Override

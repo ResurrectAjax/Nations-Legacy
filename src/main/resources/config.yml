@@ -43,13 +43,32 @@ Nations:
     Interact:
       Adjustable: false
       Default: "DENY"
-  War:
-    # KillPoints: the amount of kill points players can get from killing someone with a certain rank
-    KillPoints:
-      Leader: 3
-      Officer: 2
-      Member: 1
-      Nationless: 1
+      
+  Nation:
+    Ranks:
+      # Worth: the amount of kill points players can get from killing someone with a certain rank
+      # Power: the position of power this rank holds (2 different ranks can not have the same position of power)
+      # Permissions: the permissions a player will get with a certain rank
+      Leader:
+        Worth: 3
+        Power: 3
+        Permissions:
+        - "nations.player.*"
+      Officer:
+        Worth: 2
+        Power: 2
+        Permissions:
+        - "nations.player.*"
+      Member:
+        Worth: 1
+        Power: 1
+        Permissions:
+        - "nations.player.*"
+      Nationless:
+        Worth: 1
+        Power: 0
+        Permissions:
+        - "nations.player.*"
     
     # Chunks: the chunks that will be transferred to the winning nation
     #   Regain: wether the losing nation can regain the chunks they lost using chunkgain

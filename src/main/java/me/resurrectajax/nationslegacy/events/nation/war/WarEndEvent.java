@@ -56,20 +56,20 @@ public class WarEndEvent extends WarEvent{
 				Bukkit.getOnlinePlayers().stream()
 				.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
-					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.Broadcast.Message"), nation.getName()));
-					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.Broadcast.Message"), nation.getName()));
+					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.Broadcast.Message"), nation.getName(), loser.getName()));
+					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.Broadcast.Message"), nation.getName(), loser.getName()));
 				});
 				Bukkit.getOnlinePlayers().stream()
 					.filter(el -> enemy.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 					.forEach(el -> {
-						if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksLost.Message"), nation.getName()));
-						el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksLost.Message"), nation.getName()));
+						if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksLost.Message"), String.valueOf(losingChunkAmount), nation.getName()));
+						el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksLost.Message"), String.valueOf(losingChunkAmount), nation.getName()));
 					});
 				Bukkit.getOnlinePlayers().stream()
 				.filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
-					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksGained.Message"), enemy.getName()));
-					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksGained.Message"), enemy.getName()));
+					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksGained.Message"), String.valueOf(losingChunkAmount), enemy.getName()));
+					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksGained.Message"), String.valueOf(losingChunkAmount), enemy.getName()));
 				});
 				
 				winner.setMaxChunks(winner.getMaxChunks()+losingChunkAmount);

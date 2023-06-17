@@ -1,5 +1,11 @@
 package me.resurrectajax.nationslegacy.general;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,34 +53,50 @@ public class GeneralMethods extends me.resurrectajax.ajaxplugin.general.GeneralM
 	 * @param value String to replace value with
 	 * @return formatted String
 	 * */
- 	public static String format(CommandSender sender, String input, String value) {
+ 	public static String format(CommandSender sender, String input, String... values) {
  		String newStr = input;
  		if(Nations.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null && sender instanceof OfflinePlayer) return GeneralMethods.format(PlaceholderAPI.setPlaceholders((OfflinePlayer) sender, input));
- 		for(String format : Nations.getInstance().getFormats()) {
- 			if(input.contains(format)) newStr = input.replaceAll(format, value);
- 		}
- 		return ChatColor.translateAlternateColorCodes('&', newStr);
+ 		return getStringWithoutPlaceholderApi(newStr, values);
 	}
  	
- 	public static String format(OfflinePlayer player, String input, String value) {
+ 	public static String format(OfflinePlayer player, String input, String... values) {
  		String newStr = input;
  		if(Nations.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) return GeneralMethods.format(PlaceholderAPI.setPlaceholders(player, input));
- 		for(String format : Nations.getInstance().getFormats()) {
- 			if(input.contains(format)) newStr = input.replaceAll(format, value);
- 		}
- 		return ChatColor.translateAlternateColorCodes('&', newStr);
+ 		return getStringWithoutPlaceholderApi(newStr, values);
 	}
  	
- 	public static String relFormat(CommandSender sender1, CommandSender sender2, String input, String value) {
+ 	public static String relFormat(CommandSender sender1, CommandSender sender2, String input, String... values) {
  		String newStr = input;
  		if(Nations.getInstance().getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
  			newStr = PlaceholderAPI.setPlaceholders((OfflinePlayer) sender1, input);
  			return GeneralMethods.format(PlaceholderAPI.setRelationalPlaceholders((Player) sender1, (Player) sender2, newStr));
  		}
- 		for(String format : Nations.getInstance().getFormats()) {
- 			if(input.contains(format)) newStr = input.replaceAll(format, value);
+ 		return getStringWithoutPlaceholderApi(newStr, values);
+ 	}
+ 	
+ 	private static String getStringWithoutPlaceholderApi(String input, String... values) {
+ 		List<String> formatStrings = getFormatStrings(input);
+ 		List<String> valueList = Arrays.asList(values);
+ 		String newStr = input;
+ 		int counter = 0;
+ 		for(String format : formatStrings) {
+ 			if(Nations.getInstance().getFormats().contains(format)) newStr = newStr.replace(String.format("%%%s%%", format), valueList.get(counter));
+ 			counter++;
  		}
+ 		
  		return ChatColor.translateAlternateColorCodes('&', newStr);
+ 	}
+ 	
+ 	private static List<String> getFormatStrings(String value) {
+ 		List<String> matches = new ArrayList<>();
+ 	    Pattern pattern = Pattern.compile("%(.*?)%"); // Use a regular expression pattern to match text between '%'
+ 	    Matcher matcher = pattern.matcher(value);
+ 	    
+ 	    while (matcher.find()) {
+ 	        matches.add(matcher.group(1));
+ 	    }
+ 	    
+ 	    return matches;
  	}
  	
  	public static void updatePlayerTab(Player player) {

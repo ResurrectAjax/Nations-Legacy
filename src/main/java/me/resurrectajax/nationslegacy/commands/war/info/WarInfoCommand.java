@@ -131,7 +131,7 @@ public class WarInfoCommand extends ChildCommand{
 
 	@Override
 	public String getPermissionNode() {
-		return null;
+		return "nations.player.war.info";
 	}
 
 	@Override

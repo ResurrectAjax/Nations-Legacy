@@ -1,13 +1,114 @@
 main: me.resurrectajax.nationslegacy.main.Nations
 name: Nations-Legacy
-version: 1.0.1
+version: 1.0.2
 author: ResurrectAjax
 description: Create nations, claim land, wage war!
 api-version: 1.19
-depend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI]
 
 commands:
   Nations:
     description: run a Nations command
     usage: /<command>
     aliases: n
+permissions:
+  nations.*:
+    description: Gives access to all Nations commands
+    children:
+      nations.admin: true
+      nations.admin.disband: true
+      nations.admin.join: true
+      nations.admin.reload: true
+      nations.player.ally: true
+      nations.player.ally.add: true
+      nations.player.ally.remove: true
+      nations.player.claim: true
+      nations.player.unclaim: true
+      nations.player.create: true
+      nations.player.description: true
+      nations.player.description.set: true
+      nations.player.description.remove: true
+      nations.player.flag: true
+      nations.player.flag.set: true
+      nations.player.flag.info: true
+      nations.player.home: true
+      nations.player.sethome: true
+      nations.player.delhome: true
+      nations.player.info: true
+      nations.player.invite: true
+      nations.player.kick: true
+      nations.player.leave: true
+      nations.player.list: true
+      nations.player.map: true
+      nations.player.demote: true
+      nations.player.promote: true
+      nations.player.transfer: true
+      nations.player.war: true
+      nations.player.war.add: true
+      nations.player.war.truce: true
+      nations.player.war.info: true
+      nations.player.who: true
+  nations.admin.*:
+    description: Gives access to all admin commands
+    children:
+      nations.admin: true
+      nations.admin.disband: true
+      nations.admin.join: true
+      nations.admin.reload: true
+  nations.player.*:
+    description: Gives access to all player commands
+    children:
+      nations.player.ally: true
+      nations.player.ally.add: true
+      nations.player.ally.remove: true
+      nations.player.claim: true
+      nations.player.unclaim: true
+      nations.player.create: true
+      nations.player.description: true
+      nations.player.description.set: true
+      nations.player.description.remove: true
+      nations.player.flag: true
+      nations.player.flag.set: true
+      nations.player.flag.info: true
+      nations.player.home: true
+      nations.player.sethome: true
+      nations.player.delhome: true
+      nations.player.info: true
+      nations.player.invite: true
+      nations.player.kick: true
+      nations.player.leave: true
+      nations.player.list: true
+      nations.player.map: true
+      nations.player.demote: true
+      nations.player.promote: true
+      nations.player.transfer: true
+      nations.player.war: true
+      nations.player.war.add: true
+      nations.player.war.truce: true
+      nations.player.war.info: true
+      nations.player.who: true
+  nations.player.ally.*:
+    description: Gives access to all alliance commands
+    children:
+      nations.player.ally: true
+      nations.player.ally.add: true
+      nations.player.ally.remove: true
+  nations.player.description.*:
+    description: Gives access to all description commands
+    children: 
+      nations.player.description: true
+      nations.player.description.set: true
+      nations.player.description.remove: true
+  nations.player.flag.*:
+    description: Gives access to all flag commands
+    children:
+      nations.player.flag: true
+      nations.player.flag.set: true
+      nations.player.flag.info: true
+  nations.player.war.*:
+    description: Gives access to all war commands
+    children:
+      nations.player.war: true
+      nations.player.war.add: true
+      nations.player.war.truce: true
+      nations.player.war.info: true

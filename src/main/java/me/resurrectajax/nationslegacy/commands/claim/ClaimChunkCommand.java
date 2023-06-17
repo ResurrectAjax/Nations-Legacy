@@ -29,7 +29,7 @@ public class ClaimChunkCommand extends ChildCommand{
 	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
-		return null;
+		return "nations.player.claim";
 	}
 	@Override
 	public boolean hasTabCompletion() {

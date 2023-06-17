@@ -37,8 +37,8 @@ public class DeclareWarEvent extends WarEvent{
 					if(Bukkit.getPlayer(player.getUUID()) == null) continue;
 					Player playerA = Bukkit.getPlayer(player.getUUID());
 					
-					if(enemyPlayer == null) playerA.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), enemy.getName()));
-					else playerA.sendMessage(GeneralMethods.relFormat(sender, enemyPlayer, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), enemy.getName()));
+					if(enemyPlayer == null) playerA.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), nation.getName(), enemy.getName()));
+					else playerA.sendMessage(GeneralMethods.relFormat(sender, enemyPlayer, language.getString("Command.Nations.War.Add.DeclarationSent.Message"), nation.getName(), enemy.getName()));
 				}
 				main.getMappingRepo().startWar(nation.getNationID(), enemy.getNationID());
 			}

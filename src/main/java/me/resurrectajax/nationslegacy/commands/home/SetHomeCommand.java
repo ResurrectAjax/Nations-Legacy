@@ -74,7 +74,7 @@ public class SetHomeCommand extends ChildCommand{
 
 	@Override
 	public String getPermissionNode() {
-		return null;
+		return "nations.player.sethome";
 	}
 
 	@Override
