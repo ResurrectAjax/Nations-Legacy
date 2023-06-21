@@ -30,6 +30,7 @@ public class NationMapping {
 	private Set<PlayerMapping> leaders = new HashSet<PlayerMapping>();
 	private Set<PlayerMapping> officers = new HashSet<PlayerMapping>();
 	private Set<PlayerMapping> members = new HashSet<PlayerMapping>();
+	private Set<PlayerMapping> allMembers = new HashSet<>();
 	private Set<Chunk> claimedChunks = new HashSet<Chunk>();
 	private Set<Chunk> newChunks = new HashSet<Chunk>();
 	private Set<Chunk> deletedChunks = new HashSet<Chunk>();
@@ -112,6 +113,23 @@ public class NationMapping {
 
 
 
+	public Set<PlayerMapping> getMembers(int power) {
+		
+	}
+	public Set<PlayerMapping> getMembers(String name) {
+		
+	}
+	public void addAllMembers(Collection<PlayerMapping> members, int power) {
+		for(PlayerMapping player : leaders) {
+			if(this.leaders.stream().anyMatch(play -> play.getUUID().equals(player.getUUID()))) continue;
+		}
+		for(PlayerMapping leader : leaders) {
+			this.leaders.add(leader);
+			leader.setRank(Rank.Leader);
+		}
+	}
+	
+	
 	public Set<PlayerMapping> getLeaders() {
 		return leaders;
 	}

@@ -12,7 +12,6 @@ import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
-import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
 public class ClaimChunkEvent extends NationEvent{
 	private Chunk chunk;
@@ -49,8 +48,7 @@ public class ClaimChunkEvent extends NationEvent{
 					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.MaxChunks.Message"), nation.getName()));
 					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), nation.getName()));
 					
-					PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-					mappingRepo.getNationByPlayer(playerMap).saveChunks();
+					Bukkit.getPluginManager().callEvent(new SaveChunksEvent(nation, sender));
 					return;
 				}
 			}

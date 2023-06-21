@@ -22,6 +22,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.flywaydb.core.Flyway;
 
+import db.migration.V1_0_1__remove_ranks_foreign_key;
 import me.resurrectajax.ajaxplugin.sql.Errors;
 import me.resurrectajax.nationslegacy.enumeration.Flag;
 import me.resurrectajax.nationslegacy.enumeration.Rank;
@@ -46,8 +47,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     public Database(Nations instance, MappingRepository mappingRepo){
     	super(instance);
         this.mappingRepo = mappingRepo;
-        
-        loadMigrations();
     }
     
     public void loadMigrations() {
@@ -55,24 +54,15 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     	
     	Flyway flyway = Flyway.configure()
                 .dataSource("jdbc:sqlite:" + dataFolder, "", "")
+                .locations("classpath:db/migration")
                 .baselineOnMigrate(true)
+                .javaMigrations(
+                		new V1_0_1__remove_ranks_foreign_key()
+                		)
                 .load();
 
         // Run the database migrations
         flyway.migrate();
-    }
-    
-    private String SQLiteCreateRanksTable = "CREATE TABLE IF NOT EXISTS Ranks (" + 
-    		"`Rank` varchar(32) PRIMARY KEY" +
-            ");"; 
-    
-    private String SQLiteInsertRanks() {
-    	String stmt = "INSERT OR IGNORE INTO Ranks(Rank) values";
-    	for(Rank rank : Rank.values()) {
-    		if(rank.equals(Rank.values()[Rank.values().length-1])) stmt += "('" + rank.toString() + "')";
-    		else stmt += "('" + rank.toString() + "'),";
-    	}
-    	return stmt;
     }
     
     private String SQLiteCreateFlagsTable = "CREATE TABLE IF NOT EXISTS Flags (" + 
@@ -84,7 +74,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             "`Killpoints` int NOT NULL, " +
             "`NationID` int, " +
             "`Rank` varchar(32) not null, " +
-            "foreign key(Rank) references Ranks(Rank), " +
             "foreign key(NationID) references Nations(NationID) on delete set null" +
             ");"; 
     
@@ -151,18 +140,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
     		"primary key(NationID, Name), " +
     		"foreign key(NationID) references Nations(NationID) on delete cascade" +
             ");";
-    /* EXAMPLES
-    
-    private String SQLiteCreateBlocksTable = 
-    		"create table if not exists Blocks("
-    		+ "blockID INTEGER PRIMARY KEY AUTOINCREMENT, "
-    		+ "raidID int not null, "
-    		+ "type varchar(32) not null, "
-    		+ "amount int not null, "
-    		+ "isContainer boolean not null check(isContainer in (0, 1)), "
-    		+ "foreign key(raidID) references Raids(raidID) on delete cascade"
-    		+ ");";
-	*/
     
     /**
      * load database and execute table creation statements
@@ -172,8 +149,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         try{
             Statement s = connection.createStatement();
             
-            s.executeUpdate(SQLiteCreateRanksTable);
-            s.executeUpdate(SQLiteInsertRanks());
             s.executeUpdate(SQLiteCreateFlagsTable);
             s.executeUpdate(SQLiteCreateNationsTable);
             s.executeUpdate(SQLiteCreatePlayersTable);
@@ -185,10 +160,12 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             s.executeUpdate(SQLiteCreateFlagLinesTable);
             updateFlags();
             s.close();
-   
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
         }
+        finally {
+        	loadMigrations();
+		}
     }
     
     /**

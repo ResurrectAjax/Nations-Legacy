@@ -14,6 +14,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.events.nation.claim.SaveChunksEvent;
 import me.resurrectajax.nationslegacy.events.nation.claim.UnclaimAllChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -67,7 +68,7 @@ public class UnclaimChunkCommand extends ChildCommand{
 				if(!mappingRepo.getUnclaimingSet().contains(player.getUniqueId())) return;
 				mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), args[1]));
-				mappingRepo.getNationByPlayer(playerMap).saveChunks();
+				Bukkit.getPluginManager().callEvent(new SaveChunksEvent(nation, sender));
 				break;
 			case "all":
 				if(nation.getClaimedChunks().size() == 0) {

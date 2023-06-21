@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.nationslegacy.events.nation.NationEvent;
+import me.resurrectajax.nationslegacy.events.nation.claim.SaveChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
@@ -48,7 +49,7 @@ public class TransferChunksEvent extends NationEvent{
 						
 						Set<Chunk> chunks = getBorderChunks(smallest[0], smallest[1], largest[0], largest[1], sortedList, new HashSet<>(), neededChunks);
 						chunks.forEach(el -> nation.unclaimChunk(el));	
-						nation.saveChunks();
+						Bukkit.getPluginManager().callEvent(new SaveChunksEvent(nation, sender));
 					}	
 					if(config.getBoolean("Nations.Transfer.Chunks.Regain")) nation.setGainedChunks(nation.getGainedChunks()-neededChunkAmount > 0 ? nation.getGainedChunks()-neededChunkAmount : 0);
 					nation.setMaxChunks(nation.getMaxChunks()-neededChunkAmount);

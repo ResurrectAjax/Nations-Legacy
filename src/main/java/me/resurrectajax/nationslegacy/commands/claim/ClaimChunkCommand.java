@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.events.nation.claim.SaveChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -87,7 +89,7 @@ public class ClaimChunkCommand extends ChildCommand{
 				if(!mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
 				mappingRepo.getClaimingSet().remove(player.getUniqueId());
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Claim.TurnedOff.Message"), args[1]));
-				mappingRepo.getNationByPlayer(playerMap).saveChunks();
+				Bukkit.getPluginManager().callEvent(new SaveChunksEvent(nation, sender));
 				break;
 			}
 		}

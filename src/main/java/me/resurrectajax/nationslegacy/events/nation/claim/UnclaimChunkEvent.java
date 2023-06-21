@@ -12,7 +12,6 @@ import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
-import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
 public class UnclaimChunkEvent extends NationEvent{
 
@@ -46,9 +45,7 @@ public class UnclaimChunkEvent extends NationEvent{
 					mappingRepo.getUnclaimingSet().remove(player.getUniqueId());
 					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.NoChunks.Message"), nation.getName()));
 					sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Unclaim.TurnedOff.Message"), nation.getName()));
-					
-					PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-					mappingRepo.getNationByPlayer(playerMap).saveChunks();
+					Bukkit.getPluginManager().callEvent(new SaveChunksEvent(nation, sender));
 					return;
 				}
 				
