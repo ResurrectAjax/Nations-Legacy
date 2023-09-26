@@ -43,15 +43,15 @@ public class WarEndEvent extends WarEvent{
 				
 				mappingRepo.removeWar(nation.getNationID(), enemy.getNationID());
 				
-				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-				Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> enemy.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-				OfflinePlayer enemyOffline = enemy.getAllMembers().stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID())).findFirst().orElse(null);
+				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> enemy.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				OfflinePlayer enemyOffline = enemy.getPlayers().stream().map(el -> Bukkit.getOfflinePlayer(el.getUUID())).findFirst().orElse(null);
 				
 				main.getCommandManager().setLastMentioned(enemyOffline.getName(), enemyOffline);
 				
 				Set<PlayerMapping> players = new HashSet<>();
-				players.addAll(winner.getAllMembers());
-				players.addAll(loser.getAllMembers());
+				players.addAll(winner.getPlayers());
+				players.addAll(loser.getPlayers());
 				
 				Bukkit.getOnlinePlayers().stream()
 				.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
@@ -60,13 +60,13 @@ public class WarEndEvent extends WarEvent{
 					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.Broadcast.Message"), nation.getName(), loser.getName()));
 				});
 				Bukkit.getOnlinePlayers().stream()
-					.filter(el -> enemy.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
+					.filter(el -> enemy.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 					.forEach(el -> {
 						if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksLost.Message"), String.valueOf(losingChunkAmount), nation.getName()));
 						el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksLost.Message"), String.valueOf(losingChunkAmount), nation.getName()));
 					});
 				Bukkit.getOnlinePlayers().stream()
-				.filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
+				.filter(el -> nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
 					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.End.ChunksGained.Message"), String.valueOf(losingChunkAmount), enemy.getName()));
 					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.End.ChunksGained.Message"), String.valueOf(losingChunkAmount), enemy.getName()));

@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.war.info;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -14,13 +13,13 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 import me.resurrectajax.nationslegacy.persistency.WarMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
 public class WarInfoCommand extends ChildCommand{
 
@@ -55,7 +54,7 @@ public class WarInfoCommand extends ChildCommand{
 				nation = mappingRepo.getNationByID(player.getNationID());
 				enemy = mappingRepo.getNationByName(args[2]);
 				if(enemy != null) {
-					PlayerMapping pl = enemy.getAllMembers().stream().findFirst().orElse(null);
+					PlayerMapping pl = enemy.getPlayers().stream().findFirst().orElse(null);
 					super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 				}
 				break;
@@ -64,7 +63,7 @@ public class WarInfoCommand extends ChildCommand{
 				nation = mappingRepo.getNationByName(args[2]);
 				enemy = mappingRepo.getNationByName(args[3]);
 				if(nation != null) {
-					PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+					PlayerMapping pl = nation.getPlayers().stream().findFirst().orElse(null);
 					super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 				}
 				break;
@@ -96,9 +95,9 @@ public class WarInfoCommand extends ChildCommand{
 		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getNation().getName(), war.getNationKillpoints())));
 		sender.sendMessage(GeneralMethods.format(String.format("  &b%s: &c%dp", war.getEnemy().getName(), war.getEnemyKillpoints())));
 		;
-		sender.sendMessage(GeneralMethods.format("&7" + Arrays.asList(Rank.values()).stream()
-				.filter(el -> !el.equals(Rank.Nationless))
-				.map(el -> String.format("%s = %dp", el.toString(), Rank.getRankWorth(el)))
+		sender.sendMessage(GeneralMethods.format("&7" + Rank.getRanks().stream()
+				.filter(el -> !el.equals(Rank.getNationless()))
+				.map(el -> String.format("%s = %dp", el.toString(), el.getWorth()))
 				.collect(Collectors.joining("; "))));
 		sender.sendMessage(GeneralMethods.format("&a" + GeneralMethods.padCenter("", '-', 34)));
 	}

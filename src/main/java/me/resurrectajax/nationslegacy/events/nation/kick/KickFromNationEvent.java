@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import me.resurrectajax.nationslegacy.events.nation.NationEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
@@ -31,12 +32,15 @@ public class KickFromNationEvent extends NationEvent{
 				OfflinePlayer play = (OfflinePlayer) sender;
 				
 				String message = GeneralMethods.format(play, language.getString("Command.Nations.Player.Kick.Message"), Bukkit.getOfflinePlayer(player.getUUID()).getName());
-				nation.getAllMembers().forEach(el -> {
+				nation.getPlayers().forEach(el -> {
 					if(Bukkit.getPlayer(el.getUUID()) != null) Bukkit.getPlayer(el.getUUID()).sendMessage(message);
 				});
 				
 				nation.kickPlayer(player);
 				GeneralMethods.updatePlayerTab(Bukkit.getPlayer(play.getUniqueId()));
+				Player kickedPlayer = Bukkit.getPlayer(player.getUUID());
+				if(kickedPlayer != null) main.reloadPermissions(kickedPlayer);
+				
 				Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
 				if(wars.isEmpty()) return;
 				wars.stream().forEach(el -> el.updateGoal());

@@ -15,6 +15,7 @@ import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -50,12 +51,12 @@ public class RequestTruceEvent extends WarEvent{
 					TextComponent senderText = new TextComponent(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.RequestSent.Message"), enemy.getName()));
 					senderText.addExtra(cancel);
 					
-					for(PlayerMapping playerMap : nation.getLeaders()) {
+					for(PlayerMapping playerMap : nation.getPlayersByRank(Rank.getHighest())) {
 						Player senderPlay = Bukkit.getPlayer(playerMap.getUUID());
 						senderPlay.spigot().sendMessage(senderText);
 					}
 					
-					for(PlayerMapping playerMap : enemy.getLeaders()) {
+					for(PlayerMapping playerMap : enemy.getPlayersByRank(Rank.getHighest())) {
 						Player receiverPlay = Bukkit.getPlayer(playerMap.getUUID());
 						if(receiverPlay == null) continue;
 						
@@ -69,7 +70,7 @@ public class RequestTruceEvent extends WarEvent{
 					    	//if player hasn't accepted, expire the invite
 					    	HashMap<Integer, Set<Integer>> allianceRequests = warCommand.getTruceRequests();
 					        if(!allianceRequests.containsKey(enemy.getNationID()) || !allianceRequests.get(enemy.getNationID()).contains(nation.getNationID())) return;
-					        for(PlayerMapping players : nation.getLeaders()) {
+					        for(PlayerMapping players : nation.getPlayersByRank(Rank.getHighest())) {
 					        	Player play = Bukkit.getPlayer(players.getUUID());
 					        	play.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.Expired.Message"), play.getName()));	
 					        }

@@ -1,6 +1,9 @@
 package me.resurrectajax.nationslegacy.events.nation.disband;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -26,34 +29,53 @@ public class DisbandNationEvent extends NationEvent{
 			public void run() {
 				if(isCancelled) return;
 				
-				List<PlayerMapping> claimers = new ArrayList<PlayerMapping>();
-				claimers.addAll(nation.getLeaders());
-				claimers.addAll(nation.getOfficers());
-				if(claimers.stream()
-						.map(el -> el.getUUID())
-						.collect(Collectors.toSet()).removeIf(el -> Nations.getInstance().getMappingRepo().getClaimingSet().contains(el))) ;
+				Nations main = Nations.getInstance();
+				
+				Set<UUID> claimers = new HashSet<>(main.getMappingRepo()
+						.getClaimingSet()
+						.stream()
+						.filter(el -> nation.getPlayers()
+								.stream()
+								.map(pla -> pla.getUUID())
+								.anyMatch(ma -> el.equals(ma)))
+						.collect(Collectors.toSet()));
+				Set<UUID> unclaimers = new HashSet<>(main.getMappingRepo()
+						.getUnclaimingSet()
+						.stream()
+						.filter(el -> nation.getPlayers()
+								.stream()
+								.map(pla -> pla.getUUID())
+								.anyMatch(ma -> el.equals(ma)))
+						.collect(Collectors.toSet()));
+				claimers.addAll(unclaimers);
+				main.getMappingRepo().getUnclaimingSet().removeAll(claimers);
 				
 				FileConfiguration language = Nations.getInstance().getLanguage();
 				MappingRepository mappingRepo = Nations.getInstance().getMappingRepo();
 				
-				List<PlayerMapping> members = new ArrayList<PlayerMapping>(nation.getAllMembers());
+				List<PlayerMapping> members = new ArrayList<PlayerMapping>(nation.getPlayers());
 				
 				List<PlayerMapping> onlineMembers = members.stream()
 						.filter(el -> Bukkit.getPlayer(el.getUUID()) != null)
 						.collect(Collectors.toList());
 				
-				OfflinePlayer player = Bukkit.getOfflinePlayer(onlineMembers.get(0).getUUID());
-				
-				onlineMembers.forEach(el -> {
-					Player onplayer = Bukkit.getPlayer(el.getUUID());
-					onplayer.sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
-					GeneralMethods.updatePlayerTab(onplayer);
-				});
+				if(!onlineMembers.isEmpty()) {
+					OfflinePlayer player = Bukkit.getOfflinePlayer(onlineMembers.get(0).getUUID());
+					
+					onlineMembers.forEach(el -> {
+						Player onplayer = Bukkit.getPlayer(el.getUUID());
+						onplayer.sendMessage(GeneralMethods.format(player, language.getString("Command.Nations.Disband.Disbanded.Message"), nation.getName()));
+					});	
+				}
 				
 				mappingRepo.disbandNation(nation);
 				
 				GeneralMethods.updatePlayerTab((Player) sender);
-				onlineMembers.forEach(el -> GeneralMethods.updatePlayerTab(Bukkit.getPlayer(el.getUUID())));
+				onlineMembers.forEach(el -> {
+					Player onPlayer = Bukkit.getPlayer(el.getUUID());
+					GeneralMethods.updatePlayerTab(onPlayer);
+					main.reloadPermissions(onPlayer);
+				});
 			}	
 		}, 1L);
 		

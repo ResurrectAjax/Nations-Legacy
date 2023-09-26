@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.events.nation.home.DeleteHomeEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -49,7 +48,7 @@ public class DeleteHomeCommand extends ChildCommand{
 			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
 			return;
 		}
-		if(!playerMap.getRank().equals(Rank.Leader)) {
+		if(!sender.hasPermission(getPermissionNode())) {
 			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 			return;
 		}

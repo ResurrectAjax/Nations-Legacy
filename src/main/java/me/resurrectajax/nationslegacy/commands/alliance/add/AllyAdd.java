@@ -14,7 +14,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.alliance.AllyCommand;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.alliance.RequestAllianceEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -43,13 +43,13 @@ public class AllyAdd extends ChildCommand{
 		
 		super.setLastArg(main, sender, args.length > 2 ? args[2] : "");
 		if(receivingNation != null) {
-			PlayerMapping pl = receivingNation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = receivingNation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
 		if(args.length != 3) player.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
-		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else if(receivingNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
 		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.Self.Message"), args[2]));
 		else if(mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(receivingNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.NationAtWar.Message"), args[2]));

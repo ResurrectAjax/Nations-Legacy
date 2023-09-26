@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.events.nation.description.SetNationDescriptionEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -45,7 +44,7 @@ public class SetDescription extends ChildCommand{
 		
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+		else if(!sender.hasPermission(getPermissionNode())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else Bukkit.getPluginManager().callEvent(new SetNationDescriptionEvent(nation, sender, desc));
 	}
 

@@ -62,7 +62,7 @@ public class TransferChunksEvent extends NationEvent{
 				String message = language.getString("Command.Nations.Transfer.Sent.Message");
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, message, String.format("%d", neededChunkAmount), receiver.getName()));
 				
-				receiver.getAllMembers().forEach(el -> {
+				receiver.getPlayers().forEach(el -> {
 					String msg = language.getString("Command.Nations.Transfer.Received.Message");
 					msg = msg.replace("%nations_transfer_amount%", String.format("%d", neededChunkAmount));
 					Player play = Bukkit.getPlayer(el.getUUID());

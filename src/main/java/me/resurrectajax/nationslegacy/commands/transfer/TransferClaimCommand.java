@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.transfer.TransferChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -44,13 +44,13 @@ public class TransferClaimCommand extends ChildCommand{
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 
 		if(receivingNation != null) {
-			PlayerMapping pl = receivingNation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = receivingNation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
 		if(args.length != 3 || !GeneralMethods.isInteger(args[2])) player.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[1]));
-		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else if(receivingNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
 		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Transfer.Self.Message"), args[1]));
 		else {

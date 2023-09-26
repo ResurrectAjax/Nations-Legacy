@@ -28,11 +28,11 @@ public class DeclareWarEvent extends WarEvent{
 				
 				FileConfiguration language = main.getLanguage();
 				
-				Player enemyPlayer = enemy.getAllMembers().stream().map(el -> Bukkit.getPlayer(el.getUUID())).filter(el -> el != null).findFirst().orElse(null);
+				Player enemyPlayer = enemy.getPlayers().stream().map(el -> Bukkit.getPlayer(el.getUUID())).filter(el -> el != null).findFirst().orElse(null);
 				
 				Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-				players.addAll(nation.getAllMembers());
-				players.addAll(enemy.getAllMembers());
+				players.addAll(nation.getPlayers());
+				players.addAll(enemy.getPlayers());
 				for(PlayerMapping player : players) {
 					if(Bukkit.getPlayer(player.getUUID()) == null) continue;
 					Player playerA = Bukkit.getPlayer(player.getUUID());

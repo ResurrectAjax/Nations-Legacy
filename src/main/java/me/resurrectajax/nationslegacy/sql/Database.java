@@ -25,7 +25,7 @@ import org.flywaydb.core.Flyway;
 import db.migration.V1_0_1__remove_ranks_foreign_key;
 import me.resurrectajax.ajaxplugin.sql.Errors;
 import me.resurrectajax.nationslegacy.enumeration.Flag;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.AllianceMapping;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -63,6 +63,21 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
 
         // Run the database migrations
         flyway.migrate();
+    }
+    
+    private String SQLiteCreateRanksTable = "CREATE TABLE IF NOT EXISTS Ranks (" + 
+    		"`Rank` varchar(32) PRIMARY KEY," +
+    		"`Power` int" +
+            ");"; 
+    
+    private String SQLiteInsertRanks() {
+    	String stmt = "INSERT OR REPLACE INTO Ranks(Rank, Power) values"; 
+    	List<me.resurrectajax.nationslegacy.ranking.Rank> ranks = new ArrayList<>(me.resurrectajax.nationslegacy.ranking.Rank.getRanks());
+    	for(me.resurrectajax.nationslegacy.ranking.Rank rank : ranks) {
+    		if(rank.equals(ranks.get(ranks.size()-1))) stmt += String.format("('%s', %d)", rank.getName(), rank.getPower());
+    		else stmt += String.format("('%s', %d),", rank.getName(), rank.getPower());
+    	}
+    	return stmt;
     }
     
     private String SQLiteCreateFlagsTable = "CREATE TABLE IF NOT EXISTS Flags (" + 
@@ -145,10 +160,16 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
      * load database and execute table creation statements
      * */
     public void load() {
+    	File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
+    	boolean exists = dataFolder.exists();
     	super.setConnection(getSQLConnection());
+    	
+    	if (exists) loadMigrations();
         try{
             Statement s = connection.createStatement();
             
+            s.executeUpdate(SQLiteCreateRanksTable);
+            s.executeUpdate(SQLiteInsertRanks());
             s.executeUpdate(SQLiteCreateFlagsTable);
             s.executeUpdate(SQLiteCreateNationsTable);
             s.executeUpdate(SQLiteCreatePlayersTable);
@@ -163,9 +184,6 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
         }
-        finally {
-        	loadMigrations();
-		}
     }
     
     /**
@@ -184,7 +202,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
    
             rs = ps.executeQuery();
             while(rs.next()){
-                PlayerMapping player = new PlayerMapping(UUID.fromString(rs.getString(1)), rs.getInt(2), Rank.valueOf(rs.getString(4)), this);
+                PlayerMapping player = new PlayerMapping(UUID.fromString(rs.getString(1)), rs.getInt(2), Rank.getRankByName(rs.getString(4)), this);
                 if(rs.getObject(3) != null) player.setNationID(rs.getInt(3));
                 players.add(player);
             }
@@ -718,7 +736,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             
             PlayerMapping player = mappingRepo.getPlayerByUUID(uuid);
             player.setNationID(null);
-            player.setRank(Rank.Nationless);
+            player.setRank(Rank.getNationless());
         	
         	player.update();
             
@@ -865,7 +883,7 @@ public class Database extends me.resurrectajax.ajaxplugin.sql.Database{
             
             
             ps = conn.prepareStatement("UPDATE Players SET Rank = ? WHERE NationID = ?");
-            ps.setString(1, Rank.Nationless.toString());
+            ps.setString(1, Rank.getNationless().toString());
             ps.setInt(2, nationID);
             ps.executeUpdate();
             ps.close();

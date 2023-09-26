@@ -35,11 +35,11 @@ public class AcceptTruceEvent extends WarEvent{
 				warCommand.removeTruceRequest(nation.getNationID(), enemy.getNationID());
 				
 				Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-				players.addAll(nation.getAllMembers());
-				players.addAll(enemy.getAllMembers());
+				players.addAll(nation.getPlayers());
+				players.addAll(enemy.getPlayers());
 				
-				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-				Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> enemy.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> enemy.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
 				Bukkit.getOnlinePlayers().stream()
 					.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 					.forEach(el -> {

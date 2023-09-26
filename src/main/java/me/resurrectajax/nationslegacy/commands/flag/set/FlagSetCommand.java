@@ -13,7 +13,6 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.enumeration.Flag;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -41,7 +40,7 @@ public class FlagSetCommand extends ChildCommand{
 		
 		if(args.length < 4) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+		else if(!sender.hasPermission(getPermissionNode())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else if(Flag.getFromString(args[2]) == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Flag.Set.NotExist.Message"), args[2]));
 		else if(!config.getBoolean(String.format("Nations.Flags.%s.Adjustable", Flag.getFromString(args[2]).toString()))) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Flag.Set.NotAdjustable.Message"), args[2]));
 		else {

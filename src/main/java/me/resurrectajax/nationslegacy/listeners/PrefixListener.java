@@ -30,7 +30,7 @@ public class PrefixListener implements Listener{
 		if(!hasPrefix) return;
 		
 		String playerName = event.getPlayer().getDisplayName(), message = event.getMessage();
-		String total = String.format(config.getString("Nations.Prefix.Format") + ": %s", nation != null ? nation.getName() : config.getString("Wilderness.Name"), playerName, message);
+		String total = String.format(config.getString("Nations.Prefix.Format") + ": %s", nation != null ? nation.getName() : config.getString("Wilderness.Name"), playerName, message.replace("%", "%%"));
 		event.setFormat(GeneralMethods.format(total));
 	}
 }

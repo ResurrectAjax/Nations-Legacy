@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.events.nation.war.WarEndEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -73,7 +72,7 @@ public class PlayerKillListener implements Listener{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(uuid);
 		PlayerMapping damagerMap = mappingRepo.getPlayerByUUID(playerCombat.getOtherPlayer(uuid));
 		
-		int rankWorth = Rank.getRankWorth(playerMap.getRank());
+		int rankWorth = playerMap.getRank().getWorth();
 		if(playerMap.getNationID() == null) {
 			int kp = rankWorth + damagerMap.getKillpoints();
 			damagerMap.setKillpoints(kp);

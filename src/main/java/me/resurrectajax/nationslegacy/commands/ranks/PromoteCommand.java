@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.ranks.PromoteEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -60,11 +60,11 @@ public class PromoteCommand extends ChildCommand{
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInSameNation.Message"), args[1]));
 			return;
 		}
-		if(!promoter.getRank().equals(Rank.Leader)) {
+		if(!promoter.getRank().equals(Rank.getHighest())) {
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), args[1]));
 			return;
 		}
-		if(player.getRank().equals(Rank.Leader)) {
+		if(player.getRank().equals(Rank.getHighest())) {
 			sender.sendMessage(GeneralMethods.relFormat(sender, (CommandSender)offPlayer, language.getString("Command.Player.Promote.AlreadyHighestRank.Message"), args[1]));
 			return;
 		}
@@ -76,10 +76,10 @@ public class PromoteCommand extends ChildCommand{
 	public String[] getArguments(UUID uuid) {
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(uuid);
-		if(playerMap.getNationID() == null || !playerMap.getRank().equals(Rank.Leader)) return null;
+		if(playerMap.getNationID() == null || !playerMap.getRank().equals(Rank.getHighest())) return null;
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
-		List<String> players = nation.getAllMembers().stream()
-						.filter(el -> !el.getRank().equals(Rank.Leader))
+		List<String> players = nation.getPlayers().stream()
+						.filter(el -> !el.getRank().equals(Rank.getHighest()))
 						.map(el -> Bukkit.getPlayer(el.getUUID()).getName())
 						.toList();
 		

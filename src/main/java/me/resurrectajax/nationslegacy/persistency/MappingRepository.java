@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.nationslegacy.chunkgain.ChunkGainManager;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.scoreboard.ScoreboardManager;
 import me.resurrectajax.nationslegacy.sql.Database;
@@ -118,7 +118,7 @@ public class MappingRepository implements me.resurrectajax.ajaxplugin.interfaces
 	 * */
 	public NationMapping createNation(String name, PlayerMapping leader) {
 		FileConfiguration config = main.getConfig();
-		if(getNationByName(name) != null || !leader.getRank().equals(Rank.Nationless)) return null;
+		if(getNationByName(name) != null || !leader.getRank().equals(Rank.getNationless())) return null;
 		NationMapping nation = db.insertNation(name, leader, config.getInt("Nations.Claiming.MaxChunks"));
 		this.nations.add(nation);
 		
@@ -176,7 +176,7 @@ public class MappingRepository implements me.resurrectajax.ajaxplugin.interfaces
 	 * */
 	public void addPlayer(Player player) {
 		if(players.stream().anyMatch(play -> play.getUUID().equals(player.getUniqueId()))) return;
-		PlayerMapping playermap = db.insertPlayer(player.getUniqueId(), 0, Rank.Nationless);
+		PlayerMapping playermap = db.insertPlayer(player.getUniqueId(), 0, Rank.getNationless());
 		this.players.add(playermap);
 	}
 

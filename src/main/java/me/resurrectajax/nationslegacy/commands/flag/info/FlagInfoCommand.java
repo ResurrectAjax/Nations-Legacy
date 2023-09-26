@@ -65,7 +65,7 @@ public class FlagInfoCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nationMap = mappingRepo.getNationByName(nation);
 		if(nationMap != null) {
-			PlayerMapping pl = nationMap.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = nationMap.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		

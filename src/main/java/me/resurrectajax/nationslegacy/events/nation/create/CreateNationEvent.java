@@ -31,6 +31,8 @@ public class CreateNationEvent extends NationEvent{
 					mappingRepo.getChunkGainManager().addChunkGain(nation);
 					sender.sendMessage(GeneralMethods.format((OfflinePlayer)player, language.getString("Command.Nations.Create.Created.Message"), nation.getName()));
 					GeneralMethods.updatePlayerTab(player);
+					
+					main.reloadPermissions(player);
 				}
 			}
 		}, 1L);

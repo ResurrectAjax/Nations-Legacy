@@ -1,6 +1,6 @@
 main: me.resurrectajax.nationslegacy.main.Nations
 name: Nations-Legacy
-version: 1.0.2
+version: 1.0.3
 author: ResurrectAjax
 description: Create nations, claim land, wage war!
 api-version: 1.19
@@ -28,6 +28,7 @@ permissions:
       nations.player.description: true
       nations.player.description.set: true
       nations.player.description.remove: true
+      nations.player.disband: true
       nations.player.flag: true
       nations.player.flag.set: true
       nations.player.flag.info: true
@@ -67,6 +68,7 @@ permissions:
       nations.player.description: true
       nations.player.description.set: true
       nations.player.description.remove: true
+      nations.player.disband: true
       nations.player.flag: true
       nations.player.flag.set: true
       nations.player.flag.info: true

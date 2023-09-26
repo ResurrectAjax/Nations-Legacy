@@ -35,7 +35,7 @@ public class DemoteEvent extends NationEvent{
 				nation.demotePlayer(player);
 				
 				OfflinePlayer playerO = Bukkit.getOfflinePlayer(player.getUUID());
-				for(PlayerMapping playerA : nation.getAllMembers()) {
+				for(PlayerMapping playerA : nation.getPlayers()) {
 					if(Bukkit.getPlayer(playerA.getUUID()) == null) continue;
 					Player playerAB = Bukkit.getPlayer(playerA.getUUID());
 					PlayerMapping playerOMap = mappingRepo.getPlayerByUUID(playerO.getUniqueId());

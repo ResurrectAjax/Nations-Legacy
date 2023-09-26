@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.NationEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -42,29 +42,21 @@ public class JoinNationEvent extends NationEvent{
 					nation.kickPlayer(player);
 				}
 				
-				switch(nationRank) {
-					case Leader: 
-						nation.addLeader(player);
-						break;
-					case Officer:
-						nation.addOfficer(player);
-						break;
-					case Member:
-						nation.addMember(player);
-						break;
-					default:
-						break;
-				}
+				
+				nation.addPlayerWithRank(player, rank);
+
 				
 				if(mappingRepo.getPlayerInvites().containsKey(player.getUUID()) && mappingRepo.getPlayerInvites().get(player.getUUID()).contains(nation.getNationID())) {
 					mappingRepo.removePlayerInvite(nation.getNationID(), player.getUUID());
 					Bukkit.getOnlinePlayers().stream()
-						.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
+						.filter(el -> (nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))) && !el.getUniqueId().equals(((Player)sender).getUniqueId()))
 						.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.Accepted.Message"), nation.getName())));	
 				}
 				
 				GeneralMethods.updatePlayerTab((Player)sender);
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.JoinedNation.Message"), nation.getName()));
+				main.reloadPermissions(Bukkit.getPlayer(player.getUUID()));
+				
 				Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
 				if(wars.isEmpty()) return;
 				wars.stream().forEach(el -> el.updateGoal());

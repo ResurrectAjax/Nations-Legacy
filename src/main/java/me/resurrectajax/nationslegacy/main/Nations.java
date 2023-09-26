@@ -15,7 +15,6 @@ import me.resurrectajax.ajaxplugin.managers.FileManager;
 import me.resurrectajax.ajaxplugin.managers.PermissionManager;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.NationsCommand;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
 import me.resurrectajax.nationslegacy.events.ReloadEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.listeners.ClaimListener;
@@ -126,24 +125,29 @@ public class Nations extends AjaxPlugin{
 				);
 		
 		loadPermissions();
+		me.resurrectajax.nationslegacy.ranking.Rank.reloadRanks();
     }
 
 	public void loadPermissions() {
 		super.setPermissionManager(new PermissionManager(this));
 		
-		PermissionManager manager = getPermissionManager();
 		for(Player player : Bukkit.getOnlinePlayers()) {
-			manager.clearStartingWith(player, "nations.player");
-			
-			MappingRepository mappingRepo = getMappingRepo();
-			PlayerMapping playMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-			
-			List<String> permissions = Rank.getPermissionsByRank(playMap.getRank());
-			permissions.forEach(el -> {
-				if(el.contains("-")) manager.denyPermission(player, el);
-				else manager.grantPermission(player, el);
-			});
+			reloadPermissions(player);
 		}
+	}
+	
+	public void reloadPermissions(Player player) {
+		PermissionManager manager = getPermissionManager();
+		manager.clearStartingWith(player, "nations.player");
+		
+		MappingRepository mappingRepo = getMappingRepo();
+		PlayerMapping playMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
+		
+		List<String> permissions = playMap.getRank().getPermissions();
+		permissions.forEach(el -> {
+			if(el.contains("-")) manager.denyPermission(player, el);
+			else manager.grantPermission(player, el);
+		});
 	}
 	
 	/**

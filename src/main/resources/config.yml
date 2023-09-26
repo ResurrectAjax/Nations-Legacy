@@ -58,17 +58,37 @@ Nations:
         Worth: 2
         Power: 2
         Permissions:
-        - "nations.player.*"
+        - "nations.player.claim"
+        - "nations.player.unclaim"
+        - "nations.player.home"
+        - "nations.player.info"
+        - "nations.player.invite"
+        - "nations.player.leave"
+        - "nations.player.list"
+        - "nations.player.map"
+        - "nations.player.war.info"
+        - "nations.player.who"
       Member:
         Worth: 1
         Power: 1
         Permissions:
-        - "nations.player.*"
+        - "nations.player.home"
+        - "nations.player.info"
+        - "nations.player.leave"
+        - "nations.player.list"
+        - "nations.player.map"
+        - "nations.player.war.info"
+        - "nations.player.who"
       Nationless:
         Worth: 1
         Power: 0
         Permissions:
-        - "nations.player.*"
+        - "nations.player.info"
+        - "nations.player.list"
+        - "nations.player.map"
+        - "nations.player.war.info"
+        - "nations.player.who"
+        - "nations.player.create"
     
     # Chunks: the chunks that will be transferred to the winning nation
     #   Regain: wether the losing nation can regain the chunks they lost using chunkgain

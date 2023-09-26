@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.kick.KickFromNationEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -46,8 +46,8 @@ public class KickCommand extends ChildCommand{
 			
 			if(senderMap.getNationID() == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotInNation.Message"), offPlayer.getName()));
 			else if(player.getNationID() != senderMap.getNationID()) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotInSameNation.Message"), offPlayer.getName()));
-			else if(!senderMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotALeader.Message"), offPlayer.getName()));
-			else if(player.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Kick.Leader.Message"), offPlayer.getName()));
+			else if(!senderMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotALeader.Message"), offPlayer.getName()));
+			else if(player.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Kick.Leader.Message"), offPlayer.getName()));
 			else Bukkit.getPluginManager().callEvent(new KickFromNationEvent(mappingRepo.getNationByID(senderMap.getNationID()), sender, player));
 		}
 		else sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotExist.Message"), args[1]));
@@ -60,8 +60,8 @@ public class KickCommand extends ChildCommand{
 		if(player.getNationID() == null) return null;
 		
 		NationMapping nation = mappingRepo.getNationByID(player.getNationID());
-		Set<String> members = nation.getAllMembers().stream()
-			.filter(el -> !el.getRank().equals(Rank.Leader))
+		Set<String> members = nation.getPlayers().stream()
+			.filter(el -> !el.getRank().equals(Rank.getHighest()))
 			.map(el -> Bukkit.getOfflinePlayer(el.getUUID()).getName())
 			.collect(Collectors.toSet());
 		

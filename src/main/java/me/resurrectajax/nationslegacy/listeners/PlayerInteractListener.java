@@ -145,11 +145,12 @@ public class PlayerInteractListener implements Listener{
 		Player player = (Player) event.getEntity(), damager = (Player) event.getDamager();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId()), damagerMap = mappingRepo.getPlayerByUUID(damager.getUniqueId());
 		
+		if(playerMap == null) return;
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
 		
 		
 		if(nation != null && nation.getFlags().get(Flag.FriendlyFire)) return;
 		
-		if(playerMap.getNationID() == damagerMap.getNationID()) event.setCancelled(true);
+		if(playerMap.getNationID() == damagerMap.getNationID() && playerMap != null) event.setCancelled(true);
 	}
 }

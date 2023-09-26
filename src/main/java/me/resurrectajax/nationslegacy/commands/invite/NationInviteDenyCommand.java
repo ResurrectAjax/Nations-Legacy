@@ -39,7 +39,7 @@ public class NationInviteDenyCommand extends ChildCommand{
 		
 		super.setLastArg(main, sender, args.length < 2 ? "" : args[1]);
 		if(nation != null) {
-			PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = nation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
@@ -50,7 +50,7 @@ public class NationInviteDenyCommand extends ChildCommand{
 		else {
 			mappingRepo.removePlayerInvite(nation.getNationID(), player.getUniqueId());
 			Bukkit.getOnlinePlayers().stream()
-				.filter(el -> (nation.getLeaders().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getOfficers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId())) || nation.getMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))
+				.filter(el -> (nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))
 				.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.Denied.Message"), nation.getName())));
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.DeniedNation.Message"), player.getName()));
 		}

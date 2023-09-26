@@ -40,7 +40,7 @@ public class TruceCancel extends ChildCommand{
 		
 		super.setLastArg(main, sender, args.length < 3 ? "" : args[2]);
 		if(nation != null) {
-			PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = nation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 

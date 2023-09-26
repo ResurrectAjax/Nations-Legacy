@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -41,7 +42,7 @@ public class JoinLeaveListener implements Listener{
 		mappingRepo.getNations().forEach(el -> chunkManager.removeChunkGain(el.getNationID()));
 		
 		Set<NationMapping> activeNations = mappingRepo.getNations().stream()
-			.filter(nation -> nation.getAllMembers().stream()
+			.filter(nation -> nation.getPlayers().stream()
 					.filter(el -> Bukkit.getPlayer(el.getUUID()) != null)
 					.findAny()
 					.orElse(null)
@@ -63,18 +64,20 @@ public class JoinLeaveListener implements Listener{
 		
 		mappingRepo = main.getMappingRepo();
 		
-		if(mappingRepo.getPlayerByUUID(event.getPlayer().getUniqueId()) == null) mappingRepo.addPlayer(event.getPlayer());
+		Player player = event.getPlayer();
+		if(mappingRepo.getPlayerByUUID(player.getUniqueId()) == null) mappingRepo.addPlayer(player);
 		
+		main.reloadPermissions(player);
 		
-		mappingRepo.getScoreboardManager().updateScoreboard(event.getPlayer());
+		mappingRepo.getScoreboardManager().updateScoreboard(player);
 		
-		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(event.getPlayer().getUniqueId());
+		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		
-		GeneralMethods.updatePlayerTab(event.getPlayer());
+		GeneralMethods.updatePlayerTab(player);
 		if(playerMap.getNationID() == null) return;
 		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
-		if(nation.getAllMembers().stream().filter(el -> Bukkit.getPlayer(el.getUUID()) != null).collect(Collectors.toSet()).size() != 1) return;
+		if(nation.getPlayers().stream().filter(el -> Bukkit.getPlayer(el.getUUID()) != null).collect(Collectors.toSet()).size() != 1) return;
 		
 		if(nation.getGainedChunks() < limit || limit == -1) chunkManager.addChunkGain(nation);
 	}
@@ -87,7 +90,7 @@ public class JoinLeaveListener implements Listener{
 		if(playerMap.getNationID() == null) return;
 		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
-		if(nation.getAllMembers().stream().filter(el -> Bukkit.getPlayer(el.getUUID()) != null).collect(Collectors.toSet()).size() != 1) return;
+		if(nation.getPlayers().stream().filter(el -> Bukkit.getPlayer(el.getUUID()) != null).collect(Collectors.toSet()).size() != 1) return;
 		
 		chunkManager.removeChunkGain(nation.getNationID());
 	}

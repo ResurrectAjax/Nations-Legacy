@@ -3,7 +3,7 @@ package me.resurrectajax.nationslegacy.persistency;
 import java.util.Objects;
 import java.util.UUID;
 
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.sql.Database;
 
 public class PlayerMapping {

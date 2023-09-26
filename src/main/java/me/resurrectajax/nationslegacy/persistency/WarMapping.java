@@ -1,6 +1,6 @@
 package me.resurrectajax.nationslegacy.persistency;
 
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.sql.Database;
 
 public class WarMapping {
@@ -32,10 +32,12 @@ public class WarMapping {
 	private int calculateGoal(NationMapping nation, NationMapping enemy) {
 		int goal = 0;
 		
-		int leaderPoints = (nation.getLeaders().size() * Rank.getRankWorth(Rank.Leader)) + (enemy.getLeaders().size() * Rank.getRankWorth(Rank.Leader));
-		int officerPoints = (nation.getOfficers().size() * Rank.getRankWorth(Rank.Officer)) + (enemy.getOfficers().size() * Rank.getRankWorth(Rank.Officer));
-		int memberPoints = (nation.getMembers().size() * Rank.getRankWorth(Rank.Member)) + (enemy.getMembers().size() * Rank.getRankWorth(Rank.Member));
-		goal += leaderPoints + officerPoints + memberPoints;
+		int points = 0;
+		for(Rank rank : Rank.getRanks()) {
+			points += (nation.getPlayersByRank(rank).size() * rank.getWorth()) + (enemy.getPlayersByRank(rank).size() * rank.getWorth());
+		}
+		
+		goal += points;
 		goal *= 2;
 		
 		return goal;

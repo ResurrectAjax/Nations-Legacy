@@ -2,6 +2,7 @@ package me.resurrectajax.nationslegacy.commands.info;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
 public class NationInfoCommand extends ChildCommand{
 	private final Nations main;
@@ -66,9 +68,11 @@ public class NationInfoCommand extends ChildCommand{
 		
 		NationMapping nationMap = mappingRepo.getNationByName(nation);
 		if(nationMap != null) {
-			PlayerMapping pl = nationMap.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = nationMap.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
+		
+		TreeMap<Rank, Set<PlayerMapping>> playersByRank = nationMap.getPlayers().stream().collect(Collectors.groupingBy(PlayerMapping::getRank, TreeMap::new, Collectors.toSet()));
 		
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("Nation Info", '-', 37));
 		sender.sendMessage(GeneralMethods.format("&bNation: &a&l" + nationMap.getName()));
@@ -76,9 +80,11 @@ public class NationInfoCommand extends ChildCommand{
 		if(chunkLimit != -1) sender.sendMessage(GeneralMethods.format("  &bGained chunks: " + String.format("&a%d&b/&a%d", nationMap.getGainedChunks(), chunkLimit)));
 		sender.sendMessage(GeneralMethods.format("  &bClaimed chunks: " + String.format("&a%d&b/&a%d", nationMap.getClaimedChunks().size(), nationMap.getMaxChunks())));
 		sender.sendMessage(GeneralMethods.format("  &bDescription: &f" + nationMap.getDescription()));
-		sender.sendMessage(GeneralMethods.format("  &bLeaders: &a" + givePlayerList(nationMap.getLeaders())));
-		sender.sendMessage(GeneralMethods.format("  &bOfficers: &a" + givePlayerList(nationMap.getOfficers())));
-		sender.sendMessage(GeneralMethods.format("  &bMembers: &a" + givePlayerList(nationMap.getMembers())));
+		
+		playersByRank.entrySet().forEach(entry -> {
+			String mess = String.format("  &b%s: &a%s", entry.getKey(), givePlayerList(entry.getValue()));
+			sender.sendMessage(GeneralMethods.format(mess));
+		});
 		sender.sendMessage(GeneralMethods.format("  &bAllies: " + giveNationList(mappingRepo.getAllianceNationsByNationID(nationMap.getNationID()), ChatColor.GOLD, ChatColor.GREEN)));
 		sender.sendMessage(GeneralMethods.format("  &bEnemies: " + giveNationList(mappingRepo.getWarNationsByNationID(nationMap.getNationID()), ChatColor.RED, ChatColor.GREEN)));
 		sender.sendMessage(ChatColor.GOLD + GeneralMethods.padCenter("", '-', 35));

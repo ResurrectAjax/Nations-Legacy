@@ -38,11 +38,11 @@ public class RemoveAllianceEvent extends NationEvent{
 				mappingRepo.removeAlliance(nation.getNationID(), ally.getNationID());
 				
 				Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-				players.addAll(nation.getAllMembers());
-				players.addAll(ally.getAllMembers());
+				players.addAll(nation.getPlayers());
+				players.addAll(ally.getPlayers());
 				
-				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
-				Player allyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> ally.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player player = Bukkit.getOnlinePlayers().stream().filter(el -> nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+				Player allyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> ally.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
 				Bukkit.getOnlinePlayers().stream()
 					.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 					.forEach(el -> {

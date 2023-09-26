@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.join.JoinNationEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -35,12 +35,12 @@ public class JoinNationCommand extends ChildCommand{
 		
 		super.setLastArg(main, sender, args.length < 3 ? "" : args[2]);
 		if(nation != null) {
-			PlayerMapping pl = nation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = nation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender, Rank.Leader));
+		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender, Rank.getHighest()));
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.events.nation.NationEvent;
 import me.resurrectajax.nationslegacy.events.nation.disband.DisbandNationEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
@@ -36,17 +36,19 @@ public class LeaveNationEvent extends NationEvent{
 				FileConfiguration language = main.getLanguage();
 				
 				
-				nation.getAllMembers()
+				nation.getPlayers()
 					.stream()
 					.filter(el -> !el.getUUID().equals(playerMap.getUUID()) && Bukkit.getPlayer(el.getUUID()) != null)
 					.map(el -> Bukkit.getPlayer(el.getUUID()))
 					.forEach(el -> el.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Player.Leave.Message"), sender.getName())));
 				sender.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.Leave.Message"), sender.getName()));
 				
-				if(nation.getLeaders().size() == 1 && playerMap.getRank().equals(Rank.Leader)) main.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
+				if(nation.getPlayersByRank(Rank.getHighest()).size() == 1 && playerMap.getRank().equals(Rank.getHighest())) main.getServer().getPluginManager().callEvent(new DisbandNationEvent(nation, sender));
 				else {
 					nation.kickPlayer(playerMap);
 					GeneralMethods.updatePlayerTab((Player)sender);
+					main.reloadPermissions(Bukkit.getPlayer(playerMap.getUUID()));
+					
 					Set<WarMapping> wars = mappingRepo.getWarsByNationID(nation.getNationID());
 					if(wars.isEmpty()) return;
 					wars.stream().forEach(el -> el.updateGoal());

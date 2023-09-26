@@ -16,7 +16,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.WarCommand;
-import me.resurrectajax.nationslegacy.enumeration.Rank;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -44,13 +44,13 @@ public class TruceDeny extends ChildCommand{
 		
 		super.setLastArg(main, sender, args.length < 3 ? "" : args[2]);
 		if(senderNation != null) {
-			PlayerMapping pl = senderNation.getAllMembers().stream().findFirst().orElse(null);
+			PlayerMapping pl = senderNation.getPlayers().stream().findFirst().orElse(null);
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
 		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
-		else if(!playerMap.getRank().equals(Rank.Leader)) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
+		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
 		else if(senderNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
 		else if(nation == senderNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.Self.Message"), args[2]));
 		else if(!mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.NotAtWar.Message"), args[2]));
@@ -60,10 +60,10 @@ public class TruceDeny extends ChildCommand{
 			warCommand.removeTruceRequest(nation.getNationID(), senderNation.getNationID());
 			
 			Set<PlayerMapping> players = new HashSet<PlayerMapping>();
-			players.addAll(nation.getAllMembers());
-			players.addAll(senderNation.getAllMembers());
+			players.addAll(nation.getPlayers());
+			players.addAll(senderNation.getPlayers());
 			
-			Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> senderNation.getAllMembers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+			Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> senderNation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
 				.forEach(el -> {
