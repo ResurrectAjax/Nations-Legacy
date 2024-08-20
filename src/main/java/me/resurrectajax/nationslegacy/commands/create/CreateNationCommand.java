@@ -1,18 +1,16 @@
 package me.resurrectajax.nationslegacy.commands.create;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.create.validators.CreateNationValidator;
 import me.resurrectajax.nationslegacy.events.nation.create.CreateNationEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
@@ -64,17 +62,13 @@ public class CreateNationCommand extends ChildCommand{
 
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		FileConfiguration lang = main.getLanguage();
 		MappingRepository mappingRepo = main.getMappingRepo();
 		
 		OfflinePlayer player = (OfflinePlayer) sender;
 		super.setLastArg(main, sender, args.length < 2 ? "" : args[1]);
 		
-		if(args.length != 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(!Pattern.matches("[a-zA-Z]+", args[1])) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Error.SpecialCharacters.Message"), args[1]));
-		else if(mappingRepo.getPlayerByUUID(player.getUniqueId()).getNationID() != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyInNation.Message"), args[1]));
-		else if(mappingRepo.getNationByName(args[1]) != null) sender.sendMessage(GeneralMethods.format(player, lang.getString("Command.Nations.Create.AlreadyExists.Message"), args[1]));
-		else {
+		CreateNationValidator validator = new CreateNationValidator(sender, args, this);
+		if(validator.validate()) {
 			NationMapping nation = mappingRepo.createNation(args[1], mappingRepo.getPlayerByUUID(player.getUniqueId()));
 			Bukkit.getPluginManager().callEvent(new CreateNationEvent(nation, sender));
 		}
