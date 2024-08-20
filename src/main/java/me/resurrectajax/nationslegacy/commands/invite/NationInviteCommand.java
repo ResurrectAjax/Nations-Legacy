@@ -37,11 +37,12 @@ public class NationInviteCommand extends ChildCommand{
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		PlayerMapping receiver = mappingRepo.getPlayerByName(args.length > 1 ? args[1] : "");
-		CommandSender receive = (CommandSender)Bukkit.getPlayer(receiver.getUUID());
-		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
 		super.setLastArg(main, sender, args.length > 1 ? args[1] : "");
 		if(receiver != null) super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(receiver.getUUID()));
+		
+		CommandSender receive = (CommandSender)Bukkit.getPlayer(receiver.getUUID());
+		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
 		if(args.length != 2) player.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
 		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[1]));

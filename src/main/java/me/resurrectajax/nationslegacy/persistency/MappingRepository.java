@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -155,7 +156,9 @@ public class MappingRepository implements me.resurrectajax.ajaxplugin.interfaces
 	}
 	public PlayerMapping getPlayerByName(String name) {
 		for(PlayerMapping player : players) {
-			if(Bukkit.getOfflinePlayer(player.getUUID()).getName().equalsIgnoreCase(name)) return player;
+			OfflinePlayer offline = Bukkit.getOfflinePlayer(player.getUUID());
+			if(offline == null || offline.getName() == null) return null;
+			if(offline.getName().equalsIgnoreCase(name)) return player;
 		}
 		return null;
 	}

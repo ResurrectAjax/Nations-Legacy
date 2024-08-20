@@ -1,5 +1,6 @@
 package me.resurrectajax.nationslegacy.algorithms;
 
+import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,9 @@ import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 
+/**
+ * Algorithm class for filling an area with claimed chunks when forming a box-shape
+ * */
 public class FillAlgorithm {
 	private MappingRepository mappingRepo;
 	private NationMapping nation;
@@ -22,6 +26,12 @@ public class FillAlgorithm {
 	private int left;
 	private int right;
 	
+	/**
+	 * Constructor
+	 * @param main - {@link Nations} this plugin
+	 * @param nation - {@link NationMapping} claiming nation
+	 * @param start - {@link Chunk} chunk to start from
+	 * */
 	public FillAlgorithm(Nations main, NationMapping nation, Chunk start) {
 		this.mappingRepo = main.getMappingRepo();
 		this.nation = nation;
@@ -63,7 +73,12 @@ public class FillAlgorithm {
 		return new Integer[] {largestx, largestz};
 	}
 	
+	/**
+	 * Method to flood fill a square outline
+	 * @return {@link List} of chunks to claim
+	 * */
 	public List<Chunk> fillSquareOutline() {
+		
 	    // Initialize variables for the bounding box
 	    top = start.getX();
 	    bottom = start.getX();
@@ -109,4 +124,19 @@ public class FillAlgorithm {
 	    
 	    return markings;
 	}
+	
+	
+	public static boolean isPointInPolygon(double x, double y, int[] polygonX, int[] polygonY) {
+        Path2D path = new Path2D.Double();
+        path.moveTo(polygonX[0], polygonY[0]);
+
+        for (int i = 1; i < polygonX.length; i++) {
+            path.lineTo(polygonX[i], polygonY[i]);
+        }
+        path.closePath();
+
+        return path.contains(x, y);
+    }
+	
+	
 }
