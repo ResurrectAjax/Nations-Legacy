@@ -7,21 +7,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.commands.invite.validators.NationInviteAcceptValidator;
 import me.resurrectajax.nationslegacy.events.nation.join.JoinNationEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
 public class NationInviteAcceptCommand extends ChildCommand{
 	private Nations main;
@@ -33,9 +30,6 @@ public class NationInviteAcceptCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		FileConfiguration language = main.getLanguage();
-		Player player = (Player) sender;
-		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		NationMapping nation = mappingRepo.getNationByName(args.length < 2 ? "" : args[1]);
 		
@@ -45,11 +39,8 @@ public class NationInviteAcceptCommand extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 
-				nation == null || 
-				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender, Rank.getLowest()));
+		NationInviteAcceptValidator validator = new NationInviteAcceptValidator(sender, args, this);
+		if(validator.validate()) Bukkit.getPluginManager().callEvent(new JoinNationEvent(nation, sender, Rank.getLowest()));
 	}
 
 	@Override

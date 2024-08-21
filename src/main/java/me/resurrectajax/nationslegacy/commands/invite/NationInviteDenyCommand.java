@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.invite.validators.NationInviteDenyValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -43,11 +44,8 @@ public class NationInviteDenyCommand extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		if(args.length < 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(!mappingRepo.getPlayerInvites().containsKey(player.getUniqueId()) || 
-				nation == null || 
-				!mappingRepo.getPlayerInvites().get(player.getUniqueId()).contains(nation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.Invite.Receive.NoInvite.Message"), args[1]));
-		else {
+		NationInviteDenyValidator validator = new NationInviteDenyValidator(sender, args, this);
+		if(validator.validate()) {
 			mappingRepo.removePlayerInvite(nation.getNationID(), player.getUniqueId());
 			Bukkit.getOnlinePlayers().stream()
 				.filter(el -> (nation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))))

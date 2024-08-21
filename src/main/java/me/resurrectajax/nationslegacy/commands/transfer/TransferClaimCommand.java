@@ -62,7 +62,7 @@ public class TransferClaimCommand extends ChildCommand{
 				return;
 			}
 			
-			main.getServer().getPluginManager().callEvent(new TransferChunksEvent(nation, receivingNation, sender, transferAmount));
+			Bukkit.getPluginManager().callEvent(new TransferChunksEvent(nation, receivingNation, sender, transferAmount));
 		}
 	}
 

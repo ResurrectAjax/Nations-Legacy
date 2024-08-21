@@ -4,21 +4,20 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.commands.ranks.validators.PromoteValidator;
 import me.resurrectajax.nationslegacy.events.nation.ranks.PromoteEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
 public class PromoteCommand extends ChildCommand{
 
@@ -33,43 +32,14 @@ public class PromoteCommand extends ChildCommand{
 	public void perform(CommandSender sender, String[] args) {
 		super.setLastArg(main, sender, args.length < 2 ? "" : args[1]);
 		
-		FileConfiguration language = main.getLanguage();
-		
 		if(args.length != 2) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		if(!(sender instanceof Player)) {
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Error.ByConsole.Message"), args[1]));
-			return;
-		}
-		if(Bukkit.getPlayer(args[1]) == null) {
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotExist.Message"), args[1]));
-			return;
-		}
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping player = mappingRepo.getPlayerByName(args[1]), promoter = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
 		if(player != null) super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(player.getUUID()));
-		OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(player.getUUID());
-		
-		if(promoter.getNationID() == null) {
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[1]));
-			return;
-		}
 		NationMapping nation = mappingRepo.getNationByID(promoter.getNationID());
-		
-		if(player.getNationID() != promoter.getNationID()) {
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInSameNation.Message"), args[1]));
-			return;
-		}
-		if(!promoter.getRank().equals(Rank.getHighest())) {
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), args[1]));
-			return;
-		}
-		if(player.getRank().equals(Rank.getHighest())) {
-			sender.sendMessage(GeneralMethods.relFormat(sender, (CommandSender)offPlayer, language.getString("Command.Player.Promote.AlreadyHighestRank.Message"), args[1]));
-			return;
-		}
-		
-		main.getServer().getPluginManager().callEvent(new PromoteEvent(nation, sender, player));
+		PromoteValidator validator = new PromoteValidator(sender, args, this);
+		if(validator.validate()) Bukkit.getPluginManager().callEvent(new PromoteEvent(nation, sender, player));
 	}
 
 	@Override

@@ -4,16 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.home.validators.SetHomeValidator;
 import me.resurrectajax.nationslegacy.events.nation.home.SetHomeEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
@@ -30,7 +28,6 @@ public class SetHomeCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		
 		if(!(sender instanceof Player)) return;
 		Player player = (Player) sender;
 		
@@ -38,27 +35,13 @@ public class SetHomeCommand extends ChildCommand{
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-		FileConfiguration config = main.getConfig(), language = main.getLanguage();
-		int maxHomes = config.getInt("Nations.Home.MaxHomes");
-		if(playerMap == null) return;
-		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
-		if(nation == null) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
-			return;
-		}
-		if(!sender.hasPermission(getPermissionNode())) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-			return;
-		}
+		SetHomeValidator validator = new SetHomeValidator(sender, args, this);
 		
-		if(nation.getHomes().size() >= maxHomes && args.length >= 2) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.SetHome.MaxHomes.Message"), nation.getName()));
-			return;
+		if(validator.validate()) {
+			if(args.length >= 2) Bukkit.getPluginManager().callEvent(new SetHomeEvent(nation, sender, args[1].toLowerCase(), player.getLocation()));
+			else Bukkit.getPluginManager().callEvent(new SetHomeEvent(nation, sender, null, player.getLocation()));	
 		}
-		
-		if(args.length >= 2) Bukkit.getPluginManager().callEvent(new SetHomeEvent(nation, sender, args[1].toLowerCase(), player.getLocation()));
-		else Bukkit.getPluginManager().callEvent(new SetHomeEvent(nation, sender, null, player.getLocation()));
 	}
 
 	@Override

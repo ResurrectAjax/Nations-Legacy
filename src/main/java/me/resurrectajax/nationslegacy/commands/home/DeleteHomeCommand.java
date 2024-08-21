@@ -5,16 +5,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.home.validators.DeleteHomeValidator;
 import me.resurrectajax.nationslegacy.events.nation.home.DeleteHomeEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
@@ -31,7 +29,6 @@ public class DeleteHomeCommand extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		
 		if(!(sender instanceof Player)) return;
 		Player player = (Player) sender;
 		
@@ -40,25 +37,10 @@ public class DeleteHomeCommand extends ChildCommand{
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
-		FileConfiguration language = main.getLanguage();
-		if(playerMap == null) return;
-		
 		NationMapping nation = mappingRepo.getNationByID(playerMap.getNationID());
-		if(nation == null) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), player.getName()));
-			return;
-		}
-		if(!sender.hasPermission(getPermissionNode())) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-			return;
-		}
 		
-		if(!nation.getHomes().containsKey(home)) {
-			player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Home.DelHome.NotFound.Message"), nation.getName()));
-			return;
-		}
-		
-		Bukkit.getPluginManager().callEvent(new DeleteHomeEvent(nation, sender, home));
+		DeleteHomeValidator validator = new DeleteHomeValidator(sender, args, this);
+		if(validator.validate()) Bukkit.getPluginManager().callEvent(new DeleteHomeEvent(nation, sender, home));
 	}
 
 	@Override
