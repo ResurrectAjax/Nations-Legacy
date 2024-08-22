@@ -57,12 +57,6 @@ public class DemoteCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return "nations.player.demote";
@@ -90,12 +84,6 @@ public class DemoteCommand extends ChildCommand{
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return main.getLanguage().getString("HelpList.Demote.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

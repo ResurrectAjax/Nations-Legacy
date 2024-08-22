@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.war.info;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,7 +11,9 @@ import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
+import me.resurrectajax.ajaxplugin.interfaces.SubArgumentSource;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.war.info.validators.WarInfoValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -21,7 +22,7 @@ import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 import me.resurrectajax.nationslegacy.persistency.WarMapping;
 import me.resurrectajax.nationslegacy.ranking.Rank;
 
-public class WarInfoCommand extends ChildCommand{
+public class WarInfoCommand extends ChildCommand implements SubArgumentSource{
 
 	private ParentCommand parent;
 	private Nations main;
@@ -39,8 +40,6 @@ public class WarInfoCommand extends ChildCommand{
 		PlayerMapping player = null;
 		FileConfiguration language = main.getLanguage();
 		if(sender instanceof Player) player = mappingRepo.getPlayerByUUID(((Player)sender).getUniqueId());
-		
-		
 		
 		switch(args.length) {
 			case 3:
@@ -67,24 +66,12 @@ public class WarInfoCommand extends ChildCommand{
 					super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 				}
 				break;
-			default:
-				sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-				return;
 		}
-		if(nation == null) {
-			super.setLastArg(main, sender, args[2]);
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-			return;
-		}
-		if(enemy == null && args.length == 4) {
-			super.setLastArg(main, sender, args[3]);
-			sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.NotExist.Message"), args[3]));
-			return;
-		}
+		if(nation == null) super.setLastArg(main, sender, args[2]);
+		if(enemy == null && args.length == 4) super.setLastArg(main, sender, args[3]);
 		WarMapping war = mappingRepo.getWarByNationIDs(nation.getNationID(), enemy.getNationID());
-		if(war != null) createInfo(sender, war);
-		else if(args.length == 3) sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Truce.Send.NotAtWar.Message"), args[2]));
-		else sender.sendMessage(GeneralMethods.format(sender, language.getString("Command.Nations.War.Info.NotAtWar.Message"), args[3]));
+		WarInfoValidator validator = new WarInfoValidator(sender, args, this);
+		if(validator.validate()) createInfo(sender, war);
 	}
 	
 	private void createInfo(CommandSender sender, WarMapping war) {
@@ -154,11 +141,6 @@ public class WarInfoCommand extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		return null;
-	}
-
-	@Override
 	public ParentCommand getParentCommand() {
 		return parent;
 	}
@@ -170,7 +152,6 @@ public class WarInfoCommand extends ChildCommand{
 
 	@Override
 	public AjaxPlugin getMain() {
-		// TODO Auto-generated method stub
 		return main;
 	}
 

@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.alliance.add;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
-public class AllyCancel extends ChildCommand{
+public class AllyCancel extends ChildCommand {
 	private Nations main;
 	private AllyCommand allyCommand;
 	
@@ -95,12 +94,6 @@ public class AllyCancel extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -110,12 +103,6 @@ public class AllyCancel extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return allyCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

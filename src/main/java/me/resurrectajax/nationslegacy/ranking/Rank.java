@@ -23,6 +23,11 @@ public class Rank implements Comparable<Rank>{
 	}
 	
 	private static List<Rank> ranks = initializeRanks();
+	
+	/**
+	 * Loads all the ranks from the config.yml file
+	 * @return a list of all the available ranks
+	 * */
 	private static List<Rank> initializeRanks() {
 		Nations main = Nations.getInstance();
 		FileConfiguration config = main.getConfig();
@@ -41,9 +46,15 @@ public class Rank implements Comparable<Rank>{
 		return rankingSet;
 	}
 	
+	/**
+	 * @return the rank associated with a certain power level
+	 * */
 	public static Rank getRankByPower(int power) {
 		return ranks.stream().filter(el -> el.power == power).findFirst().orElse(null);
 	}
+	/**
+	 * @return the rank associated with the given displayname
+	 * */
 	public static Rank getRankByName(String name) {
 		Rank rank = ranks.stream().filter(el -> el.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
 		if(rank == null) getRankByPower(0);
@@ -51,40 +62,71 @@ public class Rank implements Comparable<Rank>{
 		return ranks.stream().filter(el -> el.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
 	}
 	
+	/**
+	 * @return the rank with a power of 0, which should always be nationless
+	 * */
 	public static Rank getNationless() {
 		return ranks.get(0);
 	}
+	
+	/**
+	 * @return the lowest rank possible whithin a nation
+	 * */
 	public static Rank getLowest() {
 		return ranks.get(1);
 	}
+	/**
+	 * @return the heighest rank possible whithin a nation
+	 * */
 	public static Rank getHighest() {
 		return ranks.get(ranks.size()-1);
 	}
 	
+	/**
+	 * Reloads all the ranks from config
+	 * */
 	public static void reloadRanks() {
 		ranks = initializeRanks();
 	}
 	
+	/**
+	 * @return a list of all the ranks
+	 * */
 	public static List<Rank> getRanks() {
 		return ranks;
 	}
 	
+	/**
+	 * @return an iterator of the rank list
+	 * */
 	public static ListIterator<Rank> getRankIterator() {
 		return getRanks().listIterator();
 	}
 	
+	/**
+	 * @return the displayname of a rank
+	 * */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * @return the power of a rank
+	 * */
 	public int getPower() {
 		return power;
 	}
 	
+	/**
+	 * @return the worth of a rank, i.e. how much points a player will get for killing someone of that rank
+	 * */
 	public int getWorth() {
 		return worth;
 	}
 	
+	/**
+	 * @return a list of permissions associated with the rank
+	 * */
 	public List<String> getPermissions() {
 		return permissions;
 	}

@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
-import me.resurrectajax.nationslegacy.enumeration.Flag;
+import me.resurrectajax.nationslegacy.flags.Flag;
 import me.resurrectajax.nationslegacy.general.CommandValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;

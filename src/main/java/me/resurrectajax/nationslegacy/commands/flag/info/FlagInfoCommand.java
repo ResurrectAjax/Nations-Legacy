@@ -88,12 +88,6 @@ public class FlagInfoCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return "nations.player.flag.info";
@@ -121,12 +115,6 @@ public class FlagInfoCommand extends ChildCommand{
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return main.getLanguage().getString("HelpList.Flag.Info.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

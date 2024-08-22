@@ -54,11 +54,6 @@ public class DeleteHomeCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		return "nations.player.delhome";
 	}
@@ -81,11 +76,6 @@ public class DeleteHomeCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		return main.getLanguage().getString("HelpList.Delhome.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		return null;
 	}
 
 	@Override

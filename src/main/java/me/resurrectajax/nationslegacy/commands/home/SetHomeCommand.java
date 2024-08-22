@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.home;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -50,11 +49,6 @@ public class SetHomeCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		return "nations.player.sethome";
 	}
@@ -77,11 +71,6 @@ public class SetHomeCommand extends ChildCommand{
 	@Override
 	public String getDescription() {
 		return main.getLanguage().getString("HelpList.Sethome.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		return null;
 	}
 
 	@Override

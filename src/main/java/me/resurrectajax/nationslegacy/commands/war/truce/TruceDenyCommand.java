@@ -1,7 +1,6 @@
 package me.resurrectajax.nationslegacy.commands.war.truce;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,18 +15,18 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.WarCommand;
-import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
-public class TruceDeny extends ChildCommand{
+public class TruceDenyCommand extends ChildCommand{
 	private Nations main;
 	private WarCommand warCommand;
 	
-	public TruceDeny(WarCommand warCommand) {
+	public TruceDenyCommand(WarCommand warCommand) {
 		this.main = (Nations) warCommand.getMain();
 		this.warCommand = warCommand;
 	}
@@ -117,12 +116,6 @@ public class TruceDeny extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -132,12 +125,6 @@ public class TruceDeny extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return warCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

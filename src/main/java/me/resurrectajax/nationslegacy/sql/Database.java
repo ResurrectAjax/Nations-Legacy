@@ -24,8 +24,8 @@ import org.flywaydb.core.Flyway;
 
 import db.migration.V1_0_1__remove_ranks_foreign_key;
 import me.resurrectajax.ajaxplugin.sql.Errors;
-import me.resurrectajax.nationslegacy.enumeration.Flag;
 import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.flags.Flag;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.AllianceMapping;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;

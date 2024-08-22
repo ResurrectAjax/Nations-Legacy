@@ -13,7 +13,7 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.flag.set.validators.FlagSetValidator;
-import me.resurrectajax.nationslegacy.enumeration.Flag;
+import me.resurrectajax.nationslegacy.flags.Flag;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
@@ -55,11 +55,6 @@ public class FlagSetCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		return new String[]{"ALLOW", "DENY"};
-	}
-
-	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return "nations.player.flag.set";
@@ -87,12 +82,6 @@ public class FlagSetCommand extends ChildCommand{
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return main.getLanguage().getString("HelpList.Flag.Set.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
