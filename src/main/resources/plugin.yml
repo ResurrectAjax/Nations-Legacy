@@ -1,6 +1,6 @@
 main: me.resurrectajax.nationslegacy.main.Nations
 name: Nations-Legacy
-version: 1.0.3
+version: 1.0.4
 author: ResurrectAjax
 description: Create nations, claim land, wage war!
 api-version: 1.19

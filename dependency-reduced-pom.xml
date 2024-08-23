@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.ResurrectAjax</groupId>
   <artifactId>Nations-Legacy</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
   <build>
     <plugins>
       <plugin>
@@ -50,6 +50,12 @@
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>2.11.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.34</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

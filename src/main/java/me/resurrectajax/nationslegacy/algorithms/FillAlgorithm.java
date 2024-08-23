@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.algorithms;
 
-import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,19 +123,6 @@ public class FillAlgorithm {
 	    
 	    return markings;
 	}
-	
-	
-	public static boolean isPointInPolygon(double x, double y, int[] polygonX, int[] polygonY) {
-        Path2D path = new Path2D.Double();
-        path.moveTo(polygonX[0], polygonY[0]);
-
-        for (int i = 1; i < polygonX.length; i++) {
-            path.lineTo(polygonX[i], polygonY[i]);
-        }
-        path.closePath();
-
-        return path.contains(x, y);
-    }
 	
 	
 }
