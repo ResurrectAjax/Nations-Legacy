@@ -5,35 +5,31 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.WarCommand;
-import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.commands.war.truce.validators.TruceValidator;
 import me.resurrectajax.nationslegacy.events.nation.war.RequestTruceEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
-public class WarTruce extends ChildCommand{
+public class TruceCommand extends ChildCommand{
 
 	private WarCommand parent;
 	private Nations main;
-	public WarTruce(WarCommand parent) {
+	public TruceCommand(WarCommand parent) {
 		this.parent = parent;
 		this.main = (Nations) parent.getMain();
 	}
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		FileConfiguration language = main.getLanguage();
 		Player player = (Player) sender;
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
@@ -47,13 +43,8 @@ public class WarTruce extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		if(args.length != 3) player.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
-		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-		else if(receivingNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.Self.Message"), args[2]));
-		else if(!mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(receivingNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.NotAtWar.Message"), args[2]));
-		else Bukkit.getPluginManager().callEvent(new RequestTruceEvent(nation, receivingNation, parent, sender));
+		TruceValidator validator = new TruceValidator(sender, args, this);
+		if(validator.validate()) Bukkit.getPluginManager().callEvent(new RequestTruceEvent(nation, receivingNation, parent, sender));
 	}
 
 	@Override
@@ -96,12 +87,6 @@ public class WarTruce extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
@@ -111,12 +96,6 @@ public class WarTruce extends ChildCommand{
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package me.resurrectajax.nationslegacy.enumeration;
+package me.resurrectajax.nationslegacy.flags;
 
 import java.util.Arrays;
 

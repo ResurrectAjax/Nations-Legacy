@@ -77,12 +77,6 @@ public class ListCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return "nations.player.list";
@@ -110,12 +104,6 @@ public class ListCommand extends ChildCommand{
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return main.getLanguage().getString("HelpList.List.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

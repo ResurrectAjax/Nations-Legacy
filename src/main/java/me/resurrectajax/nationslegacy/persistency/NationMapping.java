@@ -15,7 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
-import me.resurrectajax.nationslegacy.enumeration.Flag;
+import me.resurrectajax.nationslegacy.flags.Flag;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.ranking.Rank;
 import me.resurrectajax.nationslegacy.sql.Database;

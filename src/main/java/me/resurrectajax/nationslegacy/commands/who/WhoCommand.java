@@ -1,5 +1,4 @@
 package me.resurrectajax.nationslegacy.commands.who;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -98,12 +97,6 @@ public class WhoCommand extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return true;
@@ -113,12 +106,6 @@ public class WhoCommand extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

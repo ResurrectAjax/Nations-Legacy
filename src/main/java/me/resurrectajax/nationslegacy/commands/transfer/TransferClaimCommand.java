@@ -4,15 +4,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
-import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.commands.transfer.validators.TransferClaimValidator;
 import me.resurrectajax.nationslegacy.events.nation.transfer.TransferChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -36,7 +34,6 @@ public class TransferClaimCommand extends ChildCommand{
 		super.setLastArg(main, sender, arg);
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
-		FileConfiguration language = main.getLanguage();
 		
 		Player player = (Player) sender;
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
@@ -48,21 +45,10 @@ public class TransferClaimCommand extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		if(args.length != 3 || !GeneralMethods.isInteger(args[2])) player.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), args[1]));
-		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-		else if(receivingNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[1]));
-		else if(nation == receivingNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Transfer.Self.Message"), args[1]));
-		else {
+		TransferClaimValidator validator = new TransferClaimValidator(sender, args, this);
+		if(validator.validate()) {
 			Integer transferAmount = GeneralMethods.getIntFromString(args[2])[0];
-			if(transferAmount > nation.getMaxChunks()-nation.getBaseChunkLimit()) {
-				String message = language.getString("Command.Nations.Transfer.NotEnough.Message");
-				message = message.replace("%nations_transfer_amount%", String.format("%d", transferAmount));
-				player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, message, args[1]));
-				return;
-			}
-			
-			main.getServer().getPluginManager().callEvent(new TransferChunksEvent(nation, receivingNation, sender, transferAmount));
+			Bukkit.getPluginManager().callEvent(new TransferChunksEvent(nation, receivingNation, sender, transferAmount));
 		}
 	}
 
@@ -76,12 +62,6 @@ public class TransferClaimCommand extends ChildCommand{
 				.map(el -> el.getName())
 				.toList();
 		return nations.toArray(new String[nations.size()]);
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -112,12 +92,6 @@ public class TransferClaimCommand extends ChildCommand{
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return main.getLanguage().getString("HelpList.Transfer.Description");
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

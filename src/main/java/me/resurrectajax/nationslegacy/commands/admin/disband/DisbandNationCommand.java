@@ -97,12 +97,6 @@ public class DisbandNationCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public AjaxPlugin getMain() {
 		// TODO Auto-generated method stub
 		return parent.getMain();

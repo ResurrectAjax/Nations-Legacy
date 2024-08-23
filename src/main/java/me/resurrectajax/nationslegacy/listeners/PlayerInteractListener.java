@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.loot.Lootable;
 
-import me.resurrectajax.nationslegacy.enumeration.Flag;
+import me.resurrectajax.nationslegacy.flags.Flag;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;

@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.invite;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,18 +13,19 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.invite.validators.NationInviteCancelValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
-public class NationInviteCancel extends ChildCommand {
+public class NationInviteCancelCommand extends ChildCommand {
 
 	private Nations main;
 	private ParentCommand parent;
 
-	public NationInviteCancel(ParentCommand parent) {
+	public NationInviteCancelCommand(ParentCommand parent) {
 		this.main = (Nations) parent.getMain();
 		this.parent = parent;
 	}
@@ -44,16 +44,8 @@ public class NationInviteCancel extends ChildCommand {
 		super.setLastArg(main, sender, args.length < 2 ? "" : args[1]);
 		if(receiver != null) super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(receiver.getUUID()));
 
-		if (args.length < 2)
-			sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if (send.getNationID() == null)
-			sender.sendMessage(
-					GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if (!mappingRepo.getPlayerInvites().containsKey(receiver.getUUID()) || nationID == null
-				|| !mappingRepo.getPlayerInvites().get(receiver.getUUID()).contains(nationID))
-			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender,
-					language.getString("Command.Player.Invite.Cancel.NoInvite.Message"), args[1]));
-		else {
+		NationInviteCancelValidator validator = new NationInviteCancelValidator(sender, args, this);
+		if(validator.validate()) {
 			mappingRepo.removePlayerInvite(nationID, receiver.getUUID());
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender,
 					language.getString("Command.Player.Invite.Cancel.CancelInvitation.Message"), nation.getName()));
@@ -103,12 +95,6 @@ public class NationInviteCancel extends ChildCommand {
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -118,12 +104,6 @@ public class NationInviteCancel extends ChildCommand {
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

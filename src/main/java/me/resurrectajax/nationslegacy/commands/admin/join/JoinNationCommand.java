@@ -51,12 +51,6 @@ public class JoinNationCommand extends ChildCommand{
 	}
 
 	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getPermissionNode() {
 		// TODO Auto-generated method stub
 		return "nations.admin.join";

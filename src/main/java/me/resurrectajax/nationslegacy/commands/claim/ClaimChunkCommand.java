@@ -1,7 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.claim;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,6 +11,7 @@ import org.bukkit.entity.Player;
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
+import me.resurrectajax.nationslegacy.commands.claim.validators.ClaimChunkValidator;
 import me.resurrectajax.nationslegacy.events.nation.claim.SaveChunksEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
@@ -53,11 +52,6 @@ public class ClaimChunkCommand extends ChildCommand{
 		return main.getLanguage().getString("HelpList.Claim.Description");
 	}
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -74,10 +68,8 @@ public class ClaimChunkCommand extends ChildCommand{
 		PlayerMapping playerMap = mappingRepo.getPlayerByUUID(player.getUniqueId());
 		NationMapping nation = mappingRepo.getNationByPlayer(playerMap);
 		
-		if(nation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(args.length < 2 || !Arrays.asList(getArguments(player.getUniqueId())).contains(arg.toLowerCase())) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(!sender.hasPermission(getPermissionNode())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeaderOrOfficer.Message"), nation.getName()));
-		else {
+		ClaimChunkValidator validator = new ClaimChunkValidator(sender, args, this);
+		if(validator.validate()) {
 			switch(args[1]) {
 			case "on":
 				if(mappingRepo.getClaimingSet().contains(player.getUniqueId())) return;
@@ -102,11 +94,6 @@ public class ClaimChunkCommand extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return parent;
-	}
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	@Override
 	public AjaxPlugin getMain() {

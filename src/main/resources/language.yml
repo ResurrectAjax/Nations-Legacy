@@ -200,7 +200,7 @@ Command:
           Expired:
             Message: '&bNations-Legacy &8: &eThe truce request sent to &c&l%nations_player_argument%&e has expired.'
           CancelRequest:
-            Message: '&bNations-Legacy &8: &eYou''ve cancelled &9&l%nations_player_argument%&e''s truce request.'
+            Message: '&bNations-Legacy &8: &eYour truce request with &9&l%nations_player_argument%&e has been cancelled.'
         Receive:
           RequestReceived:
             Message: '&bNations-Legacy &8: &c&l%nations_nation_name%&e has requested a truce. '

@@ -1,7 +1,6 @@
 package me.resurrectajax.nationslegacy.commands.war.truce;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,21 +15,20 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.WarCommand;
-import me.resurrectajax.nationslegacy.ranking.Rank;
-import me.resurrectajax.nationslegacy.events.nation.war.AcceptTruceEvent;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
+import me.resurrectajax.nationslegacy.ranking.Rank;
 
-public class TruceAccept extends ChildCommand{
+public class TruceDenyCommand extends ChildCommand{
 	private Nations main;
 	private WarCommand warCommand;
 	
-	public TruceAccept(WarCommand allyCommand) {
-		this.main = (Nations) allyCommand.getMain();
-		this.warCommand = allyCommand;
+	public TruceDenyCommand(WarCommand warCommand) {
+		this.main = (Nations) warCommand.getMain();
+		this.warCommand = warCommand;
 	}
 	
 	@Override
@@ -57,7 +55,21 @@ public class TruceAccept extends ChildCommand{
 		else if(!mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Add.NotAtWar.Message"), args[2]));
 		else if(!warCommand.getTruceRequests().containsKey(nation.getNationID()) || 
 				!warCommand.getTruceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Receive.NoRequest.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new AcceptTruceEvent(nation, senderNation, warCommand, sender));
+		else {
+			warCommand.removeTruceRequest(nation.getNationID(), senderNation.getNationID());
+			
+			Set<PlayerMapping> players = new HashSet<PlayerMapping>();
+			players.addAll(nation.getPlayers());
+			players.addAll(senderNation.getPlayers());
+			
+			Player enemyPlayer = Bukkit.getOnlinePlayers().stream().filter(el -> senderNation.getPlayers().contains(mappingRepo.getPlayerByUUID(el.getUniqueId()))).findFirst().orElse(null);
+			Bukkit.getOnlinePlayers().stream()
+				.filter(el -> players.contains(mappingRepo.getPlayerByUUID(el.getUniqueId())))
+				.forEach(el -> {
+					if(enemyPlayer == null) el.sendMessage(GeneralMethods.format((OfflinePlayer)el, language.getString("Command.Nations.War.Truce.Receive.Denied.Message"), nation.getName()));
+					el.sendMessage(GeneralMethods.relFormat(player, enemyPlayer, language.getString("Command.Nations.War.Truce.Receive.Denied.Message"), nation.getName()));
+				});
+		}
 	}
 
 	@Override
@@ -88,25 +100,19 @@ public class TruceAccept extends ChildCommand{
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return "accept";
+		return "deny";
 	}
 
 	@Override
 	public String getSyntax() {
 		// TODO Auto-generated method stub
-		return "/nations war accept <nation>";
+		return "/nations ally deny <nation>";
 	}
 
 	@Override
 	public String getDescription() {
 		// TODO Auto-generated method stub
-		return "Accept a truce request";
-	}
-
-	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Deny an alliance request";
 	}
 
 	@Override
@@ -119,12 +125,6 @@ public class TruceAccept extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return warCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

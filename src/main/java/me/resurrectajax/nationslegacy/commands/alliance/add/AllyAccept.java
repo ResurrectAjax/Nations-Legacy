@@ -1,24 +1,20 @@
 package me.resurrectajax.nationslegacy.commands.alliance.add;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.alliance.AllyCommand;
-import me.resurrectajax.nationslegacy.ranking.Rank;
+import me.resurrectajax.nationslegacy.commands.alliance.add.validators.AllyAcceptValidator;
 import me.resurrectajax.nationslegacy.events.nation.alliance.CreateAllianceEvent;
-import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
@@ -35,7 +31,6 @@ public class AllyAccept extends ChildCommand{
 	
 	@Override
 	public void perform(CommandSender sender, String[] args) {
-		FileConfiguration language = main.getLanguage();
 		Player player = (Player) sender;
 		
 		MappingRepository mappingRepo = main.getMappingRepo();
@@ -49,16 +44,8 @@ public class AllyAccept extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 		
-		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(nation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer) sender, language.getString("Command.Player.NotInNation.Message"), args[2]));
-		else if(!playerMap.getRank().equals(Rank.getHighest())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotALeader.Message"), nation.getName()));
-		else if(senderNation == null) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.NotExist.Message"), args[2]));
-		else if(nation == senderNation) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.Self.Message"), args[2]));
-		else if(mappingRepo.getWarNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.NationAtWar.Message"), args[2]));
-		else if(mappingRepo.getAllianceNationsByNationID(nation.getNationID()).contains(senderNation)) player.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.AlreadyAlly.Message"), args[2]));
-		else if(!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) || 
-				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[1]));
-		else Bukkit.getPluginManager().callEvent(new CreateAllianceEvent(nation, senderNation, allyCommand, sender));
+		AllyAcceptValidator validator = new AllyAcceptValidator(sender, args, this);
+		if(validator.validate()) Bukkit.getPluginManager().callEvent(new CreateAllianceEvent(nation, senderNation, allyCommand, sender));
 	}
 
 	@Override
@@ -106,12 +93,6 @@ public class AllyAccept extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -121,12 +102,6 @@ public class AllyAccept extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return allyCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

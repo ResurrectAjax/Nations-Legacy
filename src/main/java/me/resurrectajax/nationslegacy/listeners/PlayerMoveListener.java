@@ -85,7 +85,10 @@ public class PlayerMoveListener implements Listener{
 				
 				if(neighbouringChunks.stream().anyMatch(el -> mappingRepo.getNationByChunk(el) != null 
 						&& mappingRepo.getNationByChunk(el).equals(nationMap)) 
-						&& shouldFill(nationMap, chunk)) Bukkit.getPluginManager().callEvent(new ClaimAutoFillEvent(nationMap, player, chunk));
+						&& shouldFill(nationMap, chunk)) {
+					
+					Bukkit.getPluginManager().callEvent(new ClaimAutoFillEvent(nationMap, player, chunk));
+				}
 				else Bukkit.getPluginManager().callEvent(new ClaimChunkEvent(nationMap, player, chunk));
 			}
 			

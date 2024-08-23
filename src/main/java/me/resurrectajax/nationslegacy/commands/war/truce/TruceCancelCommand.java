@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.war.truce;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,17 +14,18 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.WarCommand;
+import me.resurrectajax.nationslegacy.commands.war.truce.validators.TruceCancelValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
-public class TruceCancel extends ChildCommand{
+public class TruceCancelCommand extends ChildCommand{
 	private Nations main;
 	private WarCommand warCommand;
 	
-	public TruceCancel(WarCommand warCommand) {
+	public TruceCancelCommand(WarCommand warCommand) {
 		this.main = (Nations) warCommand.getMain();
 		this.warCommand = warCommand;
 	}
@@ -44,12 +44,8 @@ public class TruceCancel extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 
-		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(senderNation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(nation == null ||
-				!warCommand.getTruceRequests().containsKey(nation.getNationID()) ||  
-				!warCommand.getTruceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Receive.NoRequest.Message"), args[2]));
-		else {
+		TruceCancelValidator validator = new TruceCancelValidator(sender, args, this);
+		if(validator.validate()) {
 			warCommand.removeTruceRequest(nation.getNationID(), senderNation.getNationID());
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.War.Truce.Send.CancelRequest.Message"), nation.getName()));
 		}
@@ -98,12 +94,6 @@ public class TruceCancel extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -113,12 +103,6 @@ public class TruceCancel extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return warCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

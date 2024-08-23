@@ -22,7 +22,7 @@ import me.resurrectajax.nationslegacy.commands.home.HomeCommand;
 import me.resurrectajax.nationslegacy.commands.home.SetHomeCommand;
 import me.resurrectajax.nationslegacy.commands.info.NationInfoCommand;
 import me.resurrectajax.nationslegacy.commands.invite.NationInviteAcceptCommand;
-import me.resurrectajax.nationslegacy.commands.invite.NationInviteCancel;
+import me.resurrectajax.nationslegacy.commands.invite.NationInviteCancelCommand;
 import me.resurrectajax.nationslegacy.commands.invite.NationInviteCommand;
 import me.resurrectajax.nationslegacy.commands.invite.NationInviteDenyCommand;
 import me.resurrectajax.nationslegacy.commands.kick.KickCommand;
@@ -60,7 +60,7 @@ public class NationsCommand extends MainCommand{
 				new NationInviteCommand(this),
 				new NationInviteAcceptCommand(this),
 				new NationInviteDenyCommand(this),
-				new NationInviteCancel(this),
+				new NationInviteCancelCommand(this),
 				new MapCommand(this),
 				new AllyCommand(this),
 				new WarCommand(this),

@@ -1,6 +1,5 @@
 package me.resurrectajax.nationslegacy.commands.alliance.add;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,13 +14,14 @@ import me.resurrectajax.ajaxplugin.interfaces.ChildCommand;
 import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.alliance.AllyCommand;
+import me.resurrectajax.nationslegacy.commands.alliance.add.validators.AllyCancelValidator;
 import me.resurrectajax.nationslegacy.general.GeneralMethods;
 import me.resurrectajax.nationslegacy.main.Nations;
 import me.resurrectajax.nationslegacy.persistency.MappingRepository;
 import me.resurrectajax.nationslegacy.persistency.NationMapping;
 import me.resurrectajax.nationslegacy.persistency.PlayerMapping;
 
-public class AllyCancel extends ChildCommand{
+public class AllyCancel extends ChildCommand {
 	private Nations main;
 	private AllyCommand allyCommand;
 	
@@ -44,12 +44,8 @@ public class AllyCancel extends ChildCommand{
 			super.setLastMentioned(main, sender, Bukkit.getOfflinePlayer(pl.getUUID()));
 		}
 
-		if(args.length < 3) sender.sendMessage(GeneralMethods.getBadSyntaxMessage(main, getSyntax()));
-		else if(senderNation == null) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Player.NotInNation.Message"), ""));
-		else if(nation == null ||
-				!allyCommand.getAllianceRequests().containsKey(nation.getNationID()) ||  
-				!allyCommand.getAllianceRequests().get(nation.getNationID()).contains(senderNation.getNationID())) sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Receive.NoRequest.Message"), args[2]));
-		else {
+		AllyCancelValidator validator = new AllyCancelValidator(main, sender, args, this);
+		if(validator.validate()) {
 			allyCommand.removeAllianceRequest(nation.getNationID(), senderNation.getNationID());
 			sender.sendMessage(GeneralMethods.format((OfflinePlayer)sender, language.getString("Command.Nations.Alliance.Add.Send.CancelRequest.Message"), nation.getName()));
 		}
@@ -98,12 +94,6 @@ public class AllyCancel extends ChildCommand{
 	}
 
 	@Override
-	public List<ParentCommand> getSubCommands() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean isConsole() {
 		// TODO Auto-generated method stub
 		return false;
@@ -113,12 +103,6 @@ public class AllyCancel extends ChildCommand{
 	public ParentCommand getParentCommand() {
 		// TODO Auto-generated method stub
 		return allyCommand;
-	}
-
-	@Override
-	public String[] getSubArguments(String[] args) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

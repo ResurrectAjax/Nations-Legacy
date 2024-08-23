@@ -11,10 +11,10 @@ import me.resurrectajax.ajaxplugin.interfaces.ParentCommand;
 import me.resurrectajax.ajaxplugin.plugin.AjaxPlugin;
 import me.resurrectajax.nationslegacy.commands.war.add.WarAdd;
 import me.resurrectajax.nationslegacy.commands.war.info.WarInfoCommand;
-import me.resurrectajax.nationslegacy.commands.war.truce.TruceAccept;
-import me.resurrectajax.nationslegacy.commands.war.truce.TruceCancel;
-import me.resurrectajax.nationslegacy.commands.war.truce.TruceDeny;
-import me.resurrectajax.nationslegacy.commands.war.truce.WarTruce;
+import me.resurrectajax.nationslegacy.commands.war.truce.TruceAcceptCommand;
+import me.resurrectajax.nationslegacy.commands.war.truce.TruceCancelCommand;
+import me.resurrectajax.nationslegacy.commands.war.truce.TruceDenyCommand;
+import me.resurrectajax.nationslegacy.commands.war.truce.TruceCommand;
 
 public class WarCommand extends ParentCommand{
 
@@ -60,10 +60,10 @@ public class WarCommand extends ParentCommand{
 		return Arrays.asList(
 				new HelpCommand(this),
 				new WarAdd(this),
-				new WarTruce(this),
-				new TruceAccept(this),
-				new TruceDeny(this),
-				new TruceCancel(this),
+				new TruceCommand(this),
+				new TruceAcceptCommand(this),
+				new TruceDenyCommand(this),
+				new TruceCancelCommand(this),
 				new WarInfoCommand(this)
 				);
 	}
